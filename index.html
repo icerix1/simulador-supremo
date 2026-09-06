@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Unnamed life simulation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="life-screen">
+	<div class="screen-status">Unnamed life simulation <span>v0.0.1</span><label class="language-control" for="languageSelect">LANG:</label><select id="languageSelect" name="lifeLanguage" aria-label="Language" autocomplete="off"><option value="es">ES</option><option value="en">EN</option></select></div>
+	<div class="weather-overlay" id="weatherOverlay" aria-hidden="true"></div>
+	<div class="weather-indicator hidden" id="weatherIndicator" aria-live="polite"></div>
+	<nav class="welcome-navigation hidden" id="welcomeNavigation" aria-label="Main navigation">
+	  <button class="welcome-nav-button active" id="playNavButton" type="button">[ PLAY ]</button>
+	  <button class="welcome-nav-button" id="blogButton" type="button">[ BLOG ]</button>
+	</nav>
+	<section class="welcome-screen" id="welcomeScreen">
+	  <button class="start-life-button" id="startButton" type="button">START LIFE</button>
+	</section>
+
+	<section class="blog-screen hidden" id="blogScreen" aria-modal="true" role="dialog" aria-labelledby="blogTitle">
+	  <div class="blog-window">
+		<button class="close-history" id="closeBlogButton" type="button">[ X ]</button>
+		<h2 id="blogTitle">blog.txt // LIFE.AI notes</h2>
+		<p class="history-subtitle" id="blogSubtitle">// ideas, changes and simulator records</p>
+	  </div>
+	</section>
+
+	<section class="question-screen hidden" id="questionScreen" aria-live="polite">
+	  <p class="code-line"><span class="prompt">C:\LIFE&gt;</span> new_user.exe</p>
+		<div class="progress-line"><span id="questionNumber">01</span>/06 <span class="progress-bar">[□□□□□□]</span></div>
+	  <form id="lifeForm">
+		<label id="questionLabel" for="answerInput">What is your name?</label>
+		<textarea id="answerInput" autocomplete="off" required rows="4"></textarea>
+		<button class="next-button" type="submit">[ ENTER ]</button>
+	  </form>
+	  <p class="hint" id="questionHint">Write your answer and press ENTER.</p>
+	</section>
+
+	<section class="story-screen hidden" id="storyScreen">
+	  <div class="story-editor">
+		<p class="story-prompt"><span class="prompt">C:\LIFE&gt;</span> story.txt</p>
+		<label for="storyInput">How do you want to continue your life?</label>
+		<textarea id="storyInput" rows="8" placeholder="Write what happens next..."></textarea>
+		<button class="save-button" id="saveStoryButton" type="button">[ SAVE ]</button>
+		<button class="history-button menu-button" id="menuButton" type="button">[ MENU ]</button>
+		<div class="file-buttons hidden" id="mainFileButtons">
+		  <button class="history-button" id="chatButton" type="button">[ HABLAR CON LIFE.AI ]</button>
+			  <button class="history-button" id="statsButton" type="button">[ VIEW STATS ]</button>
+		  <button class="history-button" id="worldButton" type="button">[ VIEW WORLD ]</button>
+		  <button class="history-button" id="skillsButton" type="button">[ VIEW SKILLS ]</button>
+		  <button class="history-button" id="relationsButton" type="button">[ VIEW RELATIONSHIPS ]</button>
+		  <button class="history-button" id="learnFileButton" type="button">[ LOAD KNOWLEDGE ]</button>
+		  <button class="history-button" id="exportButton" type="button">[ EXPORT GAME ]</button>
+		  <button class="history-button" id="importButton" type="button">[ IMPORT GAME ]</button>
+		  <button class="history-button reset-button" id="resetButton" type="button">[ NEW GAME ]</button>
+		  <input id="importInput" type="file" accept="application/json,.json" hidden>
+		  <input id="learnFileInput" type="file" accept=".txt,.md,.csv,.json,text/plain,text/markdown,application/json,text/csv" hidden>
+		</div>
+		<p class="saved-message hidden" id="savedMessage">// chapter saved successfully_</p>
+		  <div class="ai-output hidden" id="aiOutput" aria-live="polite">
+		  <p id="aiText"></p>
+		  <p class="effects-line hidden" id="effectsText"></p>
+		</div>
+	  </div>
+	</section>
+
+	<section class="menu-screen hidden" id="menuScreen" aria-modal="true" role="dialog" aria-labelledby="menuTitle">
+	  <div class="menu-window">
+		<button class="close-history" id="closeMenuButton" data-close="menuScreen" type="button">[ X ]</button>
+		<h2 id="menuTitle">menu.json // control panel</h2>
+		<p class="history-subtitle" id="menuSubtitle">// all LIFE.AI modules</p>
+		<div class="menu-grid" id="menuGrid"></div>
+	  </div>
+	</section>
+
+	<section class="stats-screen hidden" id="worldScreen" aria-modal="true" role="dialog" aria-labelledby="worldTitle">
+	  <div class="stats-window world-window">
+		<button class="close-history" id="closeWorldButton" data-close="worldScreen" type="button">[ X ]</button>
+		<h2 id="worldTitle">world.json // living world</h2>
+		<p class="history-subtitle">// places, characters, goals, events and discovered rules</p>
+		<div class="world-dashboard" id="worldDashboard"></div>
+	  </div>
+	</section>
+
+	<section class="stats-screen hidden" id="skillsScreen" aria-modal="true" role="dialog" aria-labelledby="skillsTitle">
+	  <div class="stats-window skills-window">
+		<button class="close-history" id="closeSkillsButton" data-close="skillsScreen" type="button">[ X ]</button>
+		<h2 id="skillsTitle">skills.json // skills</h2>
+		<p class="history-subtitle">// learned abilities, experience and character growth</p>
+		<div class="skills-dashboard" id="skillsDashboard"></div>
+	  </div>
+	</section>
+
+	<section class="chat-screen hidden" id="chatScreen" aria-modal="true" role="dialog" aria-labelledby="chatTitle">
+	  <div class="chat-window">
+		<button class="close-history" id="closeChatButton" data-close="chatScreen" type="button">[ X ]</button>
+		<h2 id="chatTitle">life.ai // chat_console</h2>
+		<p class="history-subtitle">// conversation and learning · this mode does not modify your stats</p>
+		<div class="chat-messages" id="chatMessages" aria-live="polite">
+		  <p class="chat-ai"><span>[ LIFE.AI ]</span> Hello. I can remember what you tell me and change my rules with your instructions.</p>
+		</div>
+		<div class="analysis-panel" id="analysisPanel">
+		  <p class="analysis-title">[ ANALYZER ] waiting for a sentence...</p>
+		  <p id="analysisDetails">Intent: — · Confidence: — · Entities: —</p>
+		  <p id="predictionDetails">Prediction: — · Personality: — · Goal: —</p>
+		</div>
+		<form class="chat-form" id="chatForm">
+		  <span class="prompt">&gt;</span>
+		  <input id="chatInput" type="text" autocomplete="off" placeholder="Write a message..." required>
+		  <button type="submit">[ SEND ]</button>
+		</form>
+		<p class="chat-help">LIFE.AI analyzes the conversation, retrieves context and learns automatically when it detects useful information.</p>
+	  </div>
+	</section>
+
+	<section class="stats-screen hidden" id="relationsScreen" aria-modal="true" role="dialog" aria-labelledby="relationsTitle">
+	  <div class="stats-window relations-window">
+		<button class="close-history" id="closeRelationsButton" data-close="relationsScreen" type="button">[ X ]</button>
+		<h2 id="relationsTitle">relations.json // relationships</h2>
+		<p class="history-subtitle">// bonds, trust and social evolution</p>
+		<div class="relations-dashboard" id="relationsDashboard"></div>
+	  </div>
+	</section>
+
+	<section class="stats-screen hidden" id="statsScreen" aria-modal="true" role="dialog" aria-labelledby="statsTitle">
+	  <div class="stats-window">
+		<button class="close-history" id="closeStatsButton" data-close="statsScreen" type="button">[ X ]</button>
+		<h2 id="statsTitle">player.json // statistics</h2>
+		<p class="history-subtitle">// complete character state and story progress</p>
+	  <div class="code-block">
+		<span class="brace">{</span>
+		<div class="property"><span id="nameKey">"name"</span>: <strong class="string" id="nameStat"></strong>,</div>
+		<div class="property"><span id="surnameKey">"surname"</span>: <strong class="string" id="surnameStat"></strong>,</div>
+		<div class="property"><span id="ageKey">"age"</span>: <strong class="number" id="ageStat"></strong>,</div>
+		<div class="property"><span id="moneyKey">"money"</span>: <strong class="number">$<span id="moneyStat">100</span></strong>,</div>
+		<div class="property"><span id="locationKey">"location"</span>: <strong class="string" id="locationStat"></strong>,</div>
+		<div class="property"><span id="hobbyKey">"hobby"</span>: <strong class="string" id="hobbyStat"></strong>,</div>
+		<div class="property"><span id="energyKey">"energy"</span>: <strong class="number" id="energyStat"></strong>,</div>
+		<div class="property"><span id="moodKey">"mood"</span>: <strong class="string" id="moodStat"></strong>,</div>
+		<div class="property"><span id="reputationKey">"reputation"</span>: <strong class="number" id="reputationStat"></strong></div>
+		<span class="brace">}</span>
+	  </div>
+	  <div class="stats-extra" id="statsExtra"></div>
+	  </div>
+	</section>
+
+	<section class="history-screen hidden" id="historyScreen" aria-modal="true" role="dialog" aria-labelledby="historyTitle">
+	  <div class="history-window">
+		<button class="close-history" id="closeHistoryButton" data-close="historyScreen" type="button">[ X ]</button>
+		<h2 id="historyTitle">historial_de_decisiones.log</h2>
+		<p class="history-subtitle">// LIFE.AI memory · learns from every choice</p>
+		<div class="history-list" id="historyList"></div>
+	  </div>
+	</section>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
