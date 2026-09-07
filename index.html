@@ -11,13 +11,14 @@
 </head>
 <body>
   <main class="life-screen">
-	<div class="screen-status">Unnamed life simulation <span>v0.0.1</span><label class="language-control" for="languageSelect">LANG:</label><select id="languageSelect" name="lifeLanguage" aria-label="Language" autocomplete="off"><option value="es">ES</option><option value="en">EN</option></select></div>
+	<div class="screen-status"><span id="appTitle">Unnamed life simulation</span> <span>v0.0.1a</span><label class="language-control" id="languageLabel" for="languageSelect">LANG:</label><select id="languageSelect" name="lifeLanguage" aria-label="Language" autocomplete="off"><option value="es">ES</option><option value="en">EN</option></select></div>
 	<div class="weather-overlay" id="weatherOverlay" aria-hidden="true"></div>
 	<div class="weather-indicator hidden" id="weatherIndicator" aria-live="polite"></div>
 	<nav class="welcome-navigation hidden" id="welcomeNavigation" aria-label="Main navigation">
 	  <button class="welcome-nav-button active" id="playNavButton" type="button">[ PLAY ]</button>
 	  <button class="welcome-nav-button" id="blogButton" type="button">[ BLOG ]</button>
 	</nav>
+	<a class="discord-link hidden" id="discordLink" href="#" target="_blank" rel="noopener noreferrer">[ DISCORD ]</a>
 	<section class="welcome-screen" id="welcomeScreen">
 	  <button class="start-life-button" id="startButton" type="button">START LIFE</button>
 	</section>
@@ -51,6 +52,9 @@
 		<div class="file-buttons hidden" id="mainFileButtons">
 		  <button class="history-button" id="chatButton" type="button">[ HABLAR CON LIFE.AI ]</button>
 			  <button class="history-button" id="statsButton" type="button">[ VIEW STATS ]</button>
+		  <button class="history-button" id="careersButton" type="button">[ VIEW CAREERS ]</button>
+		  <button class="history-button" id="familyButton" type="button">[ VIEW FAMILY ]</button>
+		  <button class="history-button" id="inventoryButton" type="button">[ VIEW INVENTORY ]</button>
 		  <button class="history-button" id="worldButton" type="button">[ VIEW WORLD ]</button>
 		  <button class="history-button" id="skillsButton" type="button">[ VIEW SKILLS ]</button>
 		  <button class="history-button" id="relationsButton" type="button">[ VIEW RELATIONSHIPS ]</button>
@@ -69,6 +73,33 @@
 	  </div>
 	</section>
 
+	<section class="stats-screen hidden" id="inventoryScreen" aria-modal="true" role="dialog" aria-labelledby="inventoryTitle">
+	  <div class="stats-window inventory-window">
+		<button class="close-history" id="closeInventoryButton" data-close="inventoryScreen" type="button">[ X ]</button>
+		<h2 id="inventoryTitle">inventory.json // inventory</h2>
+		<p class="history-subtitle" id="inventorySubtitle">// objects found during the story</p>
+		<div class="inventory-dashboard" id="inventoryDashboard"></div>
+	  </div>
+	</section>
+
+	<section class="stats-screen hidden" id="careersScreen" aria-modal="true" role="dialog" aria-labelledby="careersTitle">
+	  <div class="stats-window careers-window">
+		<button class="close-history" id="closeCareersButton" data-close="careersScreen" type="button">[ X ]</button>
+		<h2 id="careersTitle">careers.json // career catalog</h2>
+		<p class="history-subtitle" id="careersSubtitle">// available professions, variants and approximate income</p>
+		<div class="careers-dashboard" id="careersDashboard"></div>
+	  </div>
+	</section>
+
+	<section class="stats-screen hidden" id="familyScreen" aria-modal="true" role="dialog" aria-labelledby="familyTitle">
+	  <div class="stats-window family-window">
+		<button class="close-history" id="closeFamilyButton" data-close="familyScreen" type="button">[ X ]</button>
+		<h2 id="familyTitle">family.json // family tree</h2>
+		<p class="history-subtitle" id="familySubtitle">// randomly generated family members</p>
+		<div class="family-dashboard" id="familyDashboard"></div>
+	  </div>
+	</section>
+
 	<section class="menu-screen hidden" id="menuScreen" aria-modal="true" role="dialog" aria-labelledby="menuTitle">
 	  <div class="menu-window">
 		<button class="close-history" id="closeMenuButton" data-close="menuScreen" type="button">[ X ]</button>
@@ -82,7 +113,7 @@
 	  <div class="stats-window world-window">
 		<button class="close-history" id="closeWorldButton" data-close="worldScreen" type="button">[ X ]</button>
 		<h2 id="worldTitle">world.json // living world</h2>
-		<p class="history-subtitle">// places, characters, goals, events and discovered rules</p>
+	  <p class="history-subtitle" id="worldSubtitle">// places, characters, goals, events and discovered rules</p>
 		<div class="world-dashboard" id="worldDashboard"></div>
 	  </div>
 	</section>
@@ -91,7 +122,7 @@
 	  <div class="stats-window skills-window">
 		<button class="close-history" id="closeSkillsButton" data-close="skillsScreen" type="button">[ X ]</button>
 		<h2 id="skillsTitle">skills.json // skills</h2>
-		<p class="history-subtitle">// learned abilities, experience and character growth</p>
+	  <p class="history-subtitle" id="skillsSubtitle">// learned abilities, experience and character growth</p>
 		<div class="skills-dashboard" id="skillsDashboard"></div>
 	  </div>
 	</section>
@@ -100,7 +131,7 @@
 	  <div class="chat-window">
 		<button class="close-history" id="closeChatButton" data-close="chatScreen" type="button">[ X ]</button>
 		<h2 id="chatTitle">life.ai // chat_console</h2>
-		<p class="history-subtitle">// conversation and learning · this mode does not modify your stats</p>
+	  <p class="history-subtitle" id="chatSubtitle">// conversation and learning · this mode does not modify your stats</p>
 		<div class="chat-messages" id="chatMessages" aria-live="polite">
 		  <p class="chat-ai"><span>[ LIFE.AI ]</span> Hello. I can remember what you tell me and change my rules with your instructions.</p>
 		</div>
@@ -122,7 +153,7 @@
 	  <div class="stats-window relations-window">
 		<button class="close-history" id="closeRelationsButton" data-close="relationsScreen" type="button">[ X ]</button>
 		<h2 id="relationsTitle">relations.json // relationships</h2>
-		<p class="history-subtitle">// bonds, trust and social evolution</p>
+	  <p class="history-subtitle" id="relationsSubtitle">// bonds, trust and social evolution</p>
 		<div class="relations-dashboard" id="relationsDashboard"></div>
 	  </div>
 	</section>
@@ -131,7 +162,7 @@
 	  <div class="stats-window">
 		<button class="close-history" id="closeStatsButton" data-close="statsScreen" type="button">[ X ]</button>
 		<h2 id="statsTitle">player.json // statistics</h2>
-		<p class="history-subtitle">// complete character state and story progress</p>
+	  <p class="history-subtitle" id="statsSubtitle">// complete character state and story progress</p>
 	  <div class="code-block">
 		<span class="brace">{</span>
 		<div class="property"><span id="nameKey">"name"</span>: <strong class="string" id="nameStat"></strong>,</div>
@@ -140,6 +171,7 @@
 		<div class="property"><span id="moneyKey">"money"</span>: <strong class="number">$<span id="moneyStat">100</span></strong>,</div>
 		<div class="property"><span id="locationKey">"location"</span>: <strong class="string" id="locationStat"></strong>,</div>
 		<div class="property"><span id="hobbyKey">"hobby"</span>: <strong class="string" id="hobbyStat"></strong>,</div>
+		<div class="property"><span id="occupationKey">"occupation"</span>: <strong class="string" id="occupationStat"></strong>,</div>
 		<div class="property"><span id="energyKey">"energy"</span>: <strong class="number" id="energyStat"></strong>,</div>
 		<div class="property"><span id="moodKey">"mood"</span>: <strong class="string" id="moodStat"></strong>,</div>
 		<div class="property"><span id="reputationKey">"reputation"</span>: <strong class="number" id="reputationStat"></strong></div>
@@ -153,11 +185,12 @@
 	  <div class="history-window">
 		<button class="close-history" id="closeHistoryButton" data-close="historyScreen" type="button">[ X ]</button>
 		<h2 id="historyTitle">historial_de_decisiones.log</h2>
-		<p class="history-subtitle">// LIFE.AI memory · learns from every choice</p>
+	  <p class="history-subtitle" id="historySubtitle">// LIFE.AI memory · learns from every choice</p>
 		<div class="history-list" id="historyList"></div>
 	  </div>
 	</section>
   </main>
+	<div class="current-occupation hidden" id="currentOccupation" aria-live="polite"></div>
   <script src="script.js"></script>
 </body>
 </html>

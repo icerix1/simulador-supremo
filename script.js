@@ -5,6 +5,19 @@ const statsScreen = document.querySelector('#statsScreen');
 const statsButton = document.querySelector('#statsButton');
 const closeStatsButton = document.querySelector('#closeStatsButton');
 const statsExtra = document.querySelector('#statsExtra');
+const careersButton = document.querySelector('#careersButton');
+const careersScreen = document.querySelector('#careersScreen');
+const closeCareersButton = document.querySelector('#closeCareersButton');
+const careersDashboard = document.querySelector('#careersDashboard');
+const familyButton = document.querySelector('#familyButton');
+const familyScreen = document.querySelector('#familyScreen');
+const closeFamilyButton = document.querySelector('#closeFamilyButton');
+const familyDashboard = document.querySelector('#familyDashboard');
+const inventoryButton = document.querySelector('#inventoryButton');
+const inventoryScreen = document.querySelector('#inventoryScreen');
+const closeInventoryButton = document.querySelector('#closeInventoryButton');
+const inventoryDashboard = document.querySelector('#inventoryDashboard');
+const currentOccupation = document.querySelector('#currentOccupation');
 const worldButton = document.querySelector('#worldButton');
 const worldScreen = document.querySelector('#worldScreen');
 const closeWorldButton = document.querySelector('#closeWorldButton');
@@ -49,6 +62,7 @@ const surnameStat = document.querySelector('#surnameStat');
 const ageStat = document.querySelector('#ageStat');
 const locationStat = document.querySelector('#locationStat');
 const hobbyStat = document.querySelector('#hobbyStat');
+const occupationStat = document.querySelector('#occupationStat');
 const energyStat = document.querySelector('#energyStat');
 const moodStat = document.querySelector('#moodStat');
 const reputationStat = document.querySelector('#reputationStat');
@@ -66,8 +80,236 @@ const playNavButton = document.querySelector('#playNavButton');
 const blogButton = document.querySelector('#blogButton');
 const blogScreen = document.querySelector('#blogScreen');
 const closeBlogButton = document.querySelector('#closeBlogButton');
+const discordLink = document.querySelector('#discordLink');
 const weatherIndicator = document.querySelector('#weatherIndicator');
 const weatherOverlay = document.querySelector('#weatherOverlay');
+
+const careerCatalog = [
+  { id: 'software_engineer', family: 'Tecnología', names: { es: 'Ingeniero de software', en: 'Software engineer' }, aliases: ['programador', 'programadora', 'desarrollador', 'desarrolladora', 'ingeniero de software', 'ingeniera de software', 'software engineer', 'software developer', 'coder'], income: 620, energy: 12 },
+  { id: 'frontend_developer', family: 'Tecnología', names: { es: 'Desarrollador frontend', en: 'Frontend developer' }, aliases: ['frontend', 'front end', 'desarrollador web', 'desarrolladora web', 'web developer', 'frontend developer', 'ui developer'], income: 560, energy: 11 },
+  { id: 'backend_developer', family: 'Tecnología', names: { es: 'Desarrollador backend', en: 'Backend developer' }, aliases: ['backend', 'back end', 'desarrollador backend', 'backend developer', 'api developer', 'servidor'], income: 610, energy: 12 },
+  { id: 'full_stack_developer', family: 'Tecnología', names: { es: 'Desarrollador full stack', en: 'Full-stack developer' }, aliases: ['full stack', 'fullstack', 'desarrollador full stack', 'full stack developer'], income: 720, energy: 14 },
+  { id: 'mobile_developer', family: 'Tecnología', names: { es: 'Desarrollador móvil', en: 'Mobile developer' }, aliases: ['programador movil', 'programador móvil', 'desarrollador movil', 'desarrollador móvil', 'android developer', 'ios developer', 'mobile developer'], income: 640, energy: 12 },
+  { id: 'game_developer', family: 'Tecnología', names: { es: 'Desarrollador de videojuegos', en: 'Game developer' }, aliases: ['programador de videojuegos', 'desarrollador de videojuegos', 'game developer', 'video game developer', 'unity developer', 'unreal developer'], income: 570, energy: 13 },
+  { id: 'data_scientist', family: 'Tecnología', names: { es: 'Científico de datos', en: 'Data scientist' }, aliases: ['cientifico de datos', 'científico de datos', 'data scientist', 'machine learning scientist'], income: 760, energy: 13 },
+  { id: 'data_analyst', family: 'Tecnología', names: { es: 'Analista de datos', en: 'Data analyst' }, aliases: ['analista de datos', 'data analyst', 'business analyst', 'analista business'], income: 520, energy: 10 },
+  { id: 'devops_engineer', family: 'Tecnología', names: { es: 'Ingeniero DevOps', en: 'DevOps engineer' }, aliases: ['devops', 'ingeniero devops', 'devops engineer', 'cloud engineer', 'ingeniero cloud'], income: 750, energy: 14 },
+  { id: 'cybersecurity_analyst', family: 'Tecnología', names: { es: 'Analista de ciberseguridad', en: 'Cybersecurity analyst' }, aliases: ['ciberseguridad', 'seguridad informatica', 'seguridad informática', 'analista de seguridad', 'cybersecurity analyst', 'security analyst', 'ethical hacker', 'hacker etico'], income: 700, energy: 13 },
+  { id: 'database_administrator', family: 'Tecnología', names: { es: 'Administrador de bases de datos', en: 'Database administrator' }, aliases: ['administrador de base de datos', 'administrador de bases de datos', 'dba', 'database administrator'], income: 650, energy: 12 },
+  { id: 'qa_engineer', family: 'Tecnología', names: { es: 'Ingeniero de calidad de software', en: 'QA engineer' }, aliases: ['tester', 'qa', 'qa tester', 'ingeniero qa', 'quality assurance', 'software tester'], income: 500, energy: 10 },
+  { id: 'ux_ui_designer', family: 'Tecnología', names: { es: 'Diseñador UX/UI', en: 'UX/UI designer' }, aliases: ['diseñador ux', 'diseñadora ux', 'diseñador ui', 'ux designer', 'ui designer', 'product designer'], income: 570, energy: 10 },
+  { id: 'it_support', family: 'Tecnología', names: { es: 'Técnico de soporte informático', en: 'IT support technician' }, aliases: ['soporte tecnico', 'soporte técnico', 'tecnico informatico', 'técnico informático', 'help desk', 'it support', 'computer technician'], income: 360, energy: 10 },
+  { id: 'network_engineer', family: 'Tecnología', names: { es: 'Ingeniero de redes', en: 'Network engineer' }, aliases: ['ingeniero de redes', 'network engineer', 'administrador de redes', 'network administrator'], income: 590, energy: 12 },
+  { id: 'doctor', family: 'Salud', names: { es: 'Médico', en: 'Doctor' }, aliases: ['medico', 'médico', 'doctora', 'doctor', 'physician', 'general practitioner', 'medico general'], income: 850, energy: 16 },
+  { id: 'surgeon', family: 'Salud', names: { es: 'Cirujano', en: 'Surgeon' }, aliases: ['cirujano', 'cirujana', 'cirujano general', 'surgeon', 'general surgeon'], income: 1250, energy: 20 },
+  { id: 'nurse', family: 'Salud', names: { es: 'Enfermero', en: 'Nurse' }, aliases: ['enfermero', 'enfermera', 'enfermeria', 'enfermería', 'nurse', 'registered nurse'], income: 480, energy: 15 },
+  { id: 'paramedic', family: 'Salud', names: { es: 'Paramédico', en: 'Paramedic' }, aliases: ['paramedico', 'paramédico', 'paramédica', 'paramedic', 'emergency medical technician', 'emt'], income: 460, energy: 16 },
+  { id: 'dentist', family: 'Salud', names: { es: 'Dentista', en: 'Dentist' }, aliases: ['dentista', 'odontologo', 'odontólogo', 'dentist'], income: 780, energy: 12 },
+  { id: 'psychologist', family: 'Salud', names: { es: 'Psicólogo', en: 'Psychologist' }, aliases: ['psicologo', 'psicóloga', 'psicólogo', 'psychologist', 'therapist'], income: 610, energy: 11 },
+  { id: 'pharmacist', family: 'Salud', names: { es: 'Farmacéutico', en: 'Pharmacist' }, aliases: ['farmaceutico', 'farmacéutico', 'farmacéutica', 'farmacia', 'pharmacist'], income: 560, energy: 10 },
+  { id: 'veterinarian', family: 'Salud', names: { es: 'Veterinario', en: 'Veterinarian' }, aliases: ['veterinario', 'veterinaria', 'veterinarian', 'vet'], income: 570, energy: 12 },
+  { id: 'police_officer', family: 'Seguridad pública', names: { es: 'Agente de policía', en: 'Police officer' }, aliases: ['policia', 'policía', 'agente de policía', 'agente policial', 'police officer', 'cop'], income: 430, energy: 15 },
+  { id: 'detective', family: 'Seguridad pública', names: { es: 'Detective', en: 'Detective' }, aliases: ['detective', 'investigador policial', 'investigadora policial', 'police detective'], income: 560, energy: 14 },
+  { id: 'police_sergeant', family: 'Seguridad pública', names: { es: 'Sargento de policía', en: 'Police sergeant' }, aliases: ['sargento de policia', 'sargento de policía', 'police sergeant'], income: 610, energy: 15 },
+  { id: 'police_inspector', family: 'Seguridad pública', names: { es: 'Inspector de policía', en: 'Police inspector' }, aliases: ['inspector de policia', 'inspector de policía', 'police inspector'], income: 690, energy: 14 },
+  { id: 'police_commissioner', family: 'Seguridad pública', names: { es: 'Comisario', en: 'Police commissioner' }, aliases: ['comisario', 'comisaria', 'comisaría', 'comisaria de policia', 'police commissioner', 'chief of police'], income: 900, energy: 13 },
+  { id: 'firefighter', family: 'Seguridad pública', names: { es: 'Bombero', en: 'Firefighter' }, aliases: ['bombero', 'bombera', 'firefighter', 'fireman', 'firewoman'], income: 470, energy: 17 },
+  { id: 'soldier', family: 'Seguridad pública', names: { es: 'Soldado', en: 'Soldier' }, aliases: ['soldado', 'soldada', 'militar', 'soldier', 'military'], income: 450, energy: 17 },
+  { id: 'military_officer', family: 'Seguridad pública', names: { es: 'Oficial militar', en: 'Military officer' }, aliases: ['oficial militar', 'military officer', 'army officer'], income: 720, energy: 15 },
+  { id: 'lawyer', family: 'Derecho y gobierno', names: { es: 'Abogado', en: 'Lawyer' }, aliases: ['abogado', 'abogada', 'lawyer', 'attorney', 'legal counsel'], income: 720, energy: 13 },
+  { id: 'judge', family: 'Derecho y gobierno', names: { es: 'Juez', en: 'Judge' }, aliases: ['juez', 'jueza', 'judge', 'magistrate'], income: 1050, energy: 12 },
+  { id: 'prosecutor', family: 'Derecho y gobierno', names: { es: 'Fiscal', en: 'Prosecutor' }, aliases: ['fiscal', 'prosecutor', 'district attorney'], income: 820, energy: 14 },
+  { id: 'civil_servant', family: 'Derecho y gobierno', names: { es: 'Funcionario público', en: 'Civil servant' }, aliases: ['funcionario publico', 'funcionario público', 'empleado publico', 'empleado público', 'civil servant', 'government employee'], income: 430, energy: 9 },
+  { id: 'teacher', family: 'Educación', names: { es: 'Profesor', en: 'Teacher' }, aliases: ['profesor', 'profesora', 'maestro', 'maestra', 'teacher', 'school teacher'], income: 420, energy: 13 },
+  { id: 'university_professor', family: 'Educación', names: { es: 'Profesor universitario', en: 'University professor' }, aliases: ['profesor universitario', 'profesora universitaria', 'university professor', 'college professor', 'docente universitario'], income: 680, energy: 12 },
+  { id: 'researcher', family: 'Educación', names: { es: 'Investigador', en: 'Researcher' }, aliases: ['investigador', 'investigadora', 'investigador cientifico', 'investigador científico', 'researcher', 'scientist'], income: 610, energy: 12 },
+  { id: 'accountant', family: 'Negocios y finanzas', names: { es: 'Contador', en: 'Accountant' }, aliases: ['contador', 'contadora', 'contable', 'accountant', 'bookkeeper'], income: 500, energy: 10 },
+  { id: 'financial_analyst', family: 'Negocios y finanzas', names: { es: 'Analista financiero', en: 'Financial analyst' }, aliases: ['analista financiero', 'financial analyst', 'investment analyst'], income: 650, energy: 12 },
+  { id: 'banker', family: 'Negocios y finanzas', names: { es: 'Banquero', en: 'Banker' }, aliases: ['banquero', 'banquera', 'banco', 'banker', 'bank employee'], income: 560, energy: 10 },
+  { id: 'entrepreneur', family: 'Negocios y finanzas', names: { es: 'Emprendedor', en: 'Entrepreneur' }, aliases: ['emprendedor', 'emprendedora', 'empresario', 'empresaria', 'entrepreneur', 'business owner', 'founder'], income: 700, energy: 16 },
+  { id: 'ceo', family: 'Negocios y finanzas', names: { es: 'Director ejecutivo', en: 'Chief executive officer' }, aliases: ['ceo', 'director ejecutivo', 'directora ejecutiva', 'gerente general', 'chief executive officer'], income: 1500, energy: 15 },
+  { id: 'manager', family: 'Negocios y finanzas', names: { es: 'Gerente', en: 'Manager' }, aliases: ['gerente', 'manager', 'jefe', 'jefa', 'team lead', 'supervisor'], income: 650, energy: 13 },
+  { id: 'salesperson', family: 'Comercio y servicios', names: { es: 'Vendedor', en: 'Salesperson' }, aliases: ['vendedor', 'vendedora', 'ventas', 'comercial', 'salesperson', 'sales representative', 'sales rep'], income: 360, energy: 12 },
+  { id: 'cashier', family: 'Comercio y servicios', names: { es: 'Cajero', en: 'Cashier' }, aliases: ['cajero', 'cajera', 'cashier'], income: 280, energy: 10 },
+  { id: 'chef', family: 'Comercio y servicios', names: { es: 'Chef', en: 'Chef' }, aliases: ['chef', 'cocinero', 'cocinera', 'cook', 'head chef'], income: 430, energy: 15 },
+  { id: 'waiter', family: 'Comercio y servicios', names: { es: 'Camarero', en: 'Waiter' }, aliases: ['camarero', 'camarera', 'mesero', 'mesera', 'waiter', 'server'], income: 300, energy: 14 },
+  { id: 'driver', family: 'Transporte', names: { es: 'Conductor profesional', en: 'Professional driver' }, aliases: ['conductor', 'chofer', 'camionero', 'taxista', 'driver', 'truck driver', 'taxi driver'], income: 390, energy: 13 },
+  { id: 'pilot', family: 'Transporte', names: { es: 'Piloto de avión', en: 'Airline pilot' }, aliases: ['piloto de avion', 'piloto de avión', 'piloto', 'airline pilot', 'pilot'], income: 1100, energy: 15 },
+  { id: 'flight_attendant', family: 'Transporte', names: { es: 'Tripulante de cabina', en: 'Flight attendant' }, aliases: ['azafata', 'azafato', 'tripulante de cabina', 'flight attendant', 'cabin crew'], income: 520, energy: 14 },
+  { id: 'architect', family: 'Ingeniería y diseño', names: { es: 'Arquitecto', en: 'Architect' }, aliases: ['arquitecto', 'arquitecta', 'architect'], income: 650, energy: 12 },
+  { id: 'civil_engineer', family: 'Ingeniería y diseño', names: { es: 'Ingeniero civil', en: 'Civil engineer' }, aliases: ['ingeniero civil', 'ingeniera civil', 'civil engineer'], income: 680, energy: 13 },
+  { id: 'mechanical_engineer', family: 'Ingeniería y diseño', names: { es: 'Ingeniero mecánico', en: 'Mechanical engineer' }, aliases: ['ingeniero mecanico', 'ingeniero mecánico', 'mechanical engineer'], income: 700, energy: 13 },
+  { id: 'electrician', family: 'Oficios', names: { es: 'Electricista', en: 'Electrician' }, aliases: ['electricista', 'electrician'], income: 470, energy: 14 },
+  { id: 'plumber', family: 'Oficios', names: { es: 'Plomero', en: 'Plumber' }, aliases: ['plomero', 'plomera', 'fontanero', 'fontanera', 'plumber'], income: 450, energy: 15 },
+  { id: 'carpenter', family: 'Oficios', names: { es: 'Carpintero', en: 'Carpenter' }, aliases: ['carpintero', 'carpintera', 'carpenter'], income: 420, energy: 15 },
+  { id: 'welder', family: 'Oficios', names: { es: 'Soldador', en: 'Welder' }, aliases: ['soldador', 'soldadora', 'welder'], income: 460, energy: 16 },
+  { id: 'farmer', family: 'Agricultura', names: { es: 'Agricultor', en: 'Farmer' }, aliases: ['agricultor', 'agricultora', 'granjero', 'granjera', 'farmer', 'farm worker'], income: 330, energy: 17 },
+  { id: 'journalist', family: 'Comunicación y arte', names: { es: 'Periodista', en: 'Journalist' }, aliases: ['periodista', 'journalist', 'reporter', 'reportero', 'reportera'], income: 420, energy: 12 },
+  { id: 'writer', family: 'Comunicación y arte', names: { es: 'Escritor', en: 'Writer' }, aliases: ['escritor', 'escritora', 'writer', 'author', 'autor', 'autora'], income: 350, energy: 10 },
+  { id: 'photographer', family: 'Comunicación y arte', names: { es: 'Fotógrafo', en: 'Photographer' }, aliases: ['fotografo', 'fotógrafo', 'fotógrafa', 'photographer'], income: 390, energy: 12 },
+  { id: 'musician', family: 'Comunicación y arte', names: { es: 'Músico', en: 'Musician' }, aliases: ['musico', 'músico', 'música', 'musica', 'cantante', 'musician', 'singer'], income: 360, energy: 12 },
+  { id: 'actor', family: 'Comunicación y arte', names: { es: 'Actor', en: 'Actor' }, aliases: ['actor', 'actriz', 'actor', 'actress', 'performer'], income: 430, energy: 13 },
+  { id: 'athlete', family: 'Deporte', names: { es: 'Atleta profesional', en: 'Professional athlete' }, aliases: ['atleta', 'deportista', 'futbolista', 'jugador profesional', 'professional athlete', 'athlete', 'footballer', 'soccer player'], income: 800, energy: 18 },
+  { id: 'fitness_trainer', family: 'Deporte', names: { es: 'Entrenador personal', en: 'Personal trainer' }, aliases: ['entrenador personal', 'personal trainer', 'fitness coach'], income: 420, energy: 14 },
+  { id: 'real_estate_agent', family: 'Inmobiliario', names: { es: 'Agente inmobiliario', en: 'Real estate agent' }, aliases: ['agente inmobiliario', 'corredor inmobiliario', 'real estate agent', 'realtor'], income: 520, energy: 12 },
+  { id: 'security_guard', family: 'Seguridad', names: { es: 'Guardia de seguridad', en: 'Security guard' }, aliases: ['guardia de seguridad', 'vigilante', 'seguridad privada', 'security guard', 'security officer'], income: 320, energy: 13 },
+  { id: 'hairdresser', family: 'Servicios personales', names: { es: 'Peluquero', en: 'Hairdresser' }, aliases: ['peluquero', 'peluquera', 'estilista', 'barbero', 'hairdresser', 'barber', 'stylist'], income: 350, energy: 12 },
+  { id: 'social_worker', family: 'Servicios sociales', names: { es: 'Trabajador social', en: 'Social worker' }, aliases: ['trabajador social', 'trabajadora social', 'social worker'], income: 390, energy: 14 },
+  { id: 'librarian', family: 'Cultura', names: { es: 'Bibliotecario', en: 'Librarian' }, aliases: ['bibliotecario', 'bibliotecaria', 'librarian'], income: 330, energy: 9 },
+  { id: 'translator', family: 'Idiomas', names: { es: 'Traductor', en: 'Translator' }, aliases: ['traductor', 'traductora', 'interprete', 'intérprete', 'translator', 'interpreter'], income: 480, energy: 10 },
+  { id: 'real_world_freelancer', family: 'Independiente', names: { es: 'Trabajador freelance', en: 'Freelancer' }, aliases: ['freelance', 'freelancer', 'autonomo', 'autónomo', 'independiente', 'self employed', 'self-employed'], income: 450, energy: 12 }
+];
+
+function normalizeCareerAlias(value) {
+  return String(value || '')
+	.toLowerCase()
+	.normalize('NFD')
+	.replace(/[\u0300-\u036f]/g, '')
+	.replace(/[^a-z0-9]+/g, ' ')
+	.trim();
+}
+
+function extractContextualLocation(text) {
+  const source = String(text || '').trim();
+  const patterns = [
+	/\b(?:voy|vamos|fui|llego|llegue|llegué|viajo|viaje|me mudo|me mudé|me mude|estoy|estaba|me encuentro|me encontré|me encontre|permanezco|quedo)\s+(?:a|al|en|hacia|por)\s+(.+?)(?=[,.!?;]|$)/i,
+	/\b(?:go|went|arrive|arrived|travel|traveled|move|moved|i am|i'm|i was|i find myself|i found myself|stay|staying)\s+(?:to|at|in|near)\s+(.+?)(?=[,.!?;]|$)/i,
+	/\b(?:mi ubicaci[oó]n es|ahora estoy en|ahora me encuentro en|my location is|i am currently in)\s+(.+?)(?=[,.!?;]|$)/i
+  ];
+  for (const pattern of patterns) {
+	const match = source.match(pattern);
+	if (!match) continue;
+	const value = match[1]
+	  .replace(/^(?:el|la|los|las|un|una|a|the|a|an)\s+/i, '')
+	  .replace(/\s+(?:y|and)\s+(?:encuentro|veo|conozco|find|see|meet)\b.*$/i, '')
+	  .trim();
+	if (value) return value;
+  }
+  return '';
+}
+
+function detectFoundItem(text) {
+  const normalized = normalizeCareerAlias(text);
+  if (!/(encontre|encontrar|hall[eé]|recogi|recoger|found|find|picked up|pick up|discover)/.test(normalized)) return null;
+  return itemAliases.find(({ alias }) => normalized.includes(alias))?.item || null;
+}
+
+function itemFindProbability(item, location) {
+  const profile = detectPlaceProfile(location);
+  return item.places[profile.id] ?? item.base;
+}
+
+function addFoundItem(playerState, item, location) {
+  playerState.inventory = Array.isArray(playerState.inventory) ? playerState.inventory : [];
+  const existing = playerState.inventory.find((entry) => entry.id === item.id);
+  if (existing) existing.quantity = (existing.quantity || 0) + 1;
+  else playerState.inventory.push({ id: item.id, name: item.names.es, quantity: 1, location, discoveredAt: new Date().toISOString() });
+  return existing || playerState.inventory[playerState.inventory.length - 1];
+}
+
+const careerAliases = careerCatalog
+  .flatMap((career) => career.aliases.map((alias) => ({ career, alias: normalizeCareerAlias(alias) })))
+  .sort((a, b) => b.alias.length - a.alias.length);
+
+const itemCatalog = [
+  { id: 'stick', names: { es: 'palo', en: 'stick' }, aliases: ['palo', 'rama', 'ramita', 'stick', 'branch'], places: { outdoors: 0.85, forest: 0.98, park: 0.8, hospital: 0.04, city: 0.25 }, base: 0.55 },
+  { id: 'truck', names: { es: 'camión', en: 'truck' }, aliases: ['camion', 'camión', 'truck', 'lorry'], places: { road: 0.45, city: 0.3, industrial: 0.55, hospital: 0.02, forest: 0.04 }, base: 0.18 },
+  { id: 'coin', names: { es: 'moneda', en: 'coin' }, aliases: ['moneda', 'monedas', 'coin', 'coins'], places: { city: 0.45, hospital: 0.3, school: 0.25, outdoors: 0.2, home: 0.3 }, base: 0.35 },
+  { id: 'phone', names: { es: 'teléfono', en: 'phone' }, aliases: ['telefono', 'teléfono', 'celular', 'movil', 'móvil', 'phone', 'cellphone'], places: { city: 0.3, hospital: 0.25, school: 0.3, home: 0.5, office: 0.35 }, base: 0.3 },
+  { id: 'book', names: { es: 'libro', en: 'book' }, aliases: ['libro', 'cuaderno', 'book', 'notebook'], places: { school: 0.8, library: 0.95, home: 0.45, hospital: 0.15, outdoors: 0.06 }, base: 0.35 },
+  { id: 'medical_mask', names: { es: 'barbijo', en: 'medical mask' }, aliases: ['barbijo', 'mascarilla', 'cubrebocas', 'medical mask', 'mask'], places: { hospital: 0.9, school: 0.2, city: 0.15, outdoors: 0.08 }, base: 0.55 },
+  { id: 'syringe', names: { es: 'jeringa', en: 'syringe' }, aliases: ['jeringa', 'syringe', 'needle'], places: { hospital: 0.55, outdoors: 0.01, home: 0.05, city: 0.03 }, base: 0.2 },
+  { id: 'key', names: { es: 'llave', en: 'key' }, aliases: ['llave', 'llaves', 'key', 'keys'], places: { home: 0.6, office: 0.35, city: 0.2, hospital: 0.15, outdoors: 0.12 }, base: 0.3 },
+  { id: 'wallet', names: { es: 'billetera', en: 'wallet' }, aliases: ['billetera', 'cartera', 'wallet', 'purse'], places: { city: 0.25, hospital: 0.15, office: 0.25, outdoors: 0.12 }, base: 0.18 },
+  { id: 'tool', names: { es: 'herramienta', en: 'tool' }, aliases: ['herramienta', 'martillo', 'destornillador', 'tool', 'hammer', 'screwdriver'], places: { industrial: 0.75, workshop: 0.9, home: 0.3, hospital: 0.03, park: 0.05 }, base: 0.4 },
+  { id: 'flower', names: { es: 'flor', en: 'flower' }, aliases: ['flor', 'flores', 'flower', 'flowers'], places: { park: 0.8, forest: 0.7, outdoors: 0.5, hospital: 0.1, city: 0.08 }, base: 0.4 },
+  { id: 'food', names: { es: 'comida', en: 'food' }, aliases: ['comida', 'alimento', 'food', 'meal'], places: { home: 0.7, restaurant: 0.8, school: 0.3, hospital: 0.25, outdoors: 0.08 }, base: 0.4 },
+  { id: 'document', names: { es: 'documento', en: 'document' }, aliases: ['documento', 'papel', 'document', 'paper'], places: { office: 0.8, school: 0.5, hospital: 0.35, city: 0.15, forest: 0.02 }, base: 0.25 },
+  { id: 'backpack', names: { es: 'mochila', en: 'backpack' }, aliases: ['mochila', 'bolso', 'backpack', 'bag'], places: { school: 0.7, city: 0.3, outdoors: 0.25, home: 0.45 }, base: 0.3 }
+];
+
+const itemAliases = itemCatalog.flatMap((item) => item.aliases.map((alias) => ({ item, alias: normalizeCareerAlias(alias) }))).sort((a, b) => b.alias.length - a.alias.length);
+
+const placeProfiles = [
+  { id: 'hospital', aliases: ['hospital', 'clinica', 'clínica', 'sanatorio', 'hospital'], label: { es: 'hospital', en: 'hospital' } },
+  { id: 'forest', aliases: ['bosque', 'selva', 'forest', 'woods'], label: { es: 'bosque', en: 'forest' } },
+  { id: 'park', aliases: ['parque', 'plaza', 'park', 'garden', 'jardin', 'jardín'], label: { es: 'parque', en: 'park' } },
+  { id: 'school', aliases: ['escuela', 'colegio', 'universidad', 'school', 'college', 'university'], label: { es: 'escuela', en: 'school' } },
+  { id: 'office', aliases: ['oficina', 'empresa', 'office', 'workplace'], label: { es: 'oficina', en: 'office' } },
+  { id: 'industrial', aliases: ['fabrica', 'fábrica', 'industria', 'industrial', 'warehouse', 'deposito', 'depósito'], label: { es: 'zona industrial', en: 'industrial area' } },
+  { id: 'workshop', aliases: ['taller', 'workshop', 'garage', 'garaje'], label: { es: 'taller', en: 'workshop' } },
+  { id: 'restaurant', aliases: ['restaurante', 'bar', 'cafeteria', 'cafetería', 'restaurant', 'cafe', 'café'], label: { es: 'restaurante', en: 'restaurant' } },
+  { id: 'home', aliases: ['casa', 'hogar', 'departamento', 'home', 'house', 'apartment'], label: { es: 'casa', en: 'home' } },
+  { id: 'road', aliases: ['calle', 'ruta', 'carretera', 'avenida', 'road', 'street', 'highway'], label: { es: 'calle', en: 'road' } },
+  { id: 'city', aliases: ['ciudad', 'centro', 'city', 'downtown'], label: { es: 'ciudad', en: 'city' } },
+  { id: 'outdoors', aliases: ['afuera', 'exterior', 'campo', 'outdoors', 'outside', 'field'], label: { es: 'exterior', en: 'outdoors' } }
+];
+
+function detectPlaceProfile(location) {
+  const normalized = normalizeCareerAlias(location);
+  return placeProfiles.find((profile) => profile.aliases.some((alias) => normalized.includes(normalizeCareerAlias(alias)))) || { id: 'city', label: { es: 'lugar público', en: 'public place' } };
+}
+
+const randomNames = {
+  es: ['Alejandro', 'Sofía', 'Mateo', 'Valentina', 'Lucas', 'Martina', 'Daniel', 'Camila', 'Nicolás', 'Emma', 'Julián', 'Lucía', 'Tomás', 'Renata', 'Gabriel', 'Elena', 'Santiago', 'Victoria', 'Bruno', 'Paula', 'Martín', 'Clara', 'Benjamín', 'Julia', 'Leonardo', 'Mía', 'Thiago', 'Abril', 'Franco', 'Malena', 'Agustín', 'Carolina', 'Facundo', 'Catalina', 'Diego', 'Florencia', 'Hugo', 'Isabella', 'Ramiro', 'Josefina', 'Emiliano', 'Pilar', 'Lautaro', 'Milagros', 'Gonzalo', 'Bianca', 'Federico', 'Aitana', 'Simón', 'Alma'],
+  en: ['Alexander', 'Sophia', 'Matthew', 'Valentina', 'Lucas', 'Mia', 'Daniel', 'Camila', 'Nicholas', 'Emma', 'Julian', 'Lucy', 'Thomas', 'Ruby', 'Gabriel', 'Eleanor', 'Samuel', 'Victoria', 'Bruno', 'Paula', 'Martin', 'Clara', 'Benjamin', 'Julia', 'Leonard', 'Amelia', 'Theo', 'April', 'Frank', 'Maya', 'August', 'Caroline', 'Miles', 'Catherine', 'James', 'Florence', 'Hugo', 'Isabelle', 'Raymond', 'Josephine', 'Emil', 'Piper', 'Leo', 'Millie', 'Graham', 'Bianca', 'Frederick', 'Ava', 'Simon', 'Alice']
+};
+
+const randomSurnames = {
+  es: ['García', 'Fernández', 'González', 'Rodríguez', 'López', 'Martínez', 'Sánchez', 'Pérez', 'Gómez', 'Díaz', 'Romero', 'Torres', 'Álvarez', 'Ruiz', 'Navarro', 'Vargas', 'Castro', 'Ortega', 'Molina', 'Delgado', 'Ramos', 'Vega', 'Cabrera', 'Méndez', 'Silva', 'Morales', 'Ibarra', 'Herrera', 'Medina', 'Suárez', 'Acosta', 'Rojas', 'Campos', 'Ponce', 'Serrano'],
+  en: ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Miller', 'Davis', 'Wilson', 'Taylor', 'Anderson', 'Thomas', 'Jackson', 'White', 'Harris', 'Martin', 'Thompson', 'Moore', 'Young', 'King', 'Wright', 'Hill', 'Scott', 'Green', 'Baker', 'Adams', 'Nelson', 'Carter', 'Mitchell', 'Roberts', 'Turner', 'Phillips', 'Campbell', 'Parker', 'Evans', 'Edwards']
+};
+
+function randomFrom(list) {
+  return list[Math.floor(Math.random() * list.length)];
+}
+
+function createFamilyMember(role, name, surname, relation) {
+  return { id: `${role}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, role, name, surname, relation };
+}
+
+function generateFamilyTree(playerSurname = '') {
+  const names = randomNames[currentLanguage] || randomNames.es;
+  const surnames = randomSurnames[currentLanguage] || randomSurnames.es;
+  const usedNames = new Set();
+  const nextName = () => {
+	let name = randomFrom(names);
+	while (usedNames.has(name)) name = randomFrom(names);
+	usedNames.add(name);
+	return name;
+  };
+	const paternalSurname = playerSurname.trim() || randomFrom(surnames);
+  let maternalSurname = randomFrom(surnames);
+  while (maternalSurname === paternalSurname) maternalSurname = randomFrom(surnames);
+  const parentSurname = `${paternalSurname} ${maternalSurname}`;
+	const members = [
+	createFamilyMember('father', nextName(), paternalSurname, 'father'),
+	createFamilyMember('mother', nextName(), parentSurname, 'mother'),
+	createFamilyMember('paternal-grandfather', nextName(), paternalSurname, 'paternalGrandfather'),
+	createFamilyMember('paternal-grandmother', nextName(), paternalSurname, 'paternalGrandmother'),
+	createFamilyMember('maternal-grandfather', nextName(), maternalSurname, 'maternalGrandfather'),
+	createFamilyMember('maternal-grandmother', nextName(), maternalSurname, 'maternalGrandmother')
+	];
+	const addDiminishingRelatives = (role, relation, surname, baseChance) => {
+	  for (let index = 0; index < 1000; index += 1) {
+		const chance = baseChance / (index + 1);
+		if (Math.random() >= chance) break;
+		members.push(createFamilyMember(`${role}-${index + 1}`, nextName(), surname, relation));
+	  }
+	};
+	addDiminishingRelatives('sibling', 'sibling', parentSurname, 0.8);
+	addDiminishingRelatives('cousin', 'cousin', paternalSurname, 0.8);
+	addDiminishingRelatives('maternal-cousin', 'maternalCousin', maternalSurname, 0.8);
+	return {
+	paternalSurname,
+	maternalSurname,
+	members
+  };
+}
+
+// Replace this URL with your Discord invite link.
+const DISCORD_URL = 'https://discord.gg/Tsw2htGAb';
+if (discordLink) discordLink.href = DISCORD_URL;
 
 const questions = [
 	{ label: '¿Cuál es tu nombre?', hint: 'Escribe tu nombre.', key: 'name' },
@@ -84,9 +326,105 @@ const creatorPosts = [
 	category: { es: 'LANZAMIENTO', en: 'RELEASE' },
 	title: { es: 'Primera versión 0.0.1', en: 'First version 0.0.1' },
 	text: { es: 'Primera versión de Unnamed life simulation. El comienzo de una vida, una historia y un mundo que todavía están por descubrir.', en: 'First version of Unnamed life simulation. The beginning of a life, a story, and a world that are still waiting to be discovered.' }
-  }
+	},
+	{
+	date: '2026-09-07',
+	category: { es: 'ACTUALIZACIÓN', en: 'UPDATE' },
+	title: { es: 'NUEVA VERSION 0.0.1a', en: 'NEW VERSION 0.0.1a' },
+	text: { es: 'Esta actualización mejora el árbol genealógico con familiares generados de forma más completa y organizada. También incorpora un sistema de trabajos y profesiones con ingresos y consumo de energía, además de nuevos ítems que pueden encontrarse durante la historia y añadirse al inventario.', en: 'This update improves the family tree with more complete and organized generated relatives. It also introduces a jobs and professions system with income and energy costs, plus new items that can be discovered during the story and added to the inventory.' }
+	}
 ];
 
+function detectCareer(text) {
+	const normalized = normalizeCareerAlias(text);
+  const match = careerAliases.find(({ alias }) => normalized.includes(alias));
+  return match?.career || null;
+}
+
+function careerLabel(career) {
+	return career ? career.names[currentLanguage] : (currentLanguage === 'en' ? 'none' : 'ninguno');
+}
+
+function careerById(id) {
+  return careerCatalog.find((career) => career.id === id) || null;
+}
+
+function renderCurrentOccupation() {
+  const save = readSave();
+  const career = careerById(save.player?.occupation);
+  if (!currentOccupation) return;
+  // Keep the bottom occupation indicator visible while a life is active,
+  // even if the player's name hasn't been set yet. Preserve localization for the label.
+	const hideIndicator = save.lifeStatus === 'ended';
+  currentOccupation.classList.toggle('hidden', hideIndicator);
+  currentOccupation.textContent = currentLanguage === 'en' ? `JOB: ${careerLabel(career)}` : `TRABAJO: ${careerLabel(career)}`;
+}
+
+function renderCareersPanel() {
+  if (!careersDashboard) return;
+  careersDashboard.replaceChildren();
+  const current = careerById(readSave().player?.occupation);
+	const card = document.createElement('article');
+  card.className = 'career-card active-career';
+  const title = document.createElement('h3');
+	title.textContent = current ? current.names[currentLanguage] : (currentLanguage === 'en' ? 'No job assigned' : 'Ningún trabajo asignado');
+  const details = document.createElement('p');
+	  details.textContent = current
+	? (currentLanguage === 'en' ? `${current.family} · income: +${current.income} · energy: -${current.energy}` : `${current.family} · ingreso: +${current.income} · energía: -${current.energy}`)
+	: (currentLanguage === 'en' ? 'Your character does not have a profession yet.' : 'Tu personaje todavía no tiene una profesión.');
+  card.append(title, details);
+  careersDashboard.append(card);
+}
+
+function renderFamilyPanel() {
+  if (!familyDashboard) return;
+  const family = readSave().player?.familyTree;
+  familyDashboard.replaceChildren();
+  if (!family?.members?.length) return;
+  const grouped = new Map();
+	family.members.forEach((member) => {
+	const group = member.relation.startsWith('paternal') || member.relation === 'cousin' ? (currentLanguage === 'en' ? 'Paternal family' : 'Familia paterna') : member.relation.startsWith('maternal') || member.relation === 'maternalCousin' ? (currentLanguage === 'en' ? 'Maternal family' : 'Familia materna') : (currentLanguage === 'en' ? 'Close family' : 'Familia cercana');
+	if (!grouped.has(group)) grouped.set(group, []);
+	grouped.get(group).push(member);
+  });
+  grouped.forEach((members, group) => {
+	const section = document.createElement('section');
+	section.className = 'family-group';
+	const heading = document.createElement('h3');
+	heading.textContent = `[ ${group} ]`;
+	section.append(heading);
+	members.forEach((member) => {
+	  const entry = document.createElement('p');
+	  const relationLabels = currentLanguage === 'en' ? { father: 'father', mother: 'mother', paternalGrandfather: 'paternal grandfather', paternalGrandmother: 'paternal grandmother', maternalGrandfather: 'maternal grandfather', maternalGrandmother: 'maternal grandmother', sibling: 'sibling', cousin: 'cousin', maternalCousin: 'maternal cousin' } : { father: 'padre', mother: 'madre', paternalGrandfather: 'abuelo paterno', paternalGrandmother: 'abuela paterna', maternalGrandfather: 'abuelo materno', maternalGrandmother: 'abuela materna', sibling: 'hermano/a', cousin: 'primo/a', maternalCousin: 'primo/a materno/a' };
+	  entry.textContent = `${member.name} ${member.surname} — ${relationLabels[member.relation] || member.relation}`;
+	  section.append(entry);
+	});
+	familyDashboard.append(section);
+  });
+}
+
+function renderInventoryPanel() {
+  if (!inventoryDashboard) return;
+  inventoryDashboard.replaceChildren();
+  const inventory = readSave().player?.inventory || [];
+  if (!inventory.length) {
+	const empty = document.createElement('p');
+	empty.textContent = currentLanguage === 'en' ? '// inventory is empty' : '// el inventario está vacío';
+	inventoryDashboard.append(empty);
+	return;
+  }
+  inventory.forEach((entry) => {
+	const item = itemCatalog.find((candidate) => candidate.id === entry.id);
+	const card = document.createElement('article');
+	card.className = 'inventory-card';
+	const title = document.createElement('h3');
+	title.textContent = `${item?.names[currentLanguage] || entry.name} x${entry.quantity}`;
+	const details = document.createElement('p');
+	details.textContent = currentLanguage === 'en' ? `Found at: ${entry.location || 'unknown place'}` : `Encontrado en: ${entry.location || 'lugar desconocido'}`;
+	card.append(title, details);
+	inventoryDashboard.append(card);
+  });
+}
 function localizedSeason(season) {
   const labels = {
 	primavera: { es: 'primavera', en: 'spring' },
@@ -116,16 +454,18 @@ const weatherLabels = {
 
 const uiText = {
   es: {
+	appTitle: 'Simulador de vida sin nombre', languageLabel: 'IDIOMA:', languageAria: 'Idioma',
 	start: 'COMENZAR VIDA', next: '[ ENTER ]', name: '¿Cuál es tu nombre?', surname: '¿Cuál es tu apellido?', age: '¿Cuántos años tienes?', money: '¿Cuánto dinero tienes?', location: '¿Dónde comienza tu historia?', hobby: '¿Cuál es tu hobby?',
 	nameHint: 'Escribe tu nombre.', surnameHint: 'Escribe tu apellido.', ageHint: 'Introduce tu edad.', moneyHint: 'Introduce una cantidad inicial.', locationHint: 'Escribe una ubicación.', hobbyHint: 'Ejemplo: música, fútbol, videojuegos, dibujo...',
   storyLabel: '¿Cómo quieres continuar tu vida?', storyPlaceholder: 'Escribe lo que sucede a continuación...', save: '[ GUARDAR ]', menu: '[ MENU ]', history: '[ VER TODAS LAS DECISIONES ]', chat: '[ HABLAR CON LIFE.AI ]', stats: '[ VER ESTADÍSTICAS ]', world: '[ VER MUNDO ]', skills: '[ VER HABILIDADES ]', relations: '[ VER RELACIONES ]', learnFile: '[ CARGAR CONOCIMIENTO ]', export: '[ EXPORTAR PARTIDA ]', import: '[ IMPORTAR PARTIDA ]', reset: '[ NUEVA PARTIDA ]', menuTitle: 'menu.json // panel de control', menuSubtitle: '// todos los módulos de LIFE.AI',
-	saved: '// capítulo guardado correctamente_', worldTitle: 'world.json // mundo vivo', worldSubtitle: '// lugares, personajes, objetivos, eventos y reglas descubiertas', skillsTitle: 'skills.json // habilidades', skillsSubtitle: '// capacidades aprendidas, experiencia y evolución del personaje', relationsTitle: 'relations.json // relaciones', relationsSubtitle: '// vínculos, confianza y evolución social', statsTitle: 'player.json // estadísticas', statsSubtitle: '// estado completo del personaje y progreso de la historia', chatTitle: 'life.ai // chat_console', chatSubtitle: '// conversación y aprendizaje · este modo no modifica tus estadísticas', chatPlaceholder: 'Escribe un mensaje...', send: '[ ENVIAR ]', chatHelp: 'LIFE.AI analiza la conversación, recupera contexto y aprende automáticamente cuando detecta información útil.', analyzer: '[ ANALYZER ] esperando una frase...', intent: 'Intención', confidence: 'Confianza', entities: 'Entidades', prediction: 'Predicción', personality: 'Personalidad', goal: 'Objetivo', historyTitle: 'historial_de_decisiones.log', historySubtitle: '// memoria de LIFE.AI · aprende de cada elección', emptyHistory: '// todavía no hay decisiones guardadas.', you: 'Tú', ai: 'IA', nameKey: '"nombre"', surnameKey: '"apellido"', ageKey: '"edad"', moneyKey: '"dinero"', locationKey: '"ubicacion"', hobbyKey: '"hobby"', energyKey: '"energia"', moodKey: '"animo"', reputationKey: '"reputacion"', play: '[ JUGAR ]', blog: '[ BLOG ]', blogTitle: 'blog.txt // notas de LIFE.AI', blogSubtitle: '// ideas, cambios y registros del simulador', chatGreeting: 'Hola. Puedo recordar lo que me cuentes y cambiar mis reglas con tus instrucciones.'
+	 saved: '// capítulo guardado correctamente_', worldTitle: 'world.json // mundo vivo', worldSubtitle: '// lugares, personajes, objetivos, eventos y reglas descubiertas', skillsTitle: 'skills.json // habilidades', skillsSubtitle: '// capacidades aprendidas, experiencia y evolución del personaje', relationsTitle: 'relations.json // relaciones', relationsSubtitle: '// vínculos, confianza y evolución social', statsTitle: 'player.json // estadísticas', statsSubtitle: '// estado completo del personaje y progreso de la historia', chatTitle: 'life.ai // chat_console', chatSubtitle: '// conversación y aprendizaje · este modo no modifica tus estadísticas', chatPlaceholder: 'Escribe un mensaje...', send: '[ ENVIAR ]', chatHelp: 'LIFE.AI analiza la conversación, recupera contexto y aprende automáticamente cuando detecta información útil.', analyzer: '[ ANALYZER ] esperando una frase...', intent: 'Intención', confidence: 'Confianza', entities: 'Entidades', prediction: 'Predicción', personality: 'Personalidad', goal: 'Objetivo', none: 'ninguno', narrator: 'narrador', stable: 'estable', historyTitle: 'historial_de_decisiones.log', historySubtitle: '// memoria de LIFE.AI · aprende de cada elección', emptyHistory: '// todavía no hay decisiones guardadas.', you: 'Tú', ai: 'IA', nameKey: '"nombre"', surnameKey: '"apellido"', ageKey: '"edad"', moneyKey: '"dinero"', locationKey: '"ubicacion"', hobbyKey: '"hobby"', occupationKey: '"profesion"', energyKey: '"energia"', moodKey: '"animo"', reputationKey: '"reputacion"', careers: '[ MI TRABAJO ]', family: '[ VER FAMILIA ]', inventory: '[ VER INVENTARIO ]', careersTitle: 'job.json // mi trabajo', careersSubtitle: '// profesión actual e ingresos aproximados', familyTitle: 'family.json // árbol familiar', familySubtitle: '// familiares generados aleatoriamente', inventoryTitle: 'inventory.json // inventario', inventorySubtitle: '// objetos encontrados durante la historia', play: '[ JUGAR ]', blog: '[ BLOG ]', blogTitle: 'blog.txt // notas de LIFE.AI', blogSubtitle: '// ideas, cambios y registros del simulador', chatGreeting: 'Hola. Puedo recordar lo que me cuentes y cambiar mis reglas con tus instrucciones.'
   },
   en: {
+	appTitle: 'Unnamed life simulation', languageLabel: 'LANG:', languageAria: 'Language',
 	start: 'START LIFE', next: '[ ENTER ]', name: 'What is your name?', surname: 'What is your surname?', age: 'How old are you?', money: 'How much money do you have?', location: 'Where does your story begin?', hobby: 'What is your hobby?',
 	nameHint: 'Write your name.', surnameHint: 'Write your surname.', ageHint: 'Enter your age.', moneyHint: 'Enter an initial amount.', locationHint: 'Write a location.', hobbyHint: 'Example: music, football, games, drawing...',
   storyLabel: 'How do you want to continue your life?', storyPlaceholder: 'Write what happens next...', save: '[ SAVE ]', menu: '[ MENU ]', history: '[ VIEW ALL DECISIONS ]', chat: '[ TALK TO LIFE.AI ]', stats: '[ VIEW STATS ]', world: '[ VIEW WORLD ]', skills: '[ VIEW SKILLS ]', relations: '[ VIEW RELATIONSHIPS ]', learnFile: '[ LOAD KNOWLEDGE ]', export: '[ EXPORT GAME ]', import: '[ IMPORT GAME ]', reset: '[ NEW GAME ]', menuTitle: 'menu.json // control panel', menuSubtitle: '// all LIFE.AI modules',
-	saved: '// chapter saved successfully_', worldTitle: 'world.json // living world', worldSubtitle: '// places, characters, goals, events and discovered rules', skillsTitle: 'skills.json // abilities', skillsSubtitle: '// learned abilities, experience and character growth', relationsTitle: 'relations.json // relationships', relationsSubtitle: '// bonds, trust and social evolution', statsTitle: 'player.json // statistics', statsSubtitle: '// complete character state and story progress', chatTitle: 'life.ai // chat_console', chatSubtitle: '// conversation and learning · this mode does not modify your stats', chatPlaceholder: 'Write a message...', send: '[ SEND ]', chatHelp: 'LIFE.AI analyzes the conversation, retrieves context and learns automatically when it detects useful information.', analyzer: '[ ANALYZER ] waiting for a sentence...', intent: 'Intent', confidence: 'Confidence', entities: 'Entities', prediction: 'Prediction', personality: 'Personality', goal: 'Goal', historyTitle: 'decision_history.log', historySubtitle: '// LIFE.AI memory · learns from every choice', emptyHistory: '// no saved decisions yet.', you: 'You', ai: 'AI', nameKey: '"name"', surnameKey: '"surname"', ageKey: '"age"', moneyKey: '"money"', locationKey: '"location"', hobbyKey: '"hobby"', energyKey: '"energy"', moodKey: '"mood"', reputationKey: '"reputation"', play: '[ PLAY ]', blog: '[ BLOG ]', blogTitle: 'blog.txt // LIFE.AI notes', blogSubtitle: '// ideas, changes and simulator records', chatGreeting: 'Hello. I can remember what you tell me and change my rules with your instructions.'
+	 saved: '// chapter saved successfully_', worldTitle: 'world.json // living world', worldSubtitle: '// places, characters, goals, events and discovered rules', skillsTitle: 'skills.json // abilities', skillsSubtitle: '// learned abilities, experience and character growth', relationsTitle: 'relations.json // relationships', relationsSubtitle: '// bonds, trust and social evolution', statsTitle: 'player.json // statistics', statsSubtitle: '// complete character state and story progress', chatTitle: 'life.ai // chat_console', chatSubtitle: '// conversation and learning · this mode does not modify your stats', chatPlaceholder: 'Write a message...', send: '[ SEND ]', chatHelp: 'LIFE.AI analyzes the conversation, retrieves context and learns automatically when it detects useful information.', analyzer: '[ ANALYZER ] waiting for a sentence...', intent: 'Intent', confidence: 'Confidence', entities: 'Entities', prediction: 'Prediction', personality: 'Personality', goal: 'Goal', none: 'none', narrator: 'narrator', stable: 'stable', historyTitle: 'decision_history.log', historySubtitle: '// LIFE.AI memory · learns from every choice', emptyHistory: '// no saved decisions yet.', you: 'You', ai: 'AI', nameKey: '"name"', surnameKey: '"surname"', ageKey: '"age"', moneyKey: '"money"', locationKey: '"location"', hobbyKey: '"hobby"', occupationKey: '"occupation"', energyKey: '"energy"', moodKey: '"mood"', reputationKey: '"reputation"', careers: '[ MY JOB ]', family: '[ VIEW FAMILY ]', inventory: '[ VIEW INVENTORY ]', careersTitle: 'job.json // my job', careersSubtitle: '// current profession and approximate income', familyTitle: 'family.json // family tree', familySubtitle: '// randomly generated family members', inventoryTitle: 'inventory.json // inventory', inventorySubtitle: '// objects found during the story', play: '[ PLAY ]', blog: '[ BLOG ]', blogTitle: 'blog.txt // LIFE.AI notes', blogSubtitle: '// ideas, changes and simulator records', chatGreeting: 'Hello. I can remember what you tell me and change my rules with your instructions.'
 	}
 };
 
@@ -139,7 +479,7 @@ document.querySelectorAll('[data-close]').forEach((button) => {
 });
 
 function startNewLife() {
-  const freshPlayer = {};
+	const freshPlayer = { familyTree: generateFamilyTree('') };
   const freshSave = { player: freshPlayer, chapters: [], memory: createEmptyMemory(), world: createEmptyWorld(), lifeStatus: 'active' };
   // Keep the new game save separate from the global persistent memory.
   window.__lifeSave = freshSave;
@@ -192,6 +532,7 @@ function setPlaceholder(element, value) {
 
 function setWelcomeNavigationVisible(visible) {
   if (welcomeNavigation) welcomeNavigation.classList.toggle('hidden', !visible);
+  if (discordLink) discordLink.classList.toggle('hidden', !visible);
 }
 
 function chooseInitialWeather() {
@@ -257,6 +598,10 @@ function stopWeatherCycle() {
 function applyTranslations() {
   document.documentElement.lang = currentLanguage;
 	if (languageSelect && languageSelect.value !== currentLanguage) languageSelect.value = currentLanguage;
+	document.title = t('appTitle');
+	setText(document.querySelector('#appTitle'), t('appTitle'));
+	setText(document.querySelector('#languageLabel'), t('languageLabel'));
+	if (languageSelect) languageSelect.setAttribute('aria-label', t('languageAria'));
 	setText(startButton, t('start'));
   setText(playNavButton, t('play')); setText(blogButton, t('blog'));
 	setText(menuButton, t('menu'));
@@ -266,13 +611,15 @@ function applyTranslations() {
   setText(questionHint, t(`${questions[currentQuestion].key}Hint`));
   setText(document.querySelector('.story-editor label'), t('storyLabel'));
   setPlaceholder(storyInput, t('storyPlaceholder'));
-  setText(saveStoryButton, t('save')); setText(historyButton, t('history')); setText(chatButton, t('chat')); setText(statsButton, t('stats')); setText(worldButton, t('world')); setText(skillsButton, t('skills'));
+	setText(saveStoryButton, t('save')); setText(historyButton, t('history')); setText(chatButton, t('chat')); setText(statsButton, t('stats')); setText(careersButton, t('careers')); setText(familyButton, t('family')); setText(worldButton, t('world')); setText(skillsButton, t('skills'));
   setText(exportButton, t('export')); setText(importButton, t('import')); setText(resetButton, t('reset')); setText(savedMessage, t('saved'));
 	setText(relationsButton, t('relations'));
 	setText(learnFileButton, t('learnFile'));
 	setText(document.querySelector('#worldTitle'), t('worldTitle')); setText(document.querySelector('#skillsTitle'), t('skillsTitle')); setText(document.querySelector('#relationsTitle'), t('relationsTitle')); setText(document.querySelector('#statsTitle'), t('statsTitle')); setText(document.querySelector('#chatTitle'), t('chatTitle')); setText(document.querySelector('#historyTitle'), t('historyTitle'));
-  setText(document.querySelector('#worldScreen .history-subtitle'), t('worldSubtitle')); setText(document.querySelector('#skillsScreen .history-subtitle'), t('skillsSubtitle')); setText(document.querySelector('#relationsScreen .history-subtitle'), t('relationsSubtitle')); setText(document.querySelector('#statsScreen .history-subtitle'), t('statsSubtitle')); setText(document.querySelector('#chatScreen .history-subtitle'), t('chatSubtitle')); setText(document.querySelector('#historyScreen .history-subtitle'), t('historySubtitle'));
-	['nameKey', 'surnameKey', 'ageKey', 'moneyKey', 'locationKey', 'hobbyKey', 'energyKey', 'moodKey', 'reputationKey'].forEach((key) => setText(document.querySelector(`#${key}`), t(key)));
+  setText(document.querySelector('#worldSubtitle'), t('worldSubtitle')); setText(document.querySelector('#skillsSubtitle'), t('skillsSubtitle')); setText(document.querySelector('#relationsSubtitle'), t('relationsSubtitle')); setText(document.querySelector('#statsSubtitle'), t('statsSubtitle')); setText(document.querySelector('#chatSubtitle'), t('chatSubtitle')); setText(document.querySelector('#historySubtitle'), t('historySubtitle'));
+	setText(document.querySelector('#careersTitle'), t('careersTitle')); setText(document.querySelector('#careersSubtitle'), t('careersSubtitle')); setText(document.querySelector('#familyTitle'), t('familyTitle')); setText(document.querySelector('#familySubtitle'), t('familySubtitle'));
+	setText(document.querySelector('#inventoryTitle'), t('inventoryTitle')); setText(document.querySelector('#inventorySubtitle'), t('inventorySubtitle')); setText(inventoryButton, t('inventory'));
+  ['nameKey', 'surnameKey', 'ageKey', 'moneyKey', 'locationKey', 'hobbyKey', 'occupationKey', 'energyKey', 'moodKey', 'reputationKey'].forEach((key) => setText(document.querySelector(`#${key}`), t(key)));
   setPlaceholder(chatInput, t('chatPlaceholder')); setText(chatForm?.querySelector('button'), t('send')); setText(document.querySelector('.chat-help'), t('chatHelp'));
   setText(document.querySelector('.analysis-title'), t('analyzer'));
 	setText(document.querySelector('#blogTitle'), t('blogTitle')); setText(document.querySelector('#blogSubtitle'), t('blogSubtitle'));
@@ -295,7 +642,11 @@ function changeLanguage(value) {
   if (!skillsScreen.classList.contains('hidden')) renderSkillsPanel();
   if (typeof relationsScreen !== 'undefined' && !relationsScreen.classList.contains('hidden')) renderRelationsPanel();
   if (!menuScreen.classList.contains('hidden')) renderMenu();
+	if (!careersScreen.classList.contains('hidden')) renderCareersPanel();
+  if (!familyScreen.classList.contains('hidden')) renderFamilyPanel();
+	if (!inventoryScreen.classList.contains('hidden')) renderInventoryPanel();
   if (window.__lifeSave?.lifeStatus === 'active') renderWeather(window.__lifeSave.weather);
+  renderCurrentOccupation();
 }
 
 listen(languageSelect, 'change', (event) => changeLanguage(event.target.value));
@@ -307,6 +658,12 @@ listen(menuButton, 'click', () => {
 });
 
 listen(closeMenuButton, 'click', () => menuScreen.classList.add('hidden'));
+listen(careersButton, 'click', () => { renderCareersPanel(); careersScreen.classList.remove('hidden'); });
+listen(closeCareersButton, 'click', () => careersScreen.classList.add('hidden'));
+listen(familyButton, 'click', () => { renderFamilyPanel(); familyScreen.classList.remove('hidden'); });
+listen(closeFamilyButton, 'click', () => familyScreen.classList.add('hidden'));
+listen(inventoryButton, 'click', () => { renderInventoryPanel(); inventoryScreen.classList.remove('hidden'); });
+listen(closeInventoryButton, 'click', () => inventoryScreen.classList.add('hidden'));
 listen(playNavButton, 'click', () => {
   blogScreen?.classList.add('hidden');
   welcomeScreen?.classList.remove('hidden');
@@ -340,11 +697,11 @@ function renderCreatorBlog() {
 	const article = document.createElement('article');
 	article.className = 'blog-entry creator-post';
 	const heading = document.createElement('h3');
-	heading.textContent = `[ ${post.category[currentLanguage]} ] ${post.title[currentLanguage]}`;
+	heading.textContent = `[ ${post.category[currentLanguage] || post.category.en || post.category.es} ] ${post.title[currentLanguage] || post.title.en || post.title.es}`;
 	const date = document.createElement('small');
 	date.textContent = post.date;
 	const text = document.createElement('p');
-	text.textContent = post.text[currentLanguage];
+	text.textContent = post.text[currentLanguage] || post.text.en || post.text.es;
 	article.append(heading, date, text);
 	blogWindow.append(article);
   });
@@ -355,6 +712,9 @@ function renderMenu() {
 	['history', () => { renderHistory(readSave().chapters); historyScreen.classList.remove('hidden'); }],
 	['chat', () => { renderChat(readSave().memory.chat || []); chatScreen.classList.remove('hidden'); chatInput.focus(); }],
 	['stats', () => { statsScreen.classList.remove('hidden'); renderStats(); renderFullStats(); }],
+	['careers', () => { renderCareersPanel(); careersScreen.classList.remove('hidden'); }],
+	['family', () => { renderFamilyPanel(); familyScreen.classList.remove('hidden'); }],
+	['inventory', () => { renderInventoryPanel(); inventoryScreen.classList.remove('hidden'); }],
 	['world', () => { renderWorldPanel(); worldScreen.classList.remove('hidden'); }],
 	['skills', () => { renderSkillsPanel(); skillsScreen.classList.remove('hidden'); }],
 	['relations', () => { renderRelationsPanel(); relationsScreen.classList.remove('hidden'); }],
@@ -654,6 +1014,9 @@ listen(lifeForm, 'submit', (event) => {
 	return;
   }
   player[question.key] = numericQuestion ? numericAnswer : answer;
+	if (question.key === 'surname') {
+	player.familyTree = generateFamilyTree(answer);
+  }
   currentQuestion += 1;
 
   if (currentQuestion === questions.length) {
@@ -782,6 +1145,8 @@ function normalizeWorld(world) {
 function normalizeSave(save) {
 	const normalized = save && typeof save === 'object' ? save : {};
 	normalized.player = normalized.player || {};
+	normalized.player.inventory = Array.isArray(normalized.player.inventory) ? normalized.player.inventory : [];
+	if (!normalized.player.familyTree || (normalized.player.surname && normalized.player.familyTree.surnameSource !== normalized.player.surname)) normalized.player.familyTree = generateFamilyTree(normalized.player.surname || '');
 	normalized.chapters = Array.isArray(normalized.chapters) ? normalized.chapters : [];
 	normalized.memory = normalizeMemory(normalized.memory || createEmptyMemory());
 	normalized.world = normalizeWorld(normalized.world);
@@ -1126,12 +1491,13 @@ class LifeEngine {
 	playerState.energy = Number.isFinite(Number(playerState.energy)) ? Number(playerState.energy) : 100;
 	playerState.reputation = Number.isFinite(Number(playerState.reputation)) ? Number(playerState.reputation) : 0;
 	playerState.mood = playerState.mood || 'estable';
+	playerState.occupation = playerState.occupation || '';
+	playerState.inventory = Array.isArray(playerState.inventory) ? playerState.inventory : [];
 	playerState.skills = playerState.skills || {};
 	playerState.relationships = playerState.relationships || {};
 	playerState.events = Array.isArray(playerState.events) ? playerState.events : [];
 	return playerState;
   }
-
   analyze(text, memory) {
 	return analyzeText(text, memory);
   }
@@ -1141,6 +1507,13 @@ class LifeEngine {
 	const interpretation = interpretDecision(text, memory, world);
 	const analysis = interpretation.analysis;
 	const effects = applyDecisionEffects(text, playerState, analysis);
+	if (analysis.mutationAllowed && analysis.entities.locations?.length) playerState.location = analysis.entities.locations[0];
+	if (analysis.mutationAllowed && analysis.entities.locations?.length) {
+	  const locationName = analysis.entities.locations[0];
+	  if (!world.locations.some((location) => location.name.toLowerCase() === locationName.toLowerCase())) {
+		world.locations.push({ id: `location-${Date.now()}-${world.locations.length}`, name: locationName, discovered: true, description: currentLanguage === 'en' ? 'Location discovered through movement.' : 'Lugar descubierto mediante el desplazamiento.', visits: 1, connectedTo: '', createdAt: new Date().toISOString() });
+	  }
+	}
 	this.applyExtendedConsequences(text, playerState, analysis, effects);
 	effects.push(...worldEngine.apply(text, interpretation, world, playerState));
 	const event = {
@@ -1161,12 +1534,37 @@ class LifeEngine {
   }
 
   applyExtendedConsequences(text, playerState, analysis, effects) {
+	if (!analysis.mutationAllowed || analysis.mutationConfidence < .48) return;
+	// Ensure any explicit location mentioned in the decision updates player state
+	const explicitLocation = extractContextualLocation(text) || extractText(text, [
+	  'me mudo a', 'vivo en', 'viajo a', 'viajo al', 'voy a', 'voy al', 'llego a', 'llego al',
+	  'mi nueva ubicacion es', 'mi nueva ubicación es', 'encuentro un lugar llamado', 'descubro la ciudad de',
+	  'move to', 'live in', 'travel to', 'go to', 'arrive at', 'new location is'
+	]);
+	if (explicitLocation) {
+	  playerState.location = explicitLocation;
+	}
 	const words = normalizeWords(text).join(' ');
 	const negated = hasNegation(text);
 	const amountFor = (fallback) => {
 	  const numeric = text.match(/\b\d+(?:[.,]\d+)?\b/);
 	  return numeric ? Number(numeric[0].replace(',', '.')) : (numberFromWords(text) ?? fallback);
 	};
+	const career = detectCareer(text) || careerById(playerState.occupation);
+	if (!negated && detectCareer(text)) {
+	  playerState.occupation = career.id;
+	  effects.push(`${currentLanguage === 'en' ? 'occupation' : 'profesión'}: ${careerLabel(career)}`);
+	}
+	const foundItem = detectFoundItem(text);
+	if (!negated && foundItem) {
+	  const probability = itemFindProbability(foundItem, playerState.location || '');
+	  if (Math.random() <= probability) {
+		const entry = addFoundItem(playerState, foundItem, playerState.location || '');
+		effects.push(currentLanguage === 'en' ? `found: ${foundItem.names.en} x${entry.quantity}` : `encontrado: ${foundItem.names.es} x${entry.quantity}`);
+	  } else {
+		effects.push(currentLanguage === 'en' ? `the find was unlikely here (${Math.round(probability * 100)}%)` : `el hallazgo era poco probable aquí (${Math.round(probability * 100)}%)`);
+	  }
+	}
 	const change = (property, amount, label) => {
 	  if (negated) return;
 	  playerState[property] = Math.max(0, Math.min(property === 'energy' ? 100 : Infinity, playerState[property] + amount));
@@ -1178,7 +1576,7 @@ class LifeEngine {
 	};
 
 	if (/dormir|duermo|descansar|descanso|recuperar|sleep|rest|recover/.test(words)) change('energy', amountFor(20), currentLanguage === 'en' ? 'energy' : 'energía');
-	if (/trabajo|trabajar|oficina|turno|jornada|empleo|work|job|office|shift/.test(words)) change('energy', -amountFor(10), currentLanguage === 'en' ? 'energy' : 'energía');
+	if (/trabajo|trabajar|oficina|turno|jornada|empleo|work|job|office|shift/.test(words) || career) change('energy', -(career?.energy || amountFor(10)), currentLanguage === 'en' ? 'energy' : 'energía');
 	if (/estudiar|estudio|curso|clase|aprender|leer|study|class|course|learn|read/.test(words)) change('energy', -amountFor(5), currentLanguage === 'en' ? 'energy' : 'energía');
 	if (!negated && /ejercicio|entrenar|correr|gimnasio|deporte|exercise|train|run|gym|sport/.test(words)) {
 	  change('energy', 5, currentLanguage === 'en' ? 'energy' : 'energía');
@@ -1364,11 +1762,16 @@ function analyzeText(text, memory = {}) {
 
   const ageSignal = /(?:creci|creciste|crecer|cumpli|cumpliste|me hice mayor|me hago mayor|envejec|un ano mas|otro ano|pasaron los anos|transcurrio un ano|grow older|grew older|get older|another year|turned another year)/.test(normalized);
   const workSignal = /(?:trabajo|trabajar|trabaje|oficina|turno|jornada|empleo|profesion|negocio|contrato|entrevista|work|worked|job|office|shift|employment|business|contract|interview)/.test(normalized);
+	const locationSignal = Boolean(entities.locations.length);
   if (ageSignal) {
 	scores.change_age = (scores.change_age || 0) + 6;
 	if (!workSignal) scores.work = 0;
   }
   if (workSignal && !ageSignal) scores.work = (scores.work || 0) + 2;
+  if (locationSignal) {
+	 scores.change_location = (scores.change_location || 0) + 5;
+	 scores.travel = (scores.travel || 0) + 2;
+  }
 
   const context = inferLocalContext(text, memory);
   const intentCategory = {
@@ -1388,11 +1791,18 @@ function analyzeText(text, memory = {}) {
   const second = ranked[1]?.[1] || 0;
   const confidence = Math.min(.98, Math.max(.12, .35 + best[1] * .15 - (second > 0 ? .05 : 0)));
 	const negated = /\b(no|nunca|jamas|jamás|sin|not|never|without)\b/.test(normalized);
+	const question = /\?|^(?:que|qué|como|cómo|por que|por qué|what|how|why|when|where)\b/.test(normalized);
+	const firstPerson = /\b(?:yo|me|mi|mis|tengo|quiero|voy|vivo|soy|estoy|decido|hago|aprendo|trabajo|i|i'm|ive|i've|my|me|we|our)\b/.test(normalized);
+	const actionVerb = /\b(?:quiero|decido|decidir|hago|hacer|voy|viajo|viajar|me mudo|vivo|trabajo|trabajar|aprendo|aprender|estudio|estudiar|duermo|dormir|descanso|descansar|compro|comprar|pago|pagar|ahorro|ahorrar|crezco|cumplo|cambio|aumento|pierdo|gano|conozco|ayudo|exploro|i want|i choose|i decide|i do|i go|i travel|i live|i work|i learn|i study|i sleep|i rest|i buy|i pay|i save|i grow|i turn|i change|i increase|i lose|i earn|i meet|i help|i explore)\b/.test(normalized);
+	const explicitDeclaration = /\b(?:tengo|mi edad es|mi nombre es|me llamo|mi apellido es|mi dinero es|vivo en|me mudo a|viajo a|my name is|my surname is|my last name is|my money is|i am|i'm|i live in|i move to|i travel to|i have)\b/.test(normalized);
+	const subjectIsOther = context.subject === 'other';
+	const mutationAllowed = !question && !negated && !subjectIsOther && (explicitDeclaration || firstPerson || actionVerb);
+	const mutationConfidence = Math.min(1, confidence + (explicitDeclaration ? .25 : 0) + (firstPerson ? .12 : 0) - (question ? .35 : 0) - (negated ? .35 : 0) - (subjectIsOther ? .3 : 0));
 	const urgency = /\bahora|urgente|necesito|ya|today|urgent|need|now\b/.test(normalized) ? 'high' : /\bpronto|soon|mañana|tomorrow\b/.test(normalized) ? 'medium' : 'low';
   const sentiment = /\b feliz|alegre|amor|éxito|happy|glad|love|success\b/.test(` ${normalized}`) ? 'positive' : /\b triste|miedo|ansiedad|problema|sad|fear|anxiety|problem\b/.test(` ${normalized}`) ? 'negative' : 'neutral';
 	const closeAlternatives = ranked.filter(([, score]) => score > 0 && best[1] - score <= .8).slice(1, 3);
   const needsClarification = !best[1] || (best[1] <= 1 && second === best[1]) || closeAlternatives.length > 1;
-  return { intent: best[1] ? best[0] : 'unknown', score: best[1], confidence, entities, normalized, negated, urgency, sentiment, needsClarification, alternatives: ranked.slice(1, 4), context, ambiguity: closeAlternatives };
+	return { intent: best[1] ? best[0] : 'unknown', score: best[1], confidence, entities, normalized, negated, question, firstPerson, actionVerb, explicitDeclaration, mutationAllowed, mutationConfidence, urgency, sentiment, needsClarification, alternatives: ranked.slice(1, 4), context, ambiguity: closeAlternatives };
 }
 
 function extractEntities(original, normalized) {
@@ -1405,7 +1815,7 @@ function extractEntities(original, normalized) {
 	entities.durations = original.match(/\d+\s*(?:días?|dias?|semanas?|meses?|años?|anos?|days?|weeks?|months?|years?)/gi) || [];
   entities.dates = original.match(/(?:hoy|mañana|manana|ayer|este año|este ano|la próxima semana|proxima semana|today|tomorrow|yesterday|this year|next week)/gi) || [];
 	const name = extractText(original, ['me llamo', 'mi nombre es', 'nuevo nombre', 'my name is', 'call me']);
-	const location = extractText(original, ['me mudo a', 'vivo en', 'viajo a', 'viajo al', 'voy a', 'voy al', 'llego a', 'llego al', 'mi nueva ubicación es', 'mi nueva ubicacion es', 'encuentro un lugar llamado', 'descubro la ciudad de', 'move to', 'live in', 'travel to', 'go to', 'arrive at', 'new location is']);
+  const location = extractContextualLocation(original) || extractText(original, ['me mudo a', 'vivo en', 'viajo a', 'viajo al', 'voy a', 'voy al', 'llego a', 'llego al', 'mi nueva ubicación es', 'mi nueva ubicacion es', 'encuentro un lugar llamado', 'descubro la ciudad de', 'move to', 'live in', 'travel to', 'go to', 'arrive at', 'new location is']);
   const hobby = extractText(original, ['mi hobby es', 'mi nuevo hobby es', 'me gusta', 'my hobby is', 'I like']);
   if (name) entities.names.push(name);
   if (location) entities.locations.push(location);
@@ -1442,7 +1852,7 @@ function interpretDecision(text, memory = createEmptyMemory(), world = createEmp
   if (!actions.length) addAction(analysis.intent === 'unknown' ? 'freeform' : analysis.intent, 1);
 
   const quoted = [...text.matchAll(/["“”«»']([^"“”«»']+)["“”«»']/g)].map((match) => match[1].trim());
-	const explicitLocation = extractText(text, ['me mudo a', 'vivo en', 'viajo a', 'viajo al', 'voy a', 'voy al', 'llego a', 'llego al', 'hacia', 'mi nueva ubicación es', 'mi nueva ubicacion es', 'encuentro un lugar llamado', 'descubro la ciudad de', 'move to', 'live in', 'travel to', 'go to', 'arrive at', 'new location is']);
+  const explicitLocation = extractContextualLocation(text) || extractText(text, ['me mudo a', 'vivo en', 'viajo a', 'viajo al', 'voy a', 'voy al', 'llego a', 'llego al', 'hacia', 'mi nueva ubicación es', 'mi nueva ubicacion es', 'encuentro un lugar llamado', 'descubro la ciudad de', 'move to', 'live in', 'travel to', 'go to', 'arrive at', 'new location is']);
   const location = analysis.entities.locations[0] || explicitLocation;
 	const introducedPeople = [...text.matchAll(/(?:aparece|llega|entra en escena|se une|encuentro a|conozco a|appears|arrives|joins|I meet|meet)\s+([^,.!?;]+?)(?=\s+(?:que|quien|una|un|el|la|para|porque|who|that|a|an|the|to|because)\b|[,.!?;]|$)/gi)].map((match) => match[1].trim());
 	const people = [...new Set([...analysis.entities.people, ...introducedPeople].filter((item) => item.length > 1))];
@@ -1484,7 +1894,7 @@ function updateAnalysisView(analysis) {
   const entities = Object.entries(analysis.entities)
 	.filter(([, values]) => values.length)
 	.map(([key, values]) => `${key}: ${values.join(', ')}`)
-	.join(' · ') || 'ninguna';
+	.join(' · ') || t('none');
 	const urgencyLabel = currentLanguage === 'en' ? 'urgency' : 'urgencia';
 	const sentimentLabel = currentLanguage === 'en' ? 'sentiment' : 'sentimiento';
 	const contextLabel = currentLanguage === 'en' ? 'topic' : 'tema';
@@ -1492,9 +1902,9 @@ function updateAnalysisView(analysis) {
 	analysisDetails.textContent = `${t('intent')}: ${analysis.intent} · ${t('confidence')}: ${Math.round(analysis.confidence * 100)}% · ${t('entities')}: ${entities} · ${urgencyLabel}: ${analysis.urgency} · ${sentimentLabel}: ${analysis.sentiment} · ${contextLabel}: ${analysis.context?.topic || '—'} · ${subjectLabel}: ${analysis.context?.subject || '—'}`;
 	const memory = mergeMemories(readSave().memory, readGlobalMemory());
 	const predictions = predictIntent(analysis.normalized, memory);
-	const personality = memory.personality?.current || 'narrador';
+	const personality = memory.personality?.current || t('narrator');
 	const goal = memory.goals.find((item) => item.status === 'active');
-  predictionDetails.textContent = `${t('prediction')}: ${predictions.join(', ') || '—'} · ${t('personality')}: ${personality} · ${t('goal')}: ${goal ? `${goal.text} (${goal.progress}%)` : '—'}`;
+	  predictionDetails.textContent = `${t('prediction')}: ${predictions.join(', ') || '—'} · ${t('personality')}: ${personality} · ${t('goal')}: ${goal ? `${goal.text} (${goal.progress}%)` : '—'}`;
 	return analysis;
 }
 
@@ -1851,19 +2261,22 @@ function renderStats() {
   document.querySelector('#moneyStat').textContent = player.money || 0;
   locationStat.textContent = `"${player.location || ''}"`;
   hobbyStat.textContent = `"${player.hobby || ''}"`;
+	const occupation = careerById(player.occupation);
+  occupationStat.textContent = `"${careerLabel(occupation)}"`;
   energyStat.textContent = player.energy ?? 100;
-  moodStat.textContent = `"${player.mood || 'estable'}"`;
+	  moodStat.textContent = `"${player.mood || t('stable')}"`;
   reputationStat.textContent = player.reputation ?? 0;
+  renderCurrentOccupation();
 }
 
 function renderFullStats() {
 	const current = readSave().player || player || {};
 	const save = readSave();
   const memory = mergeMemories(save.memory || createEmptyMemory(), readGlobalMemory() || createEmptyMemory());
-	const empty = currentLanguage === 'en' ? 'none' : 'ninguno';
+	const empty = t('none');
   const relationships = Object.entries(current.relationships || {}).map(([name, level]) => `${name}: ${level}`).join(' · ') || empty;
   const activeGoals = memory.goals.filter((goal) => goal.status === 'active').map((goal) => `${goal.text} (${goal.progress}%)`).join(' · ') || empty;
-  statsExtra.textContent = currentLanguage === 'en' ? `recorded events: ${(current.events || []).length} | personal goals: ${activeGoals} | personality: ${memory.personality?.current || 'narrator'}` : `eventos registrados: ${(current.events || []).length} | objetivos personales: ${activeGoals} | personalidad: ${memory.personality?.current || 'narrador'}`;
+	  statsExtra.textContent = currentLanguage === 'en' ? `recorded events: ${(current.events || []).length} | personal goals: ${activeGoals} | personality: ${memory.personality?.current || t('narrator')}` : `eventos registrados: ${(current.events || []).length} | objetivos personales: ${activeGoals} | personalidad: ${memory.personality?.current || t('narrator')}`;
 }
 
 function addPanelSection(container, title, entries, emptyText = currentLanguage === 'en' ? 'none' : 'ninguno') {
@@ -1932,6 +2345,7 @@ function renderRelationsPanel() {
 }
 
 function applyDecisionEffects(decision, savedPlayer, analysis = analyzeText(decision)) {
+	if (!analysis.mutationAllowed || analysis.mutationConfidence < .48) return [];
 	const text = normalizeWords(decision).join(' ');
   const has = (...words) => words.some((word) => text.includes(word));
   const effects = [];
@@ -1954,7 +2368,7 @@ function applyDecisionEffects(decision, savedPlayer, analysis = analyzeText(deci
   }
 	const newName = extractText(decision, ['me llamo', 'mi nombre es', 'cambio mi nombre a', 'my name is', 'call me', 'change my name to']);
 	const newSurname = extractText(decision, ['mi apellido es', 'cambio mi apellido a', 'my surname is', 'my last name is']);
-	const newLocation = extractText(decision, ['me mudo a', 'vivo en', 'viajo a', 'mi nueva ubicacion es', 'mi nueva ubicación es', 'i move to', 'i live in', 'i travel to', 'my new location is']);
+	const newLocation = extractContextualLocation(decision) || extractText(decision, ['me mudo a', 'vivo en', 'viajo a', 'mi nueva ubicacion es', 'mi nueva ubicación es', 'i move to', 'i live in', 'i travel to', 'my new location is']);
 	const newHobby = extractText(decision, ['mi hobby es', 'mi nuevo hobby es', 'my hobby is']);
 	if (newName) {
 		savedPlayer.name = newName;
@@ -1973,9 +2387,11 @@ function applyDecisionEffects(decision, savedPlayer, analysis = analyzeText(deci
 		effects.push(`hobby: ${newHobby}`);
 	}
 
-	if (has('trabajo', 'trabajar', 'sueldo', 'contrato', 'negocio', 'work', 'job', 'salary', 'contract', 'business')) {
-	money += 250;
-	effects.push(currentLanguage === 'en' ? '+250 money from work' : '+250 dinero por trabajo');
+	const career = detectCareer(decision) || careerById(savedPlayer.occupation);
+	if (career || has('trabajo', 'trabajar', 'sueldo', 'contrato', 'negocio', 'work', 'job', 'salary', 'contract', 'business')) {
+	  const income = career?.income || 250;
+	  money += income;
+	  effects.push(currentLanguage === 'en' ? `+${income} money from ${career ? career.names.en.toLowerCase() : 'work'}` : `+${income} dinero por ${career ? career.names.es.toLowerCase() : 'trabajo'}`);
   }
 	if (has('comprar', 'compre', 'compra', 'gastar', 'pagar', 'buy', 'spend', 'pay')) {
 	money = Math.max(0, money - 75);
@@ -1997,11 +2413,17 @@ function applyDecisionEffects(decision, savedPlayer, analysis = analyzeText(deci
 		effects.push(currentLanguage === 'en' ? `+${ageDelta} year${ageDelta === 1 ? '' : 's'}` : `+${ageDelta} año${ageDelta === 1 ? '' : 's'}`);
   }
 	if (has('viaje', 'viajar', 'camino', 'aventura', 'travel', 'trip', 'adventure')) {
-	savedPlayer.location = currentLanguage === 'en' ? 'On the road' : 'En camino';
-	effects.push(`${currentLanguage === 'en' ? 'location' : 'ubicación'}: ${savedPlayer.location}`);
+	  // Preserve any explicit location change detected earlier (newLocation).
+	  // Do not overwrite an explicitly detected location with a generic travel label.
+	  if (!newLocation) {
+		savedPlayer.location = currentLanguage === 'en' ? 'On the road' : 'En camino';
+		effects.push(`${currentLanguage === 'en' ? 'location' : 'ubicación'}: ${savedPlayer.location}`);
+	  }
   } else if (has('mudanza', 'mudarse', 'ciudad', 'vivir', 'move', 'city', 'live')) {
-	savedPlayer.location = currentLanguage === 'en' ? 'New city' : 'Nueva ciudad';
-	effects.push(`${currentLanguage === 'en' ? 'location' : 'ubicación'}: ${savedPlayer.location}`);
+	  if (!newLocation) {
+		savedPlayer.location = currentLanguage === 'en' ? 'New city' : 'Nueva ciudad';
+		effects.push(`${currentLanguage === 'en' ? 'location' : 'ubicación'}: ${savedPlayer.location}`);
+	  }
   }
 
   const hobbies = [
