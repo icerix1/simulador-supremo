@@ -330,7 +330,11 @@ function generateFamilyTree(playerSurname = '') {
 
 // Replace this URL with your Discord invite link.
 const DISCORD_URL = 'https://discord.gg/Tsw2htGAb';
-if (discordLink) discordLink.href = DISCORD_URL;
+if (discordLink) {
+  discordLink.href = DISCORD_URL;
+  discordLink.target = '_blank';
+  discordLink.rel = 'noopener noreferrer';
+}
 
 const questions = [
 	{ label: '¿Cuál es tu nombre?', hint: 'Escribe tu nombre.', key: 'name' },
@@ -2276,7 +2280,6 @@ window.setInterval(() => {
 
 async function initializeApplication() {
 	if (startButton) startButton.disabled = true;
-	setWelcomeNavigationVisible(false);
   try {
 	let storedLanguage = null;
 	try { storedLanguage = localStorage.getItem('lifeLanguage'); } catch { /* idioma predeterminado */ }

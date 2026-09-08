@@ -27,8 +27,8 @@ body.weather-rainy .weather-indicator { border-color: var(--blue); color: var(--
 .welcome-navigation { position: absolute; top: 58px; left: 50%; z-index: 25; display: flex; gap: 8px; transform: translateX(-50%); }
 .welcome-nav-button { padding: 8px 18px; border: 1px solid var(--muted); color: var(--muted); background: rgba(9,13,18,.8); cursor: pointer; font: inherit; font-size: 11px; letter-spacing: .08em; }
 .welcome-nav-button:hover, .welcome-nav-button.active { border-color: var(--green); color: var(--green); box-shadow: 0 0 12px rgba(101,209,138,.16); }
-.discord-link { position: fixed; left: 20px; bottom: 16px; z-index: 30; padding: 8px 12px; border: 1px solid var(--purple); color: var(--purple); background: rgba(9,13,18,.88); cursor: pointer; font: inherit; font-size: 10px; letter-spacing: .08em; text-decoration: none; }
-.welcome-screen .discord-link { position: relative; left: auto; bottom: auto; z-index: 1; display: inline-block; margin-top: 24px; }
+.discord-link { position: fixed; left: 20px; bottom: 16px; z-index: 30; display: inline-flex; align-items: center; justify-content: center; min-width: 126px; padding: 8px 12px; border: 1px solid var(--purple); border-radius: 0; color: var(--purple); background: rgba(9,13,18,.88); cursor: pointer; font: inherit; font-size: 10px; letter-spacing: .08em; line-height: 1.2; text-decoration: none; text-align: center; appearance: none; -webkit-appearance: none; }
+.welcome-screen .discord-link { position: relative; left: auto; bottom: auto; z-index: 1; display: inline-flex; margin-top: 24px; }
 .discord-link:hover, .discord-link:focus-visible { border-color: var(--green); color: var(--green); box-shadow: 0 0 12px rgba(101,209,138,.16); }
 .blog-screen { position: fixed; inset: 0; z-index: 20; display: flex; align-items: center; justify-content: center; padding: 25px; background: rgba(3,6,9,.88); }
 .blog-window { position: relative; width: min(760px, 100%); max-height: 85vh; overflow: auto; padding: 34px; border: 1px solid var(--green); background: var(--panel); box-shadow: 0 0 35px rgba(101,209,138,.16); text-align: left; }
