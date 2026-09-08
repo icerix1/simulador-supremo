@@ -28,6 +28,7 @@ body.weather-rainy .weather-indicator { border-color: var(--blue); color: var(--
 .welcome-nav-button { padding: 8px 18px; border: 1px solid var(--muted); color: var(--muted); background: rgba(9,13,18,.8); cursor: pointer; font: inherit; font-size: 11px; letter-spacing: .08em; }
 .welcome-nav-button:hover, .welcome-nav-button.active { border-color: var(--green); color: var(--green); box-shadow: 0 0 12px rgba(101,209,138,.16); }
 .discord-link { position: fixed; left: 20px; bottom: 16px; z-index: 30; padding: 8px 12px; border: 1px solid var(--purple); color: var(--purple); background: rgba(9,13,18,.88); cursor: pointer; font: inherit; font-size: 10px; letter-spacing: .08em; text-decoration: none; }
+.welcome-screen .discord-link { position: relative; left: auto; bottom: auto; z-index: 1; display: inline-block; margin-top: 24px; }
 .discord-link:hover, .discord-link:focus-visible { border-color: var(--green); color: var(--green); box-shadow: 0 0 12px rgba(101,209,138,.16); }
 .blog-screen { position: fixed; inset: 0; z-index: 20; display: flex; align-items: center; justify-content: center; padding: 25px; background: rgba(3,6,9,.88); }
 .blog-window { position: relative; width: min(760px, 100%); max-height: 85vh; overflow: auto; padding: 34px; border: 1px solid var(--green); background: var(--panel); box-shadow: 0 0 35px rgba(101,209,138,.16); text-align: left; }
@@ -101,28 +102,45 @@ h1 { margin: 0; color: var(--text); font-size: clamp(25px, 3.5vw, 42px); line-he
 @media (max-width: 390px) { .code-block { padding: 10px; font-size: 9px; }.property { padding-left: 6px; } }
 
 @media (max-width: 600px) {
-  body { overflow-x: hidden; }
-  .screen-status { top: 14px; left: 14px; font-size: 9px; }
+  body { min-height: 100%; overflow-x: hidden; }
+  .life-screen { min-height: 100svh; }
+  .screen-status { top: 14px; left: 14px; right: 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px; font-size: 9px; }
   .screen-status span { margin-left: 8px; }
-	.weather-indicator { right: 12px; bottom: 12px; font-size: 9px; }
-  .welcome-screen, .question-screen, .story-screen { padding: 58px 14px 30px; }
+	.weather-indicator { right: 12px; bottom: max(12px, env(safe-area-inset-bottom)); max-width: 44vw; font-size: 9px; }
+	.current-occupation { left: 12px; bottom: max(12px, env(safe-area-inset-bottom)); max-width: 48vw; padding: 7px 8px; font-size: 9px; line-height: 1.4; overflow-wrap: anywhere; }
+  .welcome-navigation { top: 58px; max-width: calc(100% - 28px); }
+  .welcome-nav-button { padding: 8px 12px; font-size: 10px; }
+	.welcome-screen .discord-link { left: auto; bottom: auto; margin-top: 22px; padding: 9px 12px; font-size: 10px; }
+	.welcome-screen, .question-screen, .story-screen { min-height: 100svh; padding: 88px 14px 76px; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+  .story-screen { height: 100svh; justify-content: flex-start; }
   .code-line, .comment, .intro-copy { font-size: 11px; }
   .start-life-button { width: min(100%, 320px); padding: 16px 12px; font-size: 15px; }
   .question-screen textarea, .story-editor textarea { width: 100%; min-height: 130px; padding: 12px; font-size: 13px; }
   .story-editor label { font-size: 19px; }
   .save-button, .next-button, .history-button { width: 100%; margin-top: 10px; padding: 10px 8px; font-size: 11px; }
+	.save-button, .next-button, .history-button, .close-history { min-height: 42px; }
   .file-buttons { width: 100%; gap: 0; }
-  .stats-screen, .history-screen, .chat-screen { align-items: flex-start; padding: 10px; }
-  .stats-window, .history-window, .chat-window { width: 100%; max-height: calc(100vh - 20px); padding: 42px 14px 16px; }
+	.stats-screen, .history-screen, .chat-screen, .menu-screen { align-items: flex-start; overflow: hidden; padding: max(10px, env(safe-area-inset-top)) 10px max(10px, env(safe-area-inset-bottom)); }
+  .stats-window, .history-window, .chat-window, .menu-window { width: 100%; max-height: calc(100svh - 20px); min-height: 0; padding: 42px 14px 16px; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
   .close-history { top: 10px; right: 10px; padding: 6px 10px; }
   .history-window h2, .chat-window h2, .stats-window h2 { padding-right: 42px; font-size: 16px; line-height: 1.4; }
   .history-subtitle { font-size: 10px; line-height: 1.6; }
-  .chat-messages { max-height: 42vh; padding: 9px; }
+	.chat-messages { max-height: 42svh; overflow-y: auto; padding: 9px; }
   .chat-form { flex-wrap: wrap; }
   .chat-form .prompt { display: none; }
   .chat-form input { width: 100%; flex-basis: 100%; font-size: 13px; }
   .chat-form button { width: 100%; margin-top: 5px; font-size: 11px; }
-  .world-dashboard, .skills-dashboard { display: block; }
+	.careers-dashboard, .family-dashboard, .inventory-dashboard { max-height: none; overflow: visible; }
+  .world-dashboard, .skills-dashboard, .relations-dashboard { display: block; }
   .panel-section { margin-bottom: 10px; padding: 10px; }
   .panel-card { font-size: 10px; }
+  .code-block, .stats-extra, .ai-output, .analysis-panel { overflow-wrap: anywhere; }
+}
+
+@media (max-width: 390px) {
+  .screen-status { font-size: 8px; }
+  .screen-status select { font-size: 9px; }
+  .current-occupation { max-width: 45vw; }
+  .weather-indicator { max-width: 42vw; }
+	.welcome-screen .discord-link { bottom: auto; }
 }
