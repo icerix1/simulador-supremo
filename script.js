@@ -57,9 +57,11 @@ const importInput = document.querySelector('#importInput');
 const learnFileButton = document.querySelector('#learnFileButton');
 const learnFileInput = document.querySelector('#learnFileInput');
 const resetButton = document.querySelector('#resetButton');
+const testGameOverButton = document.querySelector('#testGameOverButton');
 const nameStat = document.querySelector('#nameStat');
 const surnameStat = document.querySelector('#surnameStat');
 const ageStat = document.querySelector('#ageStat');
+const characterStat = document.querySelector('#characterStat');
 const locationStat = document.querySelector('#locationStat');
 const hobbyStat = document.querySelector('#hobbyStat');
 const occupationStat = document.querySelector('#occupationStat');
@@ -83,6 +85,25 @@ const closeBlogButton = document.querySelector('#closeBlogButton');
 const discordLink = document.querySelector('#discordLink');
 const weatherIndicator = document.querySelector('#weatherIndicator');
 const weatherOverlay = document.querySelector('#weatherOverlay');
+const seasonIndicator = document.querySelector('#seasonIndicator');
+const seasonEffects = document.querySelector('#seasonEffects');
+const gameOverScreen = document.querySelector('#gameOverScreen');
+const gameOverTitle = document.querySelector('#gameOverTitle');
+const gameOverText = document.querySelector('#gameOverText');
+const gameOverStats = document.querySelector('#gameOverStats');
+const gameOverNewLifeButton = document.querySelector('#gameOverNewLifeButton');
+const closeGameOverButton = document.querySelector('#closeGameOverButton');
+const supabaseStatus = document.querySelector('#supabaseStatus');
+const usernameStatus = document.querySelector('#usernameStatus');
+const activePlayersIndicator = document.querySelector('#activePlayersIndicator');
+const usernameScreen = document.querySelector('#usernameScreen');
+const usernameForm = document.querySelector('#usernameForm');
+const usernameTitle = document.querySelector('#usernameTitle');
+const usernameIntro = document.querySelector('#usernameIntro');
+const usernameLabel = document.querySelector('#usernameLabel');
+const usernameInput = document.querySelector('#usernameInput');
+const usernameSubmit = document.querySelector('#usernameSubmit');
+const usernameHint = document.querySelector('#usernameHint');
 
 const careerCatalog = [
   { id: 'software_engineer', family: 'Tecnología', names: { es: 'Ingeniero de software', en: 'Software engineer' }, aliases: ['programador', 'programadora', 'desarrollador', 'desarrolladora', 'ingeniero de software', 'ingeniera de software', 'software engineer', 'software developer', 'coder'], income: 620, energy: 12 },
@@ -159,6 +180,240 @@ const careerCatalog = [
   { id: 'translator', family: 'Idiomas', names: { es: 'Traductor', en: 'Translator' }, aliases: ['traductor', 'traductora', 'interprete', 'intérprete', 'translator', 'interpreter'], income: 480, energy: 10 },
   { id: 'real_world_freelancer', family: 'Independiente', names: { es: 'Trabajador freelance', en: 'Freelancer' }, aliases: ['freelance', 'freelancer', 'autonomo', 'autónomo', 'independiente', 'self employed', 'self-employed'], income: 450, energy: 12 }
 ];
+
+const knownHobbies = new Set([
+  'musica', 'music', 'futbol', 'football', 'videojuegos', 'videojuego', 'games', 'gaming', 'juegos',
+  'dibujar', 'dibujo', 'drawing', 'pintar', 'painting', 'cocinar', 'cocina', 'cooking', 'leer', 'lectura', 'reading',
+  'deporte', 'deportes', 'sport', 'sports', 'fotografia', 'fotografía', 'photography', 'programar', 'programacion',
+  'programación', 'coding', 'code', 'escribir', 'writing', 'bailar', 'baile', 'dance', 'jardineria', 'jardinería',
+  'gardening', 'viajar', 'viajes', 'travel', 'pescar', 'pesca', 'fishing', 'correr', 'running', 'gimnasio', 'gym',
+	'ajedrez', 'chess', 'cantar', 'singing', 'manualidades', 'crafts', 'coleccionar', 'coleccionismo', 'collecting',
+  'astronomia', 'astronomía', 'astronomy', 'observacion', 'observación', 'birdwatching', 'ornitologia', 'ornitología',
+  'ceramica', 'cerámica', 'ceramics', 'tejido', 'tejer', 'knitting', 'crochet', 'origami', 'poesia', 'poesía', 'poetry',
+  'teatro', 'theater', 'teatro musical', 'podcasts', 'podcast', 'bloguear', 'blogging', 'electronica', 'electrónica', 'electronics',
+  'robotica', 'robótica', 'robotics', 'modelismo', 'model building', 'surf', 'surfing', 'natacion', 'natación', 'swimming',
+  'ciclismo', 'cycling', 'senderismo', 'hiking', 'escalada', 'climbing', 'yoga', 'meditacion', 'meditación', 'meditation',
+  'patinaje', 'skating', 'voluntariado', 'volunteering', 'idiomas', 'languages', 'astronautica', 'astronautics', 'geologia', 'geology'
+]);
+
+const diseaseCatalog = [
+  { id: 'asthma', names: { es: 'Asma', en: 'Asthma' }, curable: false, congenitalChance: .012, onsetChance: .006, severity: 1, risks: ['humo', 'smoke', 'respirar', 'respiración', 'breath'] },
+  { id: 'migraine', names: { es: 'Migraña crónica', en: 'Chronic migraine' }, curable: false, congenitalChance: .008, onsetChance: .008, severity: 1, risks: ['dolor', 'estres', 'estrés', 'stress', 'headache'] },
+  { id: 'diabetes', names: { es: 'Diabetes', en: 'Diabetes' }, curable: false, congenitalChance: .006, onsetChance: .004, severity: 2, risks: ['dulce', 'azucar', 'azúcar', 'sed', 'sugar'] },
+  { id: 'heart_condition', names: { es: 'Enfermedad cardíaca', en: 'Heart condition' }, curable: false, congenitalChance: .004, onsetChance: .002, severity: 4, risks: ['corazon', 'corazón', 'pecho', 'heart', 'chest'] },
+  { id: 'allergy', names: { es: 'Alergia', en: 'Allergy' }, curable: false, congenitalChance: .02, onsetChance: .012, severity: 1, risks: ['polen', 'polvo', 'pollen', 'dust'] },
+  { id: 'flu', names: { es: 'Gripe', en: 'Flu' }, curable: true, congenitalChance: 0, onsetChance: .025, severity: 1, risks: ['frio', 'frío', 'lluvia', 'cold', 'rain'] },
+  { id: 'infection', names: { es: 'Infección', en: 'Infection' }, curable: true, congenitalChance: 0, onsetChance: .018, severity: 2, risks: ['herida', 'hospital', 'wound', 'hospital'] },
+  { id: 'pneumonia', names: { es: 'Neumonía', en: 'Pneumonia' }, curable: true, congenitalChance: 0, onsetChance: .006, severity: 3, risks: ['frio', 'frío', 'tos', 'cold', 'cough'] },
+  { id: 'food_poisoning', names: { es: 'Intoxicación alimentaria', en: 'Food poisoning' }, curable: true, congenitalChance: 0, onsetChance: .012, severity: 1, risks: ['comida', 'comer', 'food', 'eat'] },
+  { id: 'fracture', names: { es: 'Fractura', en: 'Fracture' }, curable: true, congenitalChance: 0, onsetChance: .004, severity: 2, risks: ['caida', 'caída', 'accidente', 'fall', 'accident'] },
+  { id: 'chronic_pain', names: { es: 'Dolor crónico', en: 'Chronic pain' }, curable: false, congenitalChance: .003, onsetChance: .006, severity: 2, risks: ['lesion', 'lesión', 'accidente', 'injury', 'accident'] },
+  { id: 'anemia', names: { es: 'Anemia', en: 'Anemia' }, curable: true, congenitalChance: .006, onsetChance: .007, severity: 1, risks: ['cansancio', 'fatiga', 'tired', 'fatigue'] },
+  { id: 'kidney_disease', names: { es: 'Enfermedad renal', en: 'Kidney disease' }, curable: false, congenitalChance: .002, onsetChance: .0015, severity: 3, risks: ['riñon', 'riñón', 'kidney'] },
+  { id: 'hypertension', names: { es: 'Hipertensión', en: 'Hypertension' }, curable: false, congenitalChance: .002, onsetChance: .008, severity: 2, risks: ['presion', 'presión', 'stress', 'estres', 'estrés'] },
+	{ id: 'sleep_disorder', names: { es: 'Trastorno del sueño', en: 'Sleep disorder' }, curable: false, congenitalChance: .004, onsetChance: .009, severity: 1, risks: ['dormir', 'noche', 'sleep', 'night'] },
+  { id: 'eczema', names: { es: 'Eccema', en: 'Eczema' }, curable: true, congenitalChance: .006, onsetChance: .01, severity: 1, risks: ['piel', 'alergia', 'skin', 'allergy'] },
+  { id: 'gastritis', names: { es: 'Gastritis', en: 'Gastritis' }, curable: true, congenitalChance: .001, onsetChance: .012, severity: 1, risks: ['comida', 'alcohol', 'food', 'alcohol'] },
+  { id: 'ulcer', names: { es: 'Úlcera', en: 'Ulcer' }, curable: true, congenitalChance: 0, onsetChance: .004, severity: 2, risks: ['dolor', 'estres', 'estrés', 'pain', 'stress'] },
+  { id: 'arthritis', names: { es: 'Artritis', en: 'Arthritis' }, curable: false, congenitalChance: .002, onsetChance: .008, severity: 2, risks: ['hueso', 'articulacion', 'articulación', 'bone', 'joint'] },
+  { id: 'osteoporosis', names: { es: 'Osteoporosis', en: 'Osteoporosis' }, curable: false, congenitalChance: .001, onsetChance: .003, severity: 3, risks: ['hueso', 'caida', 'caída', 'bone', 'fall'] },
+  { id: 'thyroid_disorder', names: { es: 'Trastorno tiroideo', en: 'Thyroid disorder' }, curable: false, congenitalChance: .002, onsetChance: .004, severity: 2, risks: ['tiroides', 'cansancio', 'thyroid', 'fatigue'] },
+  { id: 'depression', names: { es: 'Depresión', en: 'Depression' }, curable: false, congenitalChance: .004, onsetChance: .01, severity: 2, risks: ['triste', 'soledad', 'depresion', 'depresión', 'sad', 'lonely', 'depression'] },
+  { id: 'anxiety_disorder', names: { es: 'Trastorno de ansiedad', en: 'Anxiety disorder' }, curable: false, congenitalChance: .005, onsetChance: .012, severity: 1, risks: ['ansiedad', 'miedo', 'panic', 'fear', 'anxiety'] },
+  { id: 'hepatitis', names: { es: 'Hepatitis', en: 'Hepatitis' }, curable: false, congenitalChance: .001, onsetChance: .002, severity: 3, risks: ['higado', 'hígado', 'sangre', 'liver', 'blood'] },
+  { id: 'appendicitis', names: { es: 'Apendicitis', en: 'Appendicitis' }, curable: true, congenitalChance: 0, onsetChance: .003, severity: 3, risks: ['abdomen', 'dolor', 'hospital', 'abdominal', 'pain', 'hospital'] },
+  { id: 'bronchitis', names: { es: 'Bronquitis', en: 'Bronchitis' }, curable: true, congenitalChance: 0, onsetChance: .01, severity: 2, risks: ['tos', 'humo', 'frio', 'frío', 'cough', 'smoke', 'cold'] },
+  { id: 'mononucleosis', names: { es: 'Mononucleosis', en: 'Mononucleosis' }, curable: true, congenitalChance: 0, onsetChance: .003, severity: 1, risks: ['beso', 'cansancio', 'kiss', 'fatigue'] },
+  { id: 'vision_impairment', names: { es: 'Discapacidad visual', en: 'Vision impairment' }, curable: false, congenitalChance: .003, onsetChance: .004, severity: 1, risks: ['vista', 'ojo', 'vision', 'eye'] },
+	{ id: 'hearing_loss', names: { es: 'Pérdida auditiva', en: 'Hearing loss' }, curable: false, congenitalChance: .002, onsetChance: .003, severity: 1, risks: ['oido', 'oído', 'ruido', 'hearing', 'noise'] },
+  { id: 'celiac_disease', names: { es: 'Enfermedad celíaca', en: 'Celiac disease' }, curable: false, congenitalChance: .003, onsetChance: .002, severity: 2, risks: ['gluten', 'pan', 'gluten', 'bread'] },
+  { id: 'asthma_allergic', names: { es: 'Asma alérgica', en: 'Allergic asthma' }, curable: false, congenitalChance: .006, onsetChance: .004, severity: 2, risks: ['polen', 'alergia', 'pollen', 'allergy'] },
+  { id: 'dermatitis', names: { es: 'Dermatitis', en: 'Dermatitis' }, curable: true, congenitalChance: .004, onsetChance: .009, severity: 1, risks: ['piel', 'jabón', 'skin', 'soap'] },
+  { id: 'back_pain', names: { es: 'Dolor de espalda', en: 'Back pain' }, curable: false, congenitalChance: 0, onsetChance: .012, severity: 1, risks: ['espalda', 'trabajo', 'back', 'work'] },
+  { id: 'insomnia', names: { es: 'Insomnio', en: 'Insomnia' }, curable: false, congenitalChance: .002, onsetChance: .012, severity: 1, risks: ['dormir', 'noche', 'sleep', 'night'] },
+  { id: 'obesity', names: { es: 'Obesidad', en: 'Obesity' }, curable: false, congenitalChance: .002, onsetChance: .006, severity: 2, risks: ['peso', 'comida', 'weight', 'food'] },
+  { id: 'burn', names: { es: 'Quemadura', en: 'Burn' }, curable: true, congenitalChance: 0, onsetChance: .004, severity: 2, risks: ['fuego', 'cocina', 'fire', 'kitchen'] },
+  { id: 'concussion', names: { es: 'Conmoción cerebral', en: 'Concussion' }, curable: true, congenitalChance: 0, onsetChance: .002, severity: 3, risks: ['golpe', 'cabeza', 'hit', 'head'] },
+  { id: 'panic_disorder', names: { es: 'Trastorno de pánico', en: 'Panic disorder' }, curable: false, congenitalChance: .002, onsetChance: .006, severity: 2, risks: ['pánico', 'miedo', 'panic', 'fear'] }
+];
+
+function diseaseById(id) {
+  return diseaseCatalog.find((disease) => disease.id === id) || null;
+}
+
+function renderActivePlayers(count, detail = '') {
+  if (!activePlayersIndicator) return;
+	window.__activePlayerCount = Number.isFinite(count) ? count : null;
+  const label = currentLanguage === 'en' ? 'PLAYERS ONLINE' : 'JUGADORES ONLINE';
+  activePlayersIndicator.textContent = `${label}: ${Number.isFinite(count) ? count : '—'}`;
+  activePlayersIndicator.title = detail || (Number.isFinite(count) ? 'active game sessions' : 'Supabase presence unavailable');
+}
+
+async function refreshActivePlayers() {
+  if (!window.lifeSupabase?.enabled) return renderActivePlayers(null);
+  try {
+	if (window.__lifeSave?.lifeStatus === 'active' && window.__lifeSave.player?.name) await window.lifeSupabase.updatePresence(window.__lifeSave);
+	const count = await window.lifeSupabase.getActivePlayerCount();
+	renderActivePlayers(count);
+  } catch (error) {
+	renderActivePlayers(null, error?.message || window.lifeSupabase?.lastPresenceError || 'Supabase presence unavailable');
+	console.warn('LIFE.AI active player count:', error);
+  }
+}
+
+function normalizeDiseases(playerState) {
+  playerState.diseases = Array.isArray(playerState.diseases) ? playerState.diseases.filter((disease) => diseaseById(disease.id)) : [];
+  return playerState.diseases;
+}
+
+function diseaseLabel(disease) {
+  const definition = diseaseById(disease.id);
+  return definition?.names[currentLanguage] || disease.id;
+}
+
+function addDisease(playerState, disease, congenital = false) {
+  normalizeDiseases(playerState);
+  if (!disease || playerState.diseases.some((entry) => entry.id === disease.id && entry.active !== false)) return false;
+  playerState.diseases.push({ id: disease.id, active: true, controlled: false, congenital, diagnosedAt: Number(playerState.age) || 0 });
+  return true;
+}
+
+function assignBirthDiseases(playerState) {
+  normalizeDiseases(playerState);
+  diseaseCatalog.forEach((disease) => {
+	if (Math.random() < disease.congenitalChance) addDisease(playerState, disease, true);
+  });
+}
+
+function updateDiseases(decision, playerState, effects) {
+  const text = normalizeWords(decision).join(' ');
+  const diseases = normalizeDiseases(playerState);
+  const treatment = /medico|médico|doctor|hospital|medicina|medication|medicine|tratamiento|treatment|curar|heal|descansar|rest/.test(text);
+  const risky = /riesgo|peligro|accidente|atropello|atropellar|caida|caída|choque|enfermo|enfermedad|risk|danger|accident|hit by a car|car crash|ill|illness/.test(text);
+  diseases.forEach((entry) => {
+	const definition = diseaseById(entry.id);
+	if (!entry.active || !definition) return;
+	if (treatment && definition.curable) {
+	  entry.active = false;
+	  effects.push(currentLanguage === 'en' ? `${definition.names.en}: treated` : `${definition.names.es}: tratada`);
+	  return;
+	}
+	if (treatment && !definition.curable) {
+	  entry.controlled = true;
+	  effects.push(currentLanguage === 'en' ? `${definition.names.en}: controlled` : `${definition.names.es}: controlada`);
+	}
+	const energyLoss = entry.controlled ? Math.max(1, definition.severity - 1) : definition.severity;
+	playerState.energy = Math.max(0, (Number(playerState.energy) || 0) - energyLoss);
+	if (definition.severity >= 3 && !entry.controlled && Math.random() < .003) entry.fatalRisk = true;
+  });
+  const age = Number(playerState.age) || 0;
+  diseaseCatalog.forEach((definition) => {
+	const chance = definition.onsetChance + (age > 60 ? .002 : 0) + (risky && definition.risks.some((risk) => text.includes(risk)) ? .012 : 0);
+	if (Math.random() < chance) {
+	  if (addDisease(playerState, definition, false)) effects.push(currentLanguage === 'en' ? `new condition: ${definition.names.en}` : `nueva enfermedad: ${definition.names.es}`);
+	}
+  });
+  const fatal = diseases.find((entry) => entry.fatalRisk && entry.active);
+  return fatal ? (currentLanguage === 'en' ? `A sudden complication of ${diseaseLabel(fatal)} ended your life.` : `Una complicación súbita de ${diseaseLabel(fatal)} terminó con tu vida.`) : '';
+}
+
+function hasEnoughNaturalText(value) {
+  const normalized = normalizeWords(value).join(' ').trim();
+  return normalized.length >= 2 && /[a-záéíóúüñ]/i.test(normalized) && !/^(.)\1+$/.test(normalized) && !/^[^aeiouáéíóúüñ]*$/i.test(normalized);
+}
+
+function renderWorldEnvironment(save) {
+  const season = save?.world?.time?.season || seasonForMonth(save?.world?.time?.month);
+	if (save?.lifeStatus === 'active' && !storyScreen?.classList.contains('hidden')) {
+	renderWeather(normalizeWeather(save.weather));
+	renderSeason(season);
+  } else {
+	resetWeatherVisuals();
+  }
+}
+
+const seasonOrder = ['primavera', 'verano', 'otoño', 'invierno'];
+const seasonLabels = {
+  primavera: { es: 'PRIMAVERA', en: 'SPRING' },
+  verano: { es: 'VERANO', en: 'SUMMER' },
+  otoño: { es: 'OTOÑO', en: 'AUTUMN' },
+  invierno: { es: 'INVIERNO', en: 'WINTER' }
+};
+
+function chooseInitialSeason() {
+  return seasonOrder[Math.floor(Math.random() * seasonOrder.length)];
+}
+
+function seasonForMonth(month, offset = 0) {
+  return seasonOrder[(Math.floor((Math.max(1, Number(month) || 1) - 1) / 3) + Number(offset || 0)) % seasonOrder.length];
+}
+
+function renderSeason(season) {
+  const validSeason = seasonOrder.includes(season) ? season : 'primavera';
+  document.body.classList.remove('season-spring', 'season-summer', 'season-autumn', 'season-winter');
+  document.body.classList.add(`season-${({ primavera: 'spring', verano: 'summer', otoño: 'autumn', invierno: 'winter' })[validSeason]}`);
+  if (seasonIndicator) {
+	seasonIndicator.textContent = currentLanguage === 'en' ? `SEASON: ${seasonLabels[validSeason].en}` : `ESTACIÓN: ${seasonLabels[validSeason].es}`;
+	seasonIndicator.classList.remove('hidden');
+	seasonIndicator.style.display = 'block';
+  }
+  if (seasonEffects) {
+	seasonEffects.replaceChildren();
+	const symbols = { primavera: '✿', otoño: '❧', invierno: '❄', verano: '' };
+	if (symbols[validSeason]) {
+	  for (let index = 0; index < 16; index += 1) {
+		const particle = document.createElement('span');
+		particle.className = 'season-particle';
+		particle.textContent = symbols[validSeason];
+		particle.style.left = `${Math.random() * 100}%`;
+		particle.style.animationDelay = `${Math.random() * 8}s`;
+		particle.style.animationDuration = `${6 + Math.random() * 7}s`;
+		seasonEffects.append(particle);
+	  }
+	}
+  }
+}
+
+function resetSeasonVisuals() {
+  document.body.classList.remove('season-spring', 'season-summer', 'season-autumn', 'season-winter');
+  seasonIndicator?.classList.add('hidden');
+	if (seasonIndicator) seasonIndicator.style.display = '';
+  seasonEffects?.replaceChildren();
+}
+
+function annualDeathProbability(age) {
+  const years = Math.max(0, Number(age) || 0);
+  if (years < 18) return 0.0002;
+  if (years < 35) return 0.0005 + ((years - 18) * 0.00005);
+  if (years < 50) return 0.0015 + ((years - 35) * 0.0002);
+  if (years < 65) return 0.0045 + ((years - 50) * 0.0008);
+  if (years < 80) return 0.0165 + ((years - 65) * 0.0035);
+  return Math.min(0.35, 0.069 + ((years - 80) * 0.012));
+}
+
+function diedWhileAging(previousAge, currentAge) {
+  const from = Math.max(0, Number(previousAge) || 0);
+  const to = Math.max(from, Number(currentAge) || 0);
+  for (let age = from + 1; age <= to; age += 1) {
+	if (Math.random() < annualDeathProbability(age)) return age;
+  }
+  return 0;
+}
+
+function isValidLocation(value) {
+  const normalized = normalizeWords(value).join(' ').trim();
+  if (!hasEnoughNaturalText(value) || normalized.length < 3 || normalized.split(' ').length > 8) return false;
+  if (/^(a|aa|asdf|qwerty|test|xxx|none|null|nada|random|lugar|place|x+)$/i.test(normalized)) return false;
+  return /^[a-záéíóúüñ0-9][a-záéíóúüñ0-9 .,'-]*$/i.test(normalized);
+}
+
+function isValidHobby(value) {
+  const normalized = normalizeWords(value).join(' ').trim();
+  if (!hasEnoughNaturalText(value) || normalized.length < 3 || normalized.split(' ').length > 5) return false;
+  if (knownHobbies.has(normalized)) return true;
+	const words = normalized.split(' ').filter((word) => word.length >= 3);
+  return words.some((word) => knownHobbies.has(word) || [...knownHobbies].some((hobby) => word.includes(hobby) || hobby.includes(word) || closeSemanticWord(word, hobby)));
+}
 
 function normalizeCareerAlias(value) {
   return String(value || '')
@@ -264,6 +519,13 @@ const placeProfiles = [
   { id: 'road', aliases: ['calle', 'ruta', 'carretera', 'avenida', 'road', 'street', 'highway'], label: { es: 'calle', en: 'road' } },
   { id: 'city', aliases: ['ciudad', 'centro', 'city', 'downtown'], label: { es: 'ciudad', en: 'city' } },
   { id: 'outdoors', aliases: ['afuera', 'exterior', 'campo', 'outdoors', 'outside', 'field'], label: { es: 'exterior', en: 'outdoors' } }
+  ,{ id: 'beach', aliases: ['playa', 'costa', 'mar', 'beach', 'coast', 'seaside'], label: { es: 'playa', en: 'beach' } }
+  ,{ id: 'museum', aliases: ['museo', 'galeria', 'galería', 'museum', 'gallery'], label: { es: 'museo', en: 'museum' } }
+  ,{ id: 'station', aliases: ['estacion', 'estación', 'terminal', 'station', 'terminal'], label: { es: 'estación', en: 'station' } }
+  ,{ id: 'airport', aliases: ['aeropuerto', 'airport'], label: { es: 'aeropuerto', en: 'airport' } }
+  ,{ id: 'library', aliases: ['biblioteca', 'library'], label: { es: 'biblioteca', en: 'library' } }
+  ,{ id: 'university', aliases: ['facultad', 'campus', 'universidad', 'university', 'campus'], label: { es: 'universidad', en: 'university' } }
+  ,{ id: 'market', aliases: ['mercado', 'feria', 'market', 'marketplace'], label: { es: 'mercado', en: 'market' } }
 ];
 
 function detectPlaceProfile(location) {
@@ -277,8 +539,8 @@ const randomNames = {
 };
 
 const randomSurnames = {
-  es: ['García', 'Fernández', 'González', 'Rodríguez', 'López', 'Martínez', 'Sánchez', 'Pérez', 'Gómez', 'Díaz', 'Romero', 'Torres', 'Álvarez', 'Ruiz', 'Navarro', 'Vargas', 'Castro', 'Ortega', 'Molina', 'Delgado', 'Ramos', 'Vega', 'Cabrera', 'Méndez', 'Silva', 'Morales', 'Ibarra', 'Herrera', 'Medina', 'Suárez', 'Acosta', 'Rojas', 'Campos', 'Ponce', 'Serrano'],
-  en: ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Miller', 'Davis', 'Wilson', 'Taylor', 'Anderson', 'Thomas', 'Jackson', 'White', 'Harris', 'Martin', 'Thompson', 'Moore', 'Young', 'King', 'Wright', 'Hill', 'Scott', 'Green', 'Baker', 'Adams', 'Nelson', 'Carter', 'Mitchell', 'Roberts', 'Turner', 'Phillips', 'Campbell', 'Parker', 'Evans', 'Edwards']
+  es: ['García', 'Fernández', 'González', 'Rodríguez', 'López', 'Martínez', 'Sánchez', 'Pérez', 'Gómez', 'Díaz', 'Romero', 'Torres', 'Álvarez', 'Ruiz', 'Navarro', 'Vargas', 'Castro', 'Ortega', 'Molina', 'Delgado', 'Ramos', 'Vega', 'Cabrera', 'Méndez', 'Silva', 'Morales', 'Ibarra', 'Herrera', 'Medina', 'Suárez', 'Acosta', 'Rojas', 'Campos', 'Ponce', 'Serrano', 'Domínguez', 'Vázquez', 'Soto', 'Giménez', 'Márquez', 'Núñez', 'Villar', 'Rey', 'Cortés', 'Moya', 'Bravo', 'Pastor', 'Crespo', 'Román', 'Durán', 'Ferrer', 'Carmona', 'Benítez', 'Sáez', 'Arias', 'Mendoza', 'Fuentes', 'Luna', 'Prieto', 'Parra', 'Estévez', 'Velasco', 'Miranda', 'Escobar', 'Maldonado', 'Correa', 'Cáceres', 'Vera', 'León'],
+  en: ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Miller', 'Davis', 'Wilson', 'Taylor', 'Anderson', 'Thomas', 'Jackson', 'White', 'Harris', 'Martin', 'Thompson', 'Moore', 'Young', 'King', 'Wright', 'Hill', 'Scott', 'Green', 'Baker', 'Adams', 'Nelson', 'Carter', 'Mitchell', 'Roberts', 'Turner', 'Phillips', 'Campbell', 'Parker', 'Evans', 'Edwards', 'Collins', 'Stewart', 'Sanchez', 'Morris', 'Rogers', 'Reed', 'Cook', 'Morgan', 'Bell', 'Murphy', 'Bailey', 'Rivera', 'Cooper', 'Richardson', 'Cox', 'Howard', 'Ward', 'Peterson', 'Gray', 'Watson', 'Brooks', 'Bennett', 'Wood', 'Barnes', 'Ross', 'Henderson', 'Coleman', 'Jenkins', 'Perry', 'Powell', 'Long', 'Patterson', 'Hughes', 'Flores', 'Washington', 'Butler', 'Simmons']
 };
 
 function randomFrom(list) {
@@ -357,6 +619,12 @@ const creatorPosts = [
 	category: { es: 'ACTUALIZACIÓN', en: 'UPDATE' },
 	title: { es: 'NUEVA VERSION 0.0.1a', en: 'NEW VERSION 0.0.1a' },
 	text: { es: 'Esta actualización mejora el árbol genealógico con familiares generados de forma más completa y organizada. También incorpora un sistema de trabajos y profesiones con ingresos y consumo de energía, además de nuevos ítems que pueden encontrarse durante la historia y añadirse al inventario.', en: 'This update improves the family tree with more complete and organized generated relatives. It also introduces a jobs and professions system with income and energy costs, plus new items that can be discovered during the story and added to the inventory.' }
+	},
+	{
+	date: '2026-09-08',
+	category: { es: 'ACTUALIZACIÓN', en: 'UPDATE' },
+	title: { es: 'Mundo vivo y sincronización ampliada', en: 'Living world and expanded sync' },
+	text: { es: 'Se amplían los lugares, hobbies, enfermedades y señales que LIFE.AI puede aprender. También se mejora la presencia online y la sincronización segura con Supabase.', en: 'Locations, hobbies, diseases and learning signals have been expanded. Online presence and secure Supabase synchronization have also been improved.' }
 	}
 ];
 
@@ -382,7 +650,11 @@ function renderCurrentOccupation() {
   // even if the player's name hasn't been set yet. Preserve localization for the label.
 	const hideIndicator = save.lifeStatus !== 'active' || storyScreen?.classList.contains('hidden');
   currentOccupation.classList.toggle('hidden', hideIndicator);
-  currentOccupation.textContent = currentLanguage === 'en' ? `JOB: ${careerLabel(career)}` : `TRABAJO: ${careerLabel(career)}`;
+	const age = Number(save.player?.age) || 0;
+	const characterName = save.player?.name || t('none');
+  currentOccupation.textContent = currentLanguage === 'en'
+	? `CHARACTER: ${characterName} · AGE: ${age} · JOB: ${careerLabel(career)}`
+	: `PERSONAJE: ${characterName} · EDAD: ${age} · TRABAJO: ${careerLabel(career)}`;
 }
 
 function renderCareersPanel() {
@@ -486,6 +758,11 @@ let currentQuestion = 0;
 let lastAnalysis = null;
 let currentLanguage = 'en';
 try { currentLanguage = localStorage.getItem('lifeLanguage') === 'es' ? 'es' : 'en'; } catch { /* default language */ }
+window.currentLanguage = currentLanguage;
+let currentUsername = '';
+try { currentUsername = localStorage.getItem('lifeUsername')?.trim() || ''; } catch { /* optional storage */ }
+window.currentUsername = currentUsername;
+window.__lifeGlobalPatterns = [];
 let applicationReady = false;
 let weatherTimer = null;
 let worldClockTimer = null;
@@ -501,17 +778,19 @@ const weatherLabels = {
 const uiText = {
   es: {
 	appTitle: 'Simulador de vida sin nombre', languageLabel: 'IDIOMA:', languageAria: 'Idioma',
+	usernameTitle: 'IDENTIFICAR USUARIO', usernameIntro: 'Elige un nombre de usuario antes de entrar al simulador de vida.', usernameLabel: 'Nombre de usuario', usernameSubmit: '[ ENTRAR ]', usernameHint: 'Usa de 2 a 24 letras, números, espacios, guiones o guiones bajos.', usernameError: 'ERROR: introduce un nombre de usuario válido.', userStatus: 'USUARIO:',
 	start: 'COMENZAR VIDA', next: '[ ENTER ]', name: '¿Cuál es tu nombre?', surname: '¿Cuál es tu apellido?', age: '¿Cuántos años tienes?', money: '¿Cuánto dinero tienes?', location: '¿Dónde comienza tu historia?', hobby: '¿Cuál es tu hobby?',
 	nameHint: 'Escribe tu nombre.', surnameHint: 'Escribe tu apellido.', ageHint: 'Introduce tu edad.', moneyHint: 'Introduce una cantidad inicial.', locationHint: 'Escribe una ubicación.', hobbyHint: 'Ejemplo: música, fútbol, videojuegos, dibujo...',
-  storyLabel: '¿Cómo quieres continuar tu vida?', storyPlaceholder: 'Escribe lo que sucede a continuación...', save: '[ GUARDAR ]', menu: '[ MENU ]', history: '[ VER TODAS LAS DECISIONES ]', chat: '[ HABLAR CON LIFE.AI ]', stats: '[ VER ESTADÍSTICAS ]', world: '[ VER MUNDO ]', skills: '[ VER HABILIDADES ]', relations: '[ VER RELACIONES ]', learnFile: '[ CARGAR CONOCIMIENTO ]', export: '[ EXPORTAR PARTIDA ]', import: '[ IMPORTAR PARTIDA ]', reset: '[ NUEVA PARTIDA ]', menuTitle: 'menu.json // panel de control', menuSubtitle: '// todos los módulos de LIFE.AI',
-	 saved: '// capítulo guardado correctamente_', worldTitle: 'world.json // mundo vivo', worldSubtitle: '// lugares, personajes, objetivos, eventos y reglas descubiertas', skillsTitle: 'skills.json // habilidades', skillsSubtitle: '// capacidades aprendidas, experiencia y evolución del personaje', relationsTitle: 'relations.json // relaciones', relationsSubtitle: '// vínculos, confianza y evolución social', statsTitle: 'player.json // estadísticas', statsSubtitle: '// estado completo del personaje y progreso de la historia', chatTitle: 'life.ai // chat_console', chatSubtitle: '// conversación y aprendizaje · este modo no modifica tus estadísticas', chatPlaceholder: 'Escribe un mensaje...', send: '[ ENVIAR ]', chatHelp: 'LIFE.AI analiza la conversación, recupera contexto y aprende automáticamente cuando detecta información útil.', analyzer: '[ ANALYZER ] esperando una frase...', intent: 'Intención', confidence: 'Confianza', entities: 'Entidades', prediction: 'Predicción', personality: 'Personalidad', goal: 'Objetivo', none: 'ninguno', narrator: 'narrador', stable: 'estable', historyTitle: 'historial_de_decisiones.log', historySubtitle: '// memoria de LIFE.AI · aprende de cada elección', emptyHistory: '// todavía no hay decisiones guardadas.', you: 'Tú', ai: 'IA', nameKey: '"nombre"', surnameKey: '"apellido"', ageKey: '"edad"', moneyKey: '"dinero"', locationKey: '"ubicacion"', hobbyKey: '"hobby"', occupationKey: '"profesion"', energyKey: '"energia"', moodKey: '"animo"', reputationKey: '"reputacion"', careers: '[ MI TRABAJO ]', family: '[ VER FAMILIA ]', inventory: '[ VER INVENTARIO ]', careersTitle: 'job.json // mi trabajo', careersSubtitle: '// profesión actual e ingresos aproximados', familyTitle: 'family.json // árbol familiar', familySubtitle: '// familiares generados aleatoriamente', inventoryTitle: 'inventory.json // inventario', inventorySubtitle: '// objetos encontrados durante la historia', play: '[ JUGAR ]', blog: '[ BLOG ]', blogTitle: 'blog.txt // notas de LIFE.AI', blogSubtitle: '// ideas, cambios y registros del simulador', chatGreeting: 'Hola. Puedo recordar lo que me cuentes y cambiar mis reglas con tus instrucciones.'
+		storyLabel: '¿Cómo quieres continuar tu vida?', storyPlaceholder: 'Escribe lo que sucede a continuación...', save: '[ GUARDAR ]', menu: '[ MENU ]', play: '[ JUGAR ]', blog: '[ BLOG ]', logout: '[ CERRAR SESIÓN ]', logoutConfirm: '¿Quieres cerrar la sesión? La partida se conservará.', history: '[ VER TODAS LAS DECISIONES ]', chat: '[ HABLAR CON LIFE.AI ]', stats: '[ VER ESTADÍSTICAS ]', careers: '[ VER CARRERA ]', family: '[ VER FAMILIA ]', inventory: '[ VER INVENTARIO ]', world: '[ VER MUNDO ]', skills: '[ VER HABILIDADES ]', relations: '[ VER RELACIONES ]', learnFile: '[ CARGAR CONOCIMIENTO ]', export: '[ EXPORTAR PARTIDA ]', import: '[ IMPORTAR PARTIDA ]', reset: '[ NUEVA PARTIDA ]', menuTitle: 'menu.json // panel de control', menuSubtitle: '// todos los módulos de LIFE.AI',
+ nameKey: '"nombre"', surnameKey: '"apellido"', ageKey: '"edad"', characterKey: '"personaje"', moneyKey: '"dinero"',
   },
   en: {
 	appTitle: 'Unnamed life simulation', languageLabel: 'LANG:', languageAria: 'Language',
+	usernameTitle: 'IDENTIFY USER', usernameIntro: 'Choose a username before entering the life simulator.', usernameLabel: 'Username', usernameSubmit: '[ ENTER ]', usernameHint: 'Use 2 to 24 letters, numbers, spaces, hyphens or underscores.', usernameError: 'ERROR: enter a valid username.', userStatus: 'USER:',
 	start: 'START LIFE', next: '[ ENTER ]', name: 'What is your name?', surname: 'What is your surname?', age: 'How old are you?', money: 'How much money do you have?', location: 'Where does your story begin?', hobby: 'What is your hobby?',
 	nameHint: 'Write your name.', surnameHint: 'Write your surname.', ageHint: 'Enter your age.', moneyHint: 'Enter an initial amount.', locationHint: 'Write a location.', hobbyHint: 'Example: music, football, games, drawing...',
-  storyLabel: 'How do you want to continue your life?', storyPlaceholder: 'Write what happens next...', save: '[ SAVE ]', menu: '[ MENU ]', history: '[ VIEW ALL DECISIONS ]', chat: '[ TALK TO LIFE.AI ]', stats: '[ VIEW STATS ]', world: '[ VIEW WORLD ]', skills: '[ VIEW SKILLS ]', relations: '[ VIEW RELATIONSHIPS ]', learnFile: '[ LOAD KNOWLEDGE ]', export: '[ EXPORT GAME ]', import: '[ IMPORT GAME ]', reset: '[ NEW GAME ]', menuTitle: 'menu.json // control panel', menuSubtitle: '// all LIFE.AI modules',
-	 saved: '// chapter saved successfully_', worldTitle: 'world.json // living world', worldSubtitle: '// places, characters, goals, events and discovered rules', skillsTitle: 'skills.json // abilities', skillsSubtitle: '// learned abilities, experience and character growth', relationsTitle: 'relations.json // relationships', relationsSubtitle: '// bonds, trust and social evolution', statsTitle: 'player.json // statistics', statsSubtitle: '// complete character state and story progress', chatTitle: 'life.ai // chat_console', chatSubtitle: '// conversation and learning · this mode does not modify your stats', chatPlaceholder: 'Write a message...', send: '[ SEND ]', chatHelp: 'LIFE.AI analyzes the conversation, retrieves context and learns automatically when it detects useful information.', analyzer: '[ ANALYZER ] waiting for a sentence...', intent: 'Intent', confidence: 'Confidence', entities: 'Entities', prediction: 'Prediction', personality: 'Personality', goal: 'Goal', none: 'none', narrator: 'narrator', stable: 'stable', historyTitle: 'decision_history.log', historySubtitle: '// LIFE.AI memory · learns from every choice', emptyHistory: '// no saved decisions yet.', you: 'You', ai: 'AI', nameKey: '"name"', surnameKey: '"surname"', ageKey: '"age"', moneyKey: '"money"', locationKey: '"location"', hobbyKey: '"hobby"', occupationKey: '"occupation"', energyKey: '"energy"', moodKey: '"mood"', reputationKey: '"reputation"', careers: '[ MY JOB ]', family: '[ VIEW FAMILY ]', inventory: '[ VIEW INVENTORY ]', careersTitle: 'job.json // my job', careersSubtitle: '// current profession and approximate income', familyTitle: 'family.json // family tree', familySubtitle: '// randomly generated family members', inventoryTitle: 'inventory.json // inventory', inventorySubtitle: '// objects found during the story', play: '[ PLAY ]', blog: '[ BLOG ]', blogTitle: 'blog.txt // LIFE.AI notes', blogSubtitle: '// ideas, changes and simulator records', chatGreeting: 'Hello. I can remember what you tell me and change my rules with your instructions.'
+		storyLabel: 'How do you want to continue your life?', storyPlaceholder: 'Write what happens next...', save: '[ SAVE ]', menu: '[ MENU ]', play: '[ PLAY ]', blog: '[ BLOG ]', logout: '[ LOG OUT ]', logoutConfirm: 'Do you want to log out? Your game will be preserved.', history: '[ VIEW ALL DECISIONS ]', chat: '[ TALK TO LIFE.AI ]', stats: '[ VIEW STATS ]', careers: '[ VIEW CAREERS ]', family: '[ VIEW FAMILY ]', inventory: '[ VIEW INVENTORY ]', world: '[ VIEW WORLD ]', skills: '[ VIEW SKILLS ]', relations: '[ VIEW RELATIONSHIPS ]', learnFile: '[ LOAD KNOWLEDGE ]', export: '[ EXPORT GAME ]', import: '[ IMPORT GAME ]', reset: '[ NEW GAME ]', menuTitle: 'menu.json // control panel', menuSubtitle: '// all LIFE.AI modules',
+		blogReleaseTitle: '[ UPDATE ] NEW VERSION 0.0.1b', blogReleaseText: 'This update expands the world, diseases, hobbies, locations and secure Supabase synchronization.',
 	}
 };
 
@@ -526,18 +805,61 @@ document.querySelectorAll('[data-close]').forEach((button) => {
 
 function startNewLife() {
 	const freshPlayer = { familyTree: generateFamilyTree('') };
-  const freshSave = { player: freshPlayer, chapters: [], memory: createEmptyMemory(), world: createEmptyWorld(), lifeStatus: 'active' };
-  // Keep the new game save separate from the global persistent memory.
-  window.__lifeSave = freshSave;
-	saveCurrentGame(freshSave);
+	// Keep the new game separate from persistent memory until the player completes setup.
+	window.lifeSupabase?.resetGameReference?.();
+	window.__lifeSave = null;
   Object.keys(player).forEach((key) => delete player[key]);
-  Object.assign(player, freshPlayer);
+	Object.assign(player, freshPlayer);
   menuScreen.classList.add('hidden');
+	gameOverScreen?.classList.add('hidden');
 	setWelcomeNavigationVisible(true);
   storyScreen.classList.add('hidden');
   statsScreen.classList.add('hidden');
   welcomeScreen.classList.remove('hidden');
 }
+
+function renderGameOver(reason, savedGame, globalMemory) {
+  const en = currentLanguage === 'en';
+  if (!gameOverScreen) return;
+  gameOverTitle.textContent = t('gameOverTitle');
+	const cause = reason || t('gameOverText');
+  gameOverText.textContent = `${t('gameOverText')} ${en ? 'Cause of death: ' : 'Causa de muerte: '}${cause}`;
+  gameOverStats.textContent = en
+	? `Age: ${savedGame.player?.age || 0} · Chapters: ${savedGame.chapters?.length || 0} · Lives completed: ${globalMemory.lifeCount || 0}`
+	: `Edad: ${savedGame.player?.age || 0} · Capítulos: ${savedGame.chapters?.length || 0} · Vidas completadas: ${globalMemory.lifeCount || 0}`;
+  setText(gameOverNewLifeButton, t('gameOverNewLife'));
+  setText(closeGameOverButton, t('gameOverClose'));
+  welcomeScreen?.classList.add('hidden');
+  questionScreen?.classList.add('hidden');
+  storyScreen?.classList.add('hidden');
+  menuScreen?.classList.add('hidden');
+  setWelcomeNavigationVisible(false);
+  gameOverScreen.classList.remove('hidden');
+}
+
+const suddenDeathCauses = {
+  es: ['Fue atropellado por un auto mientras cruzaba la calle.', 'Murió en un accidente inesperado.', 'Una complicación de salud apareció de forma súbita.', 'Tuvo una caída fatal durante una situación cotidiana.'],
+  en: ['They were hit by a car while crossing the street.', 'They died in an unexpected accident.', 'A sudden health complication appeared.', 'They suffered a fatal fall during an ordinary moment.']
+};
+
+function randomDeathCause() {
+  const causes = suddenDeathCauses[currentLanguage] || suddenDeathCauses.es;
+  return causes[Math.floor(Math.random() * causes.length)];
+}
+
+listen(gameOverNewLifeButton, 'click', startNewLife);
+listen(closeGameOverButton, 'click', () => {
+  gameOverScreen?.classList.add('hidden');
+  welcomeScreen?.classList.remove('hidden');
+  setWelcomeNavigationVisible(true);
+});
+
+listen(testGameOverButton, async () => {
+  const savedGame = readSave();
+  if (!savedGame.player?.name) return;
+  const globalMemory = readGlobalMemory();
+  await finishLife(`${currentLanguage === 'en' ? 'TEST DEATH: ' : 'MUERTE DE PRUEBA: '}${randomDeathCause()}`, savedGame, globalMemory);
+});
 
 document.querySelectorAll('[aria-modal="true"]').forEach((screen) => {
   screen.addEventListener('click', (event) => {
@@ -576,6 +898,81 @@ function setPlaceholder(element, value) {
   if (element) element.placeholder = value;
 }
 
+function renderSupabaseStatus(state, detail = '') {
+  if (!supabaseStatus) return;
+	const connected = state === 'online';
+	const labels = currentLanguage === 'en'
+	? { online: 'CONNECTED', offline: 'DISCONNECTED' }
+	: { online: 'CONECTADO', offline: 'DESCONECTADO' };
+  supabaseStatus.classList.remove('status-pending', 'status-online', 'status-offline');
+  supabaseStatus.classList.add(connected ? 'status-online' : 'status-offline');
+  supabaseStatus.textContent = connected ? labels.online : labels.offline;
+  supabaseStatus.title = detail || supabaseStatus.textContent;
+}
+
+function renderUsernameStatus() {
+  if (!usernameStatus) return;
+  usernameStatus.textContent = `${t('userStatus')} ${currentUsername || '—'}`;
+}
+
+function isValidUsername(value) {
+  return /^[\p{L}\p{N} _-]{2,24}$/u.test(String(value || '').trim());
+}
+
+function showUsernameGate() {
+  usernameScreen?.classList.remove('hidden');
+  welcomeScreen?.classList.add('hidden');
+  setWelcomeNavigationVisible(false);
+  usernameInput?.focus();
+}
+
+function showApplicationEntry() {
+  usernameScreen?.classList.add('hidden');
+	if (window.__lifeSave?.player?.name) restoreSavedGame();
+  else {
+	window.__lifeSave = null;
+	welcomeScreen?.classList.remove('hidden');
+	setWelcomeNavigationVisible(true);
+  }
+}
+
+async function acceptUsername(value) {
+  const normalized = String(value || '').trim();
+  if (!isValidUsername(normalized)) {
+	if (usernameHint) {
+	  usernameHint.textContent = t('usernameError');
+	  usernameHint.classList.add('error');
+	}
+	return false;
+  }
+  currentUsername = normalized;
+  window.currentUsername = currentUsername;
+  try { localStorage.setItem('lifeUsername', currentUsername); } catch { /* almacenamiento opcional */ }
+  renderUsernameStatus();
+  usernameHint?.classList.remove('error');
+  usernameScreen?.classList.add('hidden');
+  showApplicationEntry();
+  if (window.lifeSupabase?.enabled) {
+	try {
+	  await window.lifeSupabase.saveUsername(currentUsername, currentLanguage);
+	} catch (error) {
+	  console.warn('LIFE.AI Supabase username sync:', error);
+	}
+  }
+  return true;
+}
+
+listen(usernameForm, 'submit', async (event) => {
+  event.preventDefault();
+  if (!applicationReady) return;
+  usernameSubmit && (usernameSubmit.disabled = true);
+  try {
+	await acceptUsername(usernameInput?.value);
+  } finally {
+	if (usernameSubmit) usernameSubmit.disabled = false;
+  }
+});
+
 function setWelcomeNavigationVisible(visible) {
   if (welcomeNavigation) welcomeNavigation.classList.toggle('hidden', !visible);
 }
@@ -593,7 +990,9 @@ function chooseNextWeather(current) {
 function resetWeatherVisuals() {
   document.body.classList.remove('weather-cold', 'weather-hot', 'weather-fog', 'weather-rainy');
   weatherIndicator?.classList.add('hidden');
+	if (weatherIndicator) weatherIndicator.style.display = '';
   if (weatherOverlay) weatherOverlay.classList.remove('active');
+  resetSeasonVisuals();
 }
 
 function renderWeather(weather) {
@@ -606,6 +1005,7 @@ function renderWeather(weather) {
   if (weatherIndicator) {
 	weatherIndicator.textContent = currentLanguage === 'en' ? `WEATHER: ${weatherLabels[weather].en}` : `CLIMA: ${weatherLabels[weather].es}`;
 	weatherIndicator.classList.remove('hidden');
+	weatherIndicator.style.display = 'block';
   }
   weatherOverlay?.classList.toggle('active', weather === 'rainy');
 }
@@ -621,14 +1021,22 @@ function startWeatherCycle(save) {
 	return;
   }
   save.weather = normalizeWeather(save.weather);
-  renderWeather(save.weather);
+	  if (!storyScreen?.classList.contains('hidden')) {
+		 renderWorldEnvironment(save);
+	  } else {
+		 resetWeatherVisuals();
+	  }
   saveCurrentGame(save);
   weatherTimer = window.setInterval(() => {
 	if (window.__lifeSave?.lifeStatus !== 'active') return;
 	const activeSave = normalizeSave(window.__lifeSave);
 	activeSave.weather = chooseNextWeather(activeSave.weather);
 	window.__lifeSave = activeSave;
-	renderWeather(activeSave.weather);
+	if (Math.floor(Date.now() / 1000) % 15 === 0) window.lifeSupabase?.updatePresence?.(activeSave).catch(() => undefined);
+	window.lifeSupabase?.updatePresence?.(activeSave).catch(() => undefined);
+	 if (!storyScreen?.classList.contains('hidden')) {
+		 renderWorldEnvironment(activeSave);
+	 }
 	saveCurrentGame(activeSave);
   }, 300000);
 }
@@ -642,13 +1050,18 @@ function stopWeatherCycle() {
 
 function applyTranslations() {
   document.documentElement.lang = currentLanguage;
+	renderActivePlayers(Number.isFinite(window.__activePlayerCount) ? window.__activePlayerCount : null);
 	if (languageSelect && languageSelect.value !== currentLanguage) languageSelect.value = currentLanguage;
 	document.title = t('appTitle');
 	setText(document.querySelector('#appTitle'), t('appTitle'));
 	setText(document.querySelector('#languageLabel'), t('languageLabel'));
+	setText(usernameTitle, t('usernameTitle')); setText(usernameIntro, t('usernameIntro')); setText(usernameLabel, t('usernameLabel')); setText(usernameSubmit, t('usernameSubmit')); setText(usernameHint, t('usernameHint'));
+	renderUsernameStatus();
 	if (languageSelect) languageSelect.setAttribute('aria-label', t('languageAria'));
 	setText(startButton, t('start'));
   setText(playNavButton, t('play')); setText(blogButton, t('blog'));
+	setText(lifeForm?.querySelector('button'), t('next'));
+	setText(gameOverTitle, t('gameOverTitle')); setText(gameOverNewLifeButton, t('gameOverNewLife')); setText(closeGameOverButton, t('gameOverClose'));
 	setText(menuButton, t('menu'));
   setText(document.querySelector('#menuTitle'), t('menuTitle'));
   setText(document.querySelector('#menuSubtitle'), t('menuSubtitle'));
@@ -657,31 +1070,36 @@ function applyTranslations() {
   setText(document.querySelector('.story-editor label'), t('storyLabel'));
   setPlaceholder(storyInput, t('storyPlaceholder'));
 	setText(saveStoryButton, t('save')); setText(historyButton, t('history')); setText(chatButton, t('chat')); setText(statsButton, t('stats')); setText(careersButton, t('careers')); setText(familyButton, t('family')); setText(worldButton, t('world')); setText(skillsButton, t('skills'));
-  setText(exportButton, t('export')); setText(importButton, t('import')); setText(resetButton, t('reset')); setText(savedMessage, t('saved'));
+	setText(exportButton, t('export')); setText(importButton, t('import')); setText(resetButton, t('reset')); setText(testGameOverButton, currentLanguage === 'en' ? '[ TEST GAME OVER ]' : '[ PROBAR GAME OVER ]'); setText(savedMessage, t('saved'));
 	setText(relationsButton, t('relations'));
 	setText(learnFileButton, t('learnFile'));
+	setText(careersButton, t('careers')); setText(familyButton, t('family')); setText(inventoryButton, t('inventory'));
 	setText(document.querySelector('#worldTitle'), t('worldTitle')); setText(document.querySelector('#skillsTitle'), t('skillsTitle')); setText(document.querySelector('#relationsTitle'), t('relationsTitle')); setText(document.querySelector('#statsTitle'), t('statsTitle')); setText(document.querySelector('#chatTitle'), t('chatTitle')); setText(document.querySelector('#historyTitle'), t('historyTitle'));
   setText(document.querySelector('#worldSubtitle'), t('worldSubtitle')); setText(document.querySelector('#skillsSubtitle'), t('skillsSubtitle')); setText(document.querySelector('#relationsSubtitle'), t('relationsSubtitle')); setText(document.querySelector('#statsSubtitle'), t('statsSubtitle')); setText(document.querySelector('#chatSubtitle'), t('chatSubtitle')); setText(document.querySelector('#historySubtitle'), t('historySubtitle'));
 	setText(document.querySelector('#careersTitle'), t('careersTitle')); setText(document.querySelector('#careersSubtitle'), t('careersSubtitle')); setText(document.querySelector('#familyTitle'), t('familyTitle')); setText(document.querySelector('#familySubtitle'), t('familySubtitle'));
 	setText(document.querySelector('#inventoryTitle'), t('inventoryTitle')); setText(document.querySelector('#inventorySubtitle'), t('inventorySubtitle')); setText(inventoryButton, t('inventory'));
-  ['nameKey', 'surnameKey', 'ageKey', 'moneyKey', 'locationKey', 'hobbyKey', 'occupationKey', 'energyKey', 'moodKey', 'reputationKey'].forEach((key) => setText(document.querySelector(`#${key}`), t(key)));
+	['nameKey', 'surnameKey', 'ageKey', 'characterKey', 'moneyKey', 'locationKey', 'hobbyKey', 'occupationKey', 'energyKey', 'moodKey', 'reputationKey'].forEach((key) => setText(document.querySelector(`#${key}`), t(key)));
   setPlaceholder(chatInput, t('chatPlaceholder')); setText(chatForm?.querySelector('button'), t('send')); setText(document.querySelector('.chat-help'), t('chatHelp'));
   setText(document.querySelector('.analysis-title'), t('analyzer'));
 	setText(document.querySelector('#blogTitle'), t('blogTitle')); setText(document.querySelector('#blogSubtitle'), t('blogSubtitle'));
+  setText(document.querySelector('#blogReleaseTitle'), t('blogReleaseTitle')); setText(document.querySelector('#blogReleaseText'), t('blogReleaseText'));
 	const chatGreeting = chatMessages?.querySelector('.chat-ai');
 	if (chatGreeting) {
 	  const label = chatGreeting.querySelector('span');
 	  chatGreeting.replaceChildren(label || document.createElement('span'), document.createTextNode(` ${t('chatGreeting')}`));
 	}
-	if (!blogScreen?.classList.contains('hidden')) renderCreatorBlog();
+	renderCreatorBlog();
   if (lastAnalysis) updateAnalysisView(lastAnalysis); else { setText(analysisDetails, `${t('intent')}: — · ${t('confidence')}: — · ${t('entities')}: —`); setText(predictionDetails, `${t('prediction')}: — · ${t('personality')}: — · ${t('goal')}: —`); }
 }
 
 function changeLanguage(value) {
   const nextLanguage = value === 'en' ? 'en' : 'es';
   currentLanguage = nextLanguage;
+	window.currentLanguage = currentLanguage;
   try { localStorage.setItem('lifeLanguage', currentLanguage); } catch { /* almacenamiento opcional */ }
   applyTranslations();
+	if (window.lifeSupabase?.enabled) renderSupabaseStatus('online');
+	else if (window.lifeSupabase) renderSupabaseStatus('offline', window.lifeSupabase.lastError || '');
   if (!historyScreen.classList.contains('hidden')) renderHistory(readSave().chapters);
   if (!worldScreen.classList.contains('hidden')) renderWorldPanel();
   if (!skillsScreen.classList.contains('hidden')) renderSkillsPanel();
@@ -691,7 +1109,10 @@ function changeLanguage(value) {
   if (!familyScreen.classList.contains('hidden')) renderFamilyPanel();
 	if (!inventoryScreen.classList.contains('hidden')) renderInventoryPanel();
 	const storyIsVisible = !storyScreen?.classList.contains('hidden');
-	if (window.__lifeSave?.lifeStatus === 'active' && storyIsVisible) renderWeather(window.__lifeSave.weather);
+	if (window.__lifeSave?.lifeStatus === 'active' && storyIsVisible) {
+	  renderWeather(window.__lifeSave.weather);
+	  renderWorldEnvironment(window.__lifeSave);
+	}
 	else if (!storyIsVisible) resetWeatherVisuals();
   renderCurrentOccupation();
 }
@@ -748,7 +1169,7 @@ function renderCreatorBlog() {
   const blogWindow = blogScreen?.querySelector('.blog-window');
   if (!blogWindow) return;
   blogWindow.querySelectorAll('.creator-post').forEach((post) => post.remove());
-  creatorPosts.forEach((post) => {
+	[...creatorPosts].sort((a, b) => b.date.localeCompare(a.date)).forEach((post) => {
 	const article = document.createElement('article');
 	article.className = 'blog-entry creator-post';
 	const heading = document.createElement('h3');
@@ -776,7 +1197,8 @@ function renderMenu() {
 	['learnFile', () => learnFileInput.click()],
 	['export', () => exportButton.click()],
 	['import', () => importInput.click()],
-	['reset', () => resetButton.click()]
+	['reset', () => resetButton.click()],
+	['logout', logoutSession]
   ];
   menuGrid.replaceChildren();
 	controls.forEach(([key, action]) => {
@@ -790,6 +1212,37 @@ function renderMenu() {
 	});
 	menuGrid.append(button);
   });
+}
+
+async function logoutSession() {
+  const confirmed = window.confirm(t('logoutConfirm'));
+  if (!confirmed) return;
+  try {
+	await window.lifeSupabase?.archiveCurrentGame?.(readSave());
+	await window.lifeSupabase?.clearPresence?.();
+  } catch (error) {
+	console.warn('LIFE.AI session archive:', error);
+  }
+  stopWeatherCycle();
+  stopWorldClock();
+  resetWeatherVisuals();
+  await storage.remove('game', 'current').catch(() => undefined);
+  await storage.remove('memory', 'global').catch(() => undefined);
+  try {
+	localStorage.removeItem('lifeUsername');
+	localStorage.removeItem('lifeSaveFallback');
+	localStorage.removeItem('lifeAIMemoryFallback');
+  } catch { /* almacenamiento opcional */ }
+  try {
+	await window.lifeSupabase?.signOut?.();
+  } catch (error) {
+	console.warn('LIFE.AI sign out:', error);
+  }
+  window.__lifeSave = null;
+  window.__lifeMemory = null;
+  currentUsername = '';
+  window.currentUsername = '';
+  window.location.reload();
 }
 
 class StorageManager {
@@ -889,7 +1342,11 @@ function predictIntent(text, memory) {
   const normalized = normalizeWords(text);
   if (!normalized.length) return [];
   return Object.entries(intentPatterns)
-	.map(([intent, patterns]) => ({ intent, score: patterns.filter((pattern) => normalized.some((word) => normalizeWords(pattern).includes(word))).length }))
+	.map(([intent, patterns]) => {
+	  const localScore = patterns.filter((pattern) => normalized.some((word) => normalizeWords(pattern).includes(word))).length;
+	  const globalCount = Number(window.__lifeGlobalPatterns?.find((item) => item.intent === intent)?.event_count) || 0;
+	  return { intent, score: localScore + (globalCount > 0 ? Math.min(2, Math.log10(globalCount + 1) / 2) : 0) };
+	})
 	.filter((item) => item.score > 0)
 	.sort((a, b) => b.score - a.score)
 	.slice(0, 3)
@@ -1039,6 +1496,7 @@ const worldEngine = new WorldEngine();
 
 listen(startButton, 'click', () => {
 	if (!applicationReady) return;
+	resetWeatherVisuals();
 	setWelcomeNavigationVisible(false);
 	blogScreen?.classList.add('hidden');
   welcomeScreen.classList.add('hidden');
@@ -1065,6 +1523,20 @@ listen(lifeForm, 'submit', (event) => {
 	questionHint.textContent = numericQuestion
 	  ? (currentLanguage === 'en' ? 'ERROR: enter a whole number equal to or greater than zero.' : 'ERROR: introduce un número entero igual o mayor que cero.')
 	  : (currentLanguage === 'en' ? 'ERROR: enter text, not only numbers.' : 'ERROR: introduce texto, no solo números.');
+	questionHint.classList.add('error');
+	return;
+  }
+	if (question.key === 'location' && !isValidLocation(answer)) {
+	questionHint.textContent = currentLanguage === 'en'
+	  ? 'ERROR: write a real place, city, country or location (for example: Madrid, London or my hometown).'
+	  : 'ERROR: escribe un lugar real, ciudad, país o ubicación (por ejemplo: Madrid, Londres o mi pueblo).';
+	questionHint.classList.add('error');
+	return;
+  }
+  if (question.key === 'hobby' && !isValidHobby(answer)) {
+	questionHint.textContent = currentLanguage === 'en'
+	  ? 'ERROR: write a recognizable hobby, such as music, football, reading, games or drawing.'
+	  : 'ERROR: escribe un hobby reconocible, como música, fútbol, lectura, videojuegos o dibujo.';
 	questionHint.classList.add('error');
 	return;
   }
@@ -1107,7 +1579,7 @@ function createEmptyMemory() {
 function createEmptyWorld() {
   return {
 	version: 1,
-	time: { day: 1, month: 1, year: 1, hour: 0, minute: 0, season: 'primavera' },
+	 time: { day: 1, month: 1, year: 1, hour: 0, minute: 0, season: chooseInitialSeason(), seasonOffset: Math.floor(Math.random() * seasonOrder.length) },
 	locations: [],
 	characters: [],
 	factions: [],
@@ -1121,8 +1593,7 @@ function createEmptyWorld() {
 }
 
 function updateWorldSeason(time) {
-  const seasons = ['primavera', 'verano', 'otoño', 'invierno'];
-  time.season = seasons[Math.floor((time.month - 1) / 3)] || seasons[0];
+	time.season = seasonForMonth(time.month, time.seasonOffset);
   return time;
 }
 
@@ -1141,7 +1612,7 @@ function advanceWorldTime(world, minutes) {
   time.year += Math.floor(absoluteMonth / 12);
   time.hour = Math.floor(remainingMinutes / 60);
   time.minute = remainingMinutes % 60;
-  updateWorldSeason(time);
+  time.season = seasonForMonth(time.month, time.seasonOffset);
   return time;
 }
 
@@ -1190,6 +1661,7 @@ function normalizeWorld(world) {
 	world.time.year = Math.max(1, Number(world.time.year) || 1);
 	world.time.hour = Math.min(23, Math.max(0, Number(world.time.hour) || 0));
 	world.time.minute = Math.min(59, Math.max(0, Number(world.time.minute) || 0));
+	world.time.seasonOffset = Number.isInteger(world.time.seasonOffset) ? ((world.time.seasonOffset % seasonOrder.length) + seasonOrder.length) % seasonOrder.length : 0;
 	updateWorldSeason(world.time);
 	['locations', 'characters', 'factions', 'items', 'quests', 'events', 'rules', 'news'].forEach((key) => {
 	  world[key] = Array.isArray(world[key]) ? world[key].slice(-300) : [];
@@ -1272,7 +1744,13 @@ function saveGlobalMemory(memory) {
 	normalizeMemory(memory);
 	window.__lifeMemory = memory;
 	try { localStorage.setItem('lifeAIMemoryFallback', JSON.stringify(memory)); } catch { /* fallback opcional */ }
-	return storage.set('memory', 'global', memory).catch(() => undefined);
+	return storage.set('memory', 'global', memory).catch(() => undefined).then(async () => {
+	  try {
+		if (window.lifeSupabase?.enabled && window.__lifeSave) await window.lifeSupabase.saveMemory(window.__lifeSave);
+	  } catch (error) {
+		console.warn('LIFE.AI Supabase memory sync:', error);
+	  }
+	});
 }
 
 function saveCurrentGame(save) {
@@ -1280,7 +1758,20 @@ function saveCurrentGame(save) {
 	normalized.updatedAt = new Date().toISOString();
   window.__lifeSave = normalized;
   try { localStorage.setItem('lifeSaveFallback', JSON.stringify(normalized)); } catch { /* fallback opcional */ }
-  return storage.set('game', 'current', normalized).catch(() => undefined);
+	return storage.set('game', 'current', normalized).catch(() => undefined).then(async () => {
+	try {
+	  if (window.lifeSupabase?.enabled) {
+		await window.lifeSupabase.saveGame(normalized, currentLanguage);
+		await window.lifeSupabase.saveDiseases(normalized);
+		await window.lifeSupabase.saveMemory(normalized);
+		await window.lifeSupabase.updatePresence(normalized);
+		await window.lifeSupabase.saveWorldSnapshot(normalized);
+	  }
+	} catch (error) {
+	  console.warn('LIFE.AI Supabase game sync:', error);
+	}
+	return normalized;
+  });
 }
 
 function readFallbackSave() {
@@ -1289,7 +1780,7 @@ function readFallbackSave() {
 
 function selectMostRecentSave(...saves) {
   return saves
-	.filter((save) => save && save.lifeStatus !== 'ended' && save.player && Object.keys(save.player).length)
+	.filter((save) => save && save.lifeStatus !== 'ended' && save.player?.name)
 	.sort((a, b) => new Date(b.updatedAt || 0).getTime() - new Date(a.updatedAt || 0).getTime())[0] || null;
 }
 
@@ -1551,6 +2042,7 @@ class LifeEngine {
 	playerState.skills = playerState.skills || {};
 	playerState.relationships = playerState.relationships || {};
 	playerState.events = Array.isArray(playerState.events) ? playerState.events : [];
+	normalizeDiseases(playerState);
 	return playerState;
   }
   analyze(text, memory) {
@@ -1570,6 +2062,8 @@ class LifeEngine {
 	  }
 	}
 	this.applyExtendedConsequences(text, playerState, analysis, effects);
+	const diseaseDeath = updateDiseases(text, playerState, effects);
+	if (diseaseDeath) effects.push(`DEATH_CAUSE: ${diseaseDeath}`);
 	effects.push(...worldEngine.apply(text, interpretation, world, playerState));
 	const event = {
 	  text,
@@ -1706,7 +2200,7 @@ class LifeEngine {
 const lifeEngine = new LifeEngine();
 
 const semanticDictionary = {
-  age: ['edad', 'año', 'anos', 'crecer', 'creci', 'crecer', 'cumplir', 'cumpli', 'mayor', 'envejecer', 'tiempo', 'birthday', 'age', 'year', 'grow', 'grew', 'older', 'birthday'],
+	age: ['edad', 'año', 'anos', 'crecer', 'creci', 'crezco', 'cumplir', 'cumpli', 'mayor', 'envejecer', 'envejecí', 'tiempo', 'cumpleaños', 'birthday', 'age', 'year', 'grow', 'grew', 'growing', 'older', 'aging', 'birthday'],
 	work: ['trabajo', 'trabajar', 'trabaje', 'trabajando', 'laburo', 'laburar', 'empleo', 'oficina', 'turno', 'jornada', 'profesion', 'profesión', 'negocio', 'contrato', 'sueldo', 'salario', 'jefe', 'entrevista', 'curriculum', 'empresa', 'work', 'worked', 'working', 'job', 'office', 'shift', 'business', 'contract', 'salary', 'wage', 'boss', 'interview', 'career', 'company', 'hired'],
   learning: ['estudiar', 'estudio', 'estudiando', 'aprender', 'aprendo', 'curso', 'clase', 'escuela', 'universidad', 'leer', 'practicar', 'programar', 'investigar', 'tarea', 'examen', 'idioma', 'learn', 'study', 'studying', 'course', 'class', 'school', 'university', 'read', 'practice', 'code', 'coding', 'research', 'homework', 'exam', 'language'],
   travel: ['viaje', 'viajar', 'viajo', 'viajando', 'camino', 'carretera', 'ciudad', 'explorar', 'aventura', 'destino', 'mudanza', 'vacaciones', 'visitar', 'playa', 'travel', 'trip', 'road', 'city', 'explore', 'adventure', 'destination', 'move', 'moving', 'vacation', 'visit', 'beach'],
@@ -1715,7 +2209,7 @@ const semanticDictionary = {
   money: ['dinero', 'plata', 'pesos', 'sueldo', 'salario', 'gastar', 'pagar', 'comprar', 'vender', 'ahorrar', 'invertir', 'cuesta', 'precio', 'deuda', 'regalo', 'money', 'cash', 'salary', 'wage', 'spend', 'pay', 'buy', 'sell', 'save', 'invest', 'cost', 'price', 'debt', 'gift'],
   emotion: ['feliz', 'felicidad', 'alegre', 'contento', 'contenta', 'triste', 'enojado', 'enojada', 'enfadado', 'ansiedad', 'miedo', 'preocupado', 'emocionado', 'solo', 'sola', 'aburrido', 'orgulloso', 'happy', 'happiness', 'glad', 'sad', 'angry', 'mad', 'anxiety', 'fear', 'worried', 'excited', 'alone', 'bored', 'proud'],
   creativity: ['escribir', 'dibujar', 'pintar', 'musica', 'cantar', 'crear', 'inventar', 'historia', 'arte', 'write', 'draw', 'paint', 'music', 'sing', 'create', 'invent', 'story', 'art'],
-  risk: ['riesgo', 'peligro', 'accidente', 'apostar', 'pelea', 'escapar', 'arriesgar', 'risk', 'danger', 'accident', 'bet', 'fight', 'escape'],
+  risk: ['riesgo', 'peligro', 'accidente', 'atropello', 'atropellar', 'caida', 'caída', 'choque', 'enfermedad', 'apostar', 'pelea', 'escapar', 'arriesgar', 'morir', 'muerte', 'muerto', 'fallecer', 'falleció', 'risk', 'danger', 'accident', 'hit by a car', 'car crash', 'fall', 'illness', 'bet', 'fight', 'escape', 'die', 'died', 'death', 'dead', 'dying'],
 	home: ['casa', 'hogar', 'habitacion', 'cocinar', 'comida', 'familia', 'house', 'home', 'room', 'cook', 'food'],
   communication: ['decir', 'contar', 'explicar', 'preguntar', 'responder', 'escuchar', 'mensaje', 'llamar', 'escribir', 'hablar', 'say', 'tell', 'explain', 'ask', 'answer', 'listen', 'message', 'call', 'write', 'speak'],
   routine: ['mañana', 'tarde', 'noche', 'despertar', 'levantarse', 'bañarse', 'vestirse', 'salir', 'volver', 'rutina', 'morning', 'afternoon', 'night', 'wake', 'get up', 'shower', 'dress', 'leave', 'return', 'routine'],
@@ -1723,7 +2217,7 @@ const semanticDictionary = {
   conflict: ['discusión', 'discusion', 'pelea', 'problema', 'enemigo', 'conflicto', 'discutir', 'perdonar', 'mentira', 'discute', 'argument', 'fight', 'problem', 'enemy', 'conflict', 'argue', 'forgive', 'lie'],
   achievement: ['logro', 'éxito', 'exito', 'ganar', 'victoria', 'mejorar', 'conseguir', 'terminar', 'completar', 'achievement', 'success', 'win', 'victory', 'improve', 'achieve', 'finish', 'complete'],
   failure: ['fallar', 'fracasar', 'fracaso', 'perder', 'perdí', 'error', 'equivocarse', 'fall', 'failure', 'lose', 'lost', 'mistake', 'wrong'],
-  nature: ['clima', 'lluvia', 'llover', 'frio', 'frío', 'calor', 'caluroso', 'niebla', 'sol', 'viento', 'tormenta', 'nieve', 'weather', 'rain', 'cold', 'hot', 'fog', 'sun', 'wind', 'storm', 'snow'],
+	nature: ['clima', 'lluvia', 'llover', 'frio', 'frío', 'calor', 'caluroso', 'niebla', 'sol', 'viento', 'tormenta', 'nieve', 'primavera', 'verano', 'otoño', 'otono', 'invierno', 'estacion', 'estación', 'weather', 'rain', 'cold', 'hot', 'fog', 'sun', 'wind', 'storm', 'snow', 'spring', 'summer', 'autumn', 'fall', 'winter', 'season'],
 	objects: ['coche', 'auto', 'casa', 'llave', 'teléfono', 'telefono', 'computadora', 'ordenador', 'portatil', 'portátil', 'libro', 'mesa', 'arma', 'regalo', 'objeto', 'mochila', 'billetera', 'moneda', 'documento', 'herramienta', 'car', 'key', 'phone', 'computer', 'laptop', 'book', 'table', 'weapon', 'gift', 'object', 'backpack', 'wallet', 'coin', 'document', 'tool'],
   questions: ['quien', 'quién', 'que', 'qué', 'cuando', 'cuándo', 'donde', 'dónde', 'como', 'cómo', 'por que', 'por qué', 'who', 'what', 'when', 'where', 'how', 'why'],
   quantity: ['uno', 'una', 'dos', 'tres', 'cuatro', 'cinco', 'diez', 'cien', 'hora', 'día', 'dia', 'semana', 'mes', 'año', 'ano', 'one', 'two', 'three', 'four', 'five', 'ten', 'hundred', 'hour', 'day', 'week', 'month', 'year']
@@ -1831,6 +2325,9 @@ const intentPatterns = {
 	advance_story: ['quiero', 'decido', 'decidir', 'hago', 'hacer', 'sucede', 'continúo', 'continuo', 'después', 'despues', 'want', 'choose', 'decide', 'do', 'happens', 'continue', 'after']
 };
 
+const hobbyIntentWords = [...knownHobbies, 'hobby', 'afición', 'aficion', 'interés', 'interes', 'interest'];
+intentPatterns.change_hobby.push(...hobbyIntentWords);
+
 function analyzeText(text, memory = {}) {
   const normalized = normalizeWords(text).join(' ');
   const entities = extractEntities(text, normalized);
@@ -1850,6 +2347,11 @@ function analyzeText(text, memory = {}) {
 	scores.change_age = (scores.change_age || 0) + 6;
 	if (!workSignal) scores.work = 0;
   }
+	if (entities.hobbies?.length) scores.change_hobby = (scores.change_hobby || 0) + 5;
+  if (entities.people?.length) scores.social = (scores.social || 0) + 2;
+  if (entities.goals?.length) scores.planning = (scores.planning || 0) + 4;
+	const globalIntent = window.__lifeGlobalPatterns?.find((item) => item.intent === Object.entries(scores).sort((a, b) => b[1] - a[1])[0]?.[0]);
+	if (globalIntent) scores[globalIntent.intent] += Math.min(3, Math.log10(Number(globalIntent.event_count) + 1));
   if (workSignal && !ageSignal) scores.work = (scores.work || 0) + 2;
   if (locationSignal) {
 	 scores.change_location = (scores.change_location || 0) + 5;
@@ -2007,21 +2509,23 @@ function showStats() {
 	lifeEngine.preparePlayer(player);
 	renderStats();
 	const initialSave = { player, chapters: [], memory: createEmptyMemory(), world: createEmptyWorld(), weather: chooseInitialWeather(), lifeStatus: 'active' };
+	assignBirthDiseases(player);
 	window.__lifeSave = initialSave;
 	saveCurrentGame(initialSave);
-	startWeatherCycle(initialSave);
   startWorldClock(initialSave);
 	setWelcomeNavigationVisible(false);
   questionScreen.classList.add('hidden');
 	statsScreen.classList.add('hidden');
   storyScreen.classList.remove('hidden');
+	startWeatherCycle(initialSave);
+  renderWorldEnvironment(initialSave);
 	renderCurrentOccupation();
   storyInput.focus();
 }
 
 function detectLifeEnding(text) {
 	const normalized = normalizeWords(text).join(' ');
-  return /\b(?:morir|muere|murio|murio|muriendo|muerto|muerte|fallecio|fallecer|suicid|se quito la vida|me quito la vida|termino su vida|termino mi vida|dejo de existir|dejo de vivir|died|dead|die|dying|death|suicide|committed suicide|killed himself|killed herself|kill myself|end my life|ended his life|ended her life|stop existing)\b/i.test(normalized);
+	return /\b(?:morir|muere|murio|muriendo|muerto|muerte|fallecio|fallecer|fallecido|paso a mejor vida|dejo de existir|dejo de vivir|se quito la vida|me quito la vida|termino su vida|suicid|died|dead|die|dying|death|passed away|suicide|committed suicide|killed himself|killed herself|kill myself|end my life|ended his life|ended her life|stop existing)\b/i.test(normalized);
 }
 
 async function finishLife(decision, savedGame, globalMemory) {
@@ -2031,12 +2535,11 @@ async function finishLife(decision, savedGame, globalMemory) {
   globalMemory.facts.push({ text: currentLanguage === 'en' ? `A previous life ended after: ${decision.slice(0, 240)}` : `Una vida anterior terminó después de: ${decision.slice(0, 240)}`, lang: currentLanguage, date: now, importance: 3 });
   normalizeMemory(globalMemory);
   await saveGlobalMemory(globalMemory);
-  await storage.remove('game', 'current').catch(() => undefined);
-	try { localStorage.removeItem('lifeSaveFallback'); } catch { /* fallback opcional */ }
-  window.__lifeSave = null;
-	const message = currentLanguage === 'en' ? `LIFE.AI: life ${globalMemory.lifeCount} has ended. Your memories remain in the browser. Start a new life to continue.` : `LIFE.AI: la vida ${globalMemory.lifeCount} ha terminado. Tus recuerdos permanecen en este navegador. Comienza una nueva vida para continuar.`;
-  window.alert(message);
-  window.location.reload();
+	savedGame.lifeStatus = 'ended';
+	  savedGame.endedReason = decision || randomDeathCause();
+  window.__lifeSave = savedGame;
+	await saveCurrentGame(savedGame);
+  renderGameOver(savedGame.endedReason, savedGame, globalMemory);
 }
 
 listen(saveStoryButton, 'click', async () => {
@@ -2052,6 +2555,7 @@ listen(saveStoryButton, 'click', async () => {
 	}
 	const globalMemory = readGlobalMemory();
 	const memory = mergeMemories(savedGame.memory, globalMemory);
+	const previousAge = Number(savedGame.player.age) || 0;
 	if (detectLifeEnding(decision)) {
 	  learnFrom(decision, globalMemory);
 	  await finishLife(decision, savedGame, globalMemory);
@@ -2060,6 +2564,20 @@ listen(saveStoryButton, 'click', async () => {
   learnFrom(decision, savedGame.memory);
   learnFrom(decision, globalMemory);
 	const result = lifeEngine.processDecision(decision, savedGame.player, memory, savedGame.world);
+	window.lifeSupabase?.saveEvent?.(savedGame, decision, result).catch((error) => console.warn('LIFE.AI Supabase event sync:', error));
+	window.lifeSupabase?.submitLearningEvent?.(savedGame, result).catch((error) => console.warn('LIFE.AI global learning sync:', error));
+	window.lifeSupabase?.saveLearningSignal?.(savedGame, result, 'decision_state').catch((error) => console.warn('LIFE.AI learning signal sync:', error));
+	const diseaseDeath = result.effects.find((effect) => effect.startsWith('DEATH_CAUSE:'));
+	if (diseaseDeath) {
+	  const reason = diseaseDeath.replace('DEATH_CAUSE:', '').trim();
+	  await finishLife(reason, savedGame, globalMemory);
+	  return;
+	}
+	const ageGained = Math.max(0, (Number(savedGame.player.age) || 0) - previousAge);
+	if (ageGained > 0) {
+	  savedGame.world.time.year = Math.max(1, Number(savedGame.world.time.year) || 1) + ageGained;
+	  result.effects.push(currentLanguage === 'en' ? `world year: +${ageGained}` : `año mundial: +${ageGained}`);
+	}
 	(result.interpretation.entities.relationships || []).forEach((relationship) => {
 	  const currentLevel = Number(savedGame.player.relationships[relationship.name] || 0);
 	  savedGame.player.relationships[relationship.name] = Math.min(100, currentLevel + (relationship.type === 'friend' ? 20 : 5));
@@ -2076,6 +2594,14 @@ listen(saveStoryButton, 'click', async () => {
 	window.__lifeSave = savedGame;
 	await saveCurrentGame(savedGame);
 	await saveGlobalMemory(globalMemory);
+	const deathAge = diedWhileAging(previousAge, savedGame.player.age);
+	if (deathAge) {
+	  const reason = currentLanguage === 'en'
+		? `Your character reached age ${deathAge} and died during the passage of time.`
+		: `Tu personaje llegó a los ${deathAge} años y murió durante el paso del tiempo.`;
+	  await finishLife(reason, savedGame, globalMemory);
+	  return;
+	}
   savedMessage.classList.remove('hidden');
   aiText.textContent = continuation;
 	effectsText.textContent = result.effects.length ? (currentLanguage === 'en' ? `// effects: ${result.effects.join(' · ')}` : `// efectos: ${result.effects.join(' · ')}`) : (currentLanguage === 'en' ? '// no state changes' : '// no hubo cambios de estado');
@@ -2120,12 +2646,29 @@ listen(learnFileInput, 'change', async () => {
 });
 
 listen(resetButton, 'click', async () => {
-	const confirmed = window.confirm(currentLanguage === 'en' ? 'Are you sure you want to delete this game and start over?' : '¿Seguro que quieres borrar esta partida y comenzar de nuevo?');
+	const confirmed = window.confirm(currentLanguage === 'en' ? 'Are you sure you want to archive this life and start over?' : '¿Seguro que quieres archivar esta vida y comenzar de nuevo?');
   if (!confirmed) return;
+	try {
+	  await window.lifeSupabase?.archiveCurrentGame?.(readSave());
+	} catch (error) {
+	  console.warn('LIFE.AI Supabase game archive:', error);
+	}
 	await storage.remove('game', 'current').catch(() => undefined);
 	try { localStorage.removeItem('lifeSaveFallback'); } catch { /* fallback opcional */ }
 	window.__lifeSave = null;
-  window.location.reload();
+	Object.keys(player).forEach((key) => delete player[key]);
+	stopWeatherCycle();
+	stopWorldClock();
+	resetWeatherVisuals();
+	menuScreen?.classList.add('hidden');
+	gameOverScreen?.classList.add('hidden');
+	questionScreen?.classList.add('hidden');
+	storyScreen?.classList.add('hidden');
+	statsScreen?.classList.add('hidden');
+	usernameScreen?.classList.add('hidden');
+	welcomeScreen?.classList.remove('hidden');
+	setWelcomeNavigationVisible(true);
+	startButton?.focus();
 });
 
 listen(importInput, 'change', async () => {
@@ -2272,11 +2815,14 @@ initializeApplication().catch((error) => {
 
 window.addEventListener('beforeunload', () => {
   if (window.__lifeSave?.lifeStatus === 'active') saveCurrentGame(window.__lifeSave);
+  window.lifeSupabase?.clearPresence?.().catch(() => undefined);
 });
 
 window.setInterval(() => {
   if (window.__lifeSave?.lifeStatus === 'active') saveCurrentGame(window.__lifeSave);
 }, 10000);
+
+window.setInterval(refreshActivePlayers, 5000);
 
 async function initializeApplication() {
 	if (startButton) startButton.disabled = true;
@@ -2285,29 +2831,56 @@ async function initializeApplication() {
 	try { storedLanguage = localStorage.getItem('lifeLanguage'); } catch { /* idioma predeterminado */ }
 	currentLanguage = storedLanguage === 'es' ? 'es' : 'en';
 	applyTranslations();
+	const supabaseUser = await window.lifeSupabase?.initialize?.();
+	if (window.lifeSupabase?.enabled && supabaseUser) renderSupabaseStatus('online');
+	else renderSupabaseStatus('offline', window.lifeSupabase?.lastError || (currentLanguage === 'en' ? 'configuration or authentication failed' : 'falló la configuración o autenticación'));
+	if (window.lifeSupabase?.enabled) {
+	  try {
+		window.__lifeGlobalPatterns = await window.lifeSupabase.loadGlobalLearning();
+	  } catch (error) {
+		window.__lifeGlobalPatterns = [];
+		console.warn('LIFE.AI global learning load:', error);
+	  }
+	refreshActivePlayers();
+	}
+	if (!currentUsername && window.lifeSupabase?.displayName) {
+	  currentUsername = window.lifeSupabase.displayName;
+	  window.currentUsername = currentUsername;
+	  try { localStorage.setItem('lifeUsername', currentUsername); } catch { /* almacenamiento opcional */ }
+	}
+	renderUsernameStatus();
 	await storage.open();
 	await storage.migrateLegacy();
 	const indexedDbSave = await storage.get('game', 'current');
 	window.__lifeMemory = await storage.get('memory', 'global');
 	window.__lifeSave = selectMostRecentSave(indexedDbSave, readFallbackSave());
+	if (window.lifeSupabase?.enabled) {
+	  try {
+		const remoteSave = await window.lifeSupabase.loadLatestGame();
+		const localUpdated = new Date(window.__lifeSave?.updatedAt || 0).getTime();
+		const remoteUpdated = new Date(remoteSave?.updatedAt || 0).getTime();
+		if (remoteSave?.player?.name && (!window.__lifeSave || remoteUpdated > localUpdated)) window.__lifeSave = normalizeSave(remoteSave);
+	  } catch (error) {
+		console.warn('LIFE.AI Supabase load sync:', error);
+		renderSupabaseStatus('offline', error?.message || String(error));
+	  }
+	}
 	window.__lifeMemory = window.__lifeMemory || readFallbackMemory();
 	if (window.__lifeMemory) normalizeMemory(window.__lifeMemory);
 	if (window.__lifeSave) {
 	  window.__lifeSave = normalizeSave(window.__lifeSave);
-	  restoreSavedGame();
 	}
 	await autoLearnFromProject();
-	if (!window.__lifeSave) setWelcomeNavigationVisible(true);
 	applyTranslations();
   } catch {
 	window.__lifeSave = selectMostRecentSave(readFallbackSave());
 	window.__lifeMemory = readFallbackMemory() || createEmptyMemory();
-	if (window.__lifeSave) restoreSavedGame();
-	if (!window.__lifeSave) setWelcomeNavigationVisible(true);
 	  try { applyTranslations(); } catch (error) { console.error('LIFE.AI fallback translation error:', error); }
 	} finally {
 	applicationReady = true;
 	if (startButton) startButton.disabled = false;
+	if (currentUsername) showApplicationEntry();
+	else showUsernameGate();
   }
 }
 
@@ -2319,10 +2892,7 @@ function restoreSavedGame() {
 	  stopWeatherCycle();
 	  stopWorldClock();
 	  resetWeatherVisuals();
-	  setWelcomeNavigationVisible(true);
-	  welcomeScreen.classList.remove('hidden');
-	  questionScreen.classList.add('hidden');
-	  storyScreen.classList.add('hidden');
+	  renderGameOver(savedGame.endedReason, savedGame, readGlobalMemory());
 	  return;
 	}
 	Object.assign(player, savedGame.player);
@@ -2334,6 +2904,7 @@ function restoreSavedGame() {
 	questionScreen.classList.add('hidden');
 	statsScreen.classList.add('hidden');
 	storyScreen.classList.remove('hidden');
+	renderWorldEnvironment(savedGame);
 	renderCurrentOccupation();
 	} catch {
 	window.__lifeSave = null;
@@ -2344,6 +2915,7 @@ function renderStats() {
   nameStat.textContent = `"${player.name || ''}"`;
   surnameStat.textContent = `"${player.surname || ''}"`;
   ageStat.textContent = player.age || 0;
+	if (characterStat) characterStat.textContent = `"${player.name || ''}"`;
   document.querySelector('#moneyStat').textContent = player.money || 0;
   locationStat.textContent = `"${player.location || ''}"`;
   hobbyStat.textContent = `"${player.hobby || ''}"`;
@@ -2362,7 +2934,8 @@ function renderFullStats() {
 	const empty = t('none');
   const relationships = Object.entries(current.relationships || {}).map(([name, level]) => `${name}: ${level}`).join(' · ') || empty;
   const activeGoals = memory.goals.filter((goal) => goal.status === 'active').map((goal) => `${goal.text} (${goal.progress}%)`).join(' · ') || empty;
-	statsExtra.textContent = currentLanguage === 'en' ? `recorded events: ${(current.events || []).length} | personal goals: ${activeGoals} | personality: ${localizedPersonality(memory.personality?.current || 'narrador')}` : `eventos registrados: ${(current.events || []).length} | objetivos personales: ${activeGoals} | personalidad: ${localizedPersonality(memory.personality?.current || 'narrador')}`;
+	const diseases = normalizeDiseases(current).filter((disease) => disease.active).map((disease) => `${diseaseLabel(disease)}${disease.controlled ? (currentLanguage === 'en' ? ' (controlled)' : ' (controlada)') : ''}`).join(', ') || empty;
+	statsExtra.textContent = currentLanguage === 'en' ? `recorded events: ${(current.events || []).length} | personal goals: ${activeGoals} | diseases: ${diseases} | personality: ${localizedPersonality(memory.personality?.current || 'narrador')}` : `eventos registrados: ${(current.events || []).length} | objetivos personales: ${activeGoals} | enfermedades: ${diseases} | personalidad: ${localizedPersonality(memory.personality?.current || 'narrador')}`;
 }
 
 function addPanelSection(container, title, entries, emptyText = currentLanguage === 'en' ? 'none' : 'ninguno') {

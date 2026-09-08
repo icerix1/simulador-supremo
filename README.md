@@ -6,40 +6,21 @@ Juego de simulación de vida offline-first creado con HTML, CSS y JavaScript van
 
 Puedes abrir `index.html` directamente en el navegador. Para una experiencia más parecida a producción, sirve la carpeta con cualquier servidor estático local.
 
-## Publicar en Vercel
-
-### Opción 1: desde la web de Vercel
-
-1. Sube este proyecto a un repositorio de GitHub, GitLab o Bitbucket.
-2. Entra en Vercel y selecciona **Add New Project**.
-3. Importa el repositorio.
-4. En **Framework Preset**, selecciona **Other**.
-5. Deja vacío **Build Command**.
-6. Deja vacío **Install Command**.
-7. Usa `.` como **Output Directory** si Vercel lo solicita.
-8. Pulsa **Deploy**.
-
-### Opción 2: usando Vercel CLI
-
-Con Node.js instalado:
-
-```powershell
-npx vercel
-```
-
-Para publicar en producción:
-
-```powershell
-npx vercel --prod
-```
-
-Ejecuta los comandos desde la carpeta que contiene directamente `index.html`, `script.js`, `styles.css` y `vercel.json`. Si el proyecto ya estaba enlazado a otra carpeta, ejecuta `npx vercel unlink` y vuelve a desplegar desde esta carpeta.
-
 ## Configuración
 
-`vercel.json` configura el proyecto como una aplicación estática, redirige las rutas a `index.html` y añade cabeceras básicas de seguridad.
+### Supabase
 
-El juego guarda datos localmente en el navegador mediante IndexedDB y `localStorage`. El despliegue en Vercel no requiere base de datos ni variables de entorno.
+La integración de Supabase es opcional. El juego sigue funcionando offline con IndexedDB y `localStorage` si el servicio no está disponible.
+
+1. Crea o abre el proyecto de Supabase.
+2. Ejecuta `supabase-schema.sql` completo desde **SQL Editor**.
+3. En **Authentication > Providers**, habilita **Anonymous Sign-Ins**.
+4. Comprueba que `SUPABASE_URL` y `SUPABASE_ANON_KEY` de `supabase-client.js` correspondan al proyecto.
+5. Usa únicamente la clave pública `anon` en el frontend. Nunca expongas una clave `service_role`.
+
+La aplicación crea un usuario anónimo y sincroniza perfiles, partidas, decisiones, memorias y enfermedades. Las políticas RLS limitan los datos privados al usuario autenticado. El aprendizaje global solo se inserta cuando existe consentimiento.
+
+El juego guarda datos localmente en el navegador mediante IndexedDB y `localStorage` como respaldo. Las partidas se sincronizan con Supabase cuando la conexión y la configuración están disponibles.
 
 ## Publicar en GitHub Pages
 

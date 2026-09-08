@@ -8,17 +8,34 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-client.js"></script>
 </head>
 <body>
   <main class="life-screen">
-	<div class="screen-status"><span id="appTitle">Unnamed life simulation</span> <span>v0.0.1a</span><label class="language-control" id="languageLabel" for="languageSelect">LANG:</label><select id="languageSelect" name="lifeLanguage" aria-label="Language" autocomplete="off"><option value="es">ES</option><option value="en">EN</option></select></div>
+	<div class="screen-status"><span id="appTitle">Unnamed life simulation</span> <span>v0.0.1b</span><span class="supabase-status status-offline" id="supabaseStatus" aria-live="polite">DESCONECTADO</span><span class="username-status" id="usernameStatus" aria-live="polite">USER: —</span><label class="language-control" id="languageLabel" for="languageSelect">LANG:</label><select id="languageSelect" name="lifeLanguage" aria-label="Language" autocomplete="off"><option value="es">ES</option><option value="en">EN</option></select></div>
+	<div class="active-players-indicator" id="activePlayersIndicator" aria-live="polite">JUGADORES: —</div>
 	<div class="weather-overlay" id="weatherOverlay" aria-hidden="true"></div>
+	<div class="season-effects" id="seasonEffects" aria-hidden="true"></div>
+	<div class="season-indicator hidden" id="seasonIndicator" aria-live="polite"></div>
 	<div class="weather-indicator hidden" id="weatherIndicator" aria-live="polite"></div>
-	<nav class="welcome-navigation" id="welcomeNavigation" aria-label="Main navigation">
+	<nav class="welcome-navigation hidden" id="welcomeNavigation" aria-label="Main navigation">
 	  <button class="welcome-nav-button active" id="playNavButton" type="button">[ PLAY ]</button>
 	  <button class="welcome-nav-button" id="blogButton" type="button">[ BLOG ]</button>
 	</nav>
-	<section class="welcome-screen" id="welcomeScreen">
+	<section class="username-screen" id="usernameScreen">
+	  <p class="code-line"><span class="prompt">C:\LIFE&gt;</span> user_login.exe</p>
+	  <h1 id="usernameTitle">IDENTIFY USER</h1>
+	  <p class="intro-copy" id="usernameIntro">Choose a username before entering the life simulator.</p>
+	  <form class="username-form" id="usernameForm">
+		<label id="usernameLabel" for="usernameInput">Username</label>
+		<input id="usernameInput" name="username" type="text" autocomplete="username" maxlength="24" required>
+		<button class="start-life-button username-submit" id="usernameSubmit" type="submit">[ ENTER ]</button>
+	  </form>
+	  <p class="hint" id="usernameHint">Use 2 to 24 letters, numbers, spaces, hyphens or underscores.</p>
+	</section>
+
+	<section class="welcome-screen hidden" id="welcomeScreen">
 	  <button class="start-life-button" id="startButton" type="button">START LIFE</button>
 	  <a class="discord-link" id="discordLink" href="https://discord.gg/Tsw2htGAb" target="_blank" rel="noopener noreferrer">[ DISCORD ]</a>
 	</section>
@@ -29,9 +46,9 @@
 		<h2 id="blogTitle">blog.txt // LIFE.AI notes</h2>
 		<p class="history-subtitle" id="blogSubtitle">// ideas, changes and simulator records</p>
 		<article class="blog-entry creator-post" id="blogRelease001a">
-		  <h3>[ ACTUALIZACIÓN ] NUEVA VERSION 0.0.1a</h3>
-		  <small>2026-09-07</small>
-		  <p>Esta actualización mejora el árbol genealógico con familiares generados de forma más completa y organizada. También incorpora un sistema de trabajos y profesiones con ingresos y consumo de energía, además de nuevos ítems que pueden encontrarse durante la historia y añadirse al inventario.</p>
+		  <h3 id="blogReleaseTitle">[ ACTUALIZACIÓN ] NUEVA VERSION 0.0.1b</h3>
+		  <small id="blogReleaseDate">2026-09-07</small>
+		  <p id="blogReleaseText">Esta actualización mejora el árbol genealógico con familiares generados de forma más completa y organizada. También incorpora un sistema de trabajos y profesiones con ingresos y consumo de energía, además de nuevos ítems que pueden encontrarse durante la historia y añadirse al inventario.</p>
 		</article>
 	  </div>
 	</section>
@@ -67,6 +84,7 @@
 		  <button class="history-button" id="exportButton" type="button">[ EXPORT GAME ]</button>
 		  <button class="history-button" id="importButton" type="button">[ IMPORT GAME ]</button>
 		  <button class="history-button reset-button" id="resetButton" type="button">[ NEW GAME ]</button>
+		  <button class="history-button reset-button" id="testGameOverButton" type="button">[ TEST GAME OVER ]</button>
 		  <input id="importInput" type="file" accept="application/json,.json" hidden>
 		  <input id="learnFileInput" type="file" accept=".txt,.md,.csv,.json,text/plain,text/markdown,application/json,text/csv" hidden>
 		</div>
@@ -84,6 +102,19 @@
 		<h2 id="inventoryTitle">inventory.json // inventory</h2>
 		<p class="history-subtitle" id="inventorySubtitle">// objects found during the story</p>
 		<div class="inventory-dashboard" id="inventoryDashboard"></div>
+	  </div>
+	</section>
+
+	<section class="game-over-screen hidden" id="gameOverScreen" aria-live="polite">
+	  <div class="game-over-window">
+		<p class="code-line"><span class="prompt">C:\LIFE&gt;</span> life_status.exe</p>
+		<h1 id="gameOverTitle">GAME OVER</h1>
+		<p id="gameOverText"></p>
+		<p id="gameOverStats" class="game-over-stats"></p>
+		<div class="game-over-actions">
+		  <button class="start-life-button" id="gameOverNewLifeButton" type="button">[ START ANOTHER LIFE ]</button>
+		  <button class="history-button" id="closeGameOverButton" type="button">[ RETURN TO START ]</button>
+		</div>
 	  </div>
 	</section>
 
@@ -173,6 +204,7 @@
 		<div class="property"><span id="nameKey">"name"</span>: <strong class="string" id="nameStat"></strong>,</div>
 		<div class="property"><span id="surnameKey">"surname"</span>: <strong class="string" id="surnameStat"></strong>,</div>
 		<div class="property"><span id="ageKey">"age"</span>: <strong class="number" id="ageStat"></strong>,</div>
+		<div class="property"><span id="characterKey">"character"</span>: <strong class="string" id="characterStat"></strong>,</div>
 		<div class="property"><span id="moneyKey">"money"</span>: <strong class="number">$<span id="moneyStat">100</span></strong>,</div>
 		<div class="property"><span id="locationKey">"location"</span>: <strong class="string" id="locationStat"></strong>,</div>
 		<div class="property"><span id="hobbyKey">"hobby"</span>: <strong class="string" id="hobbyStat"></strong>,</div>
