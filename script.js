@@ -250,12 +250,13 @@ function renderActivePlayers(count, detail = '') {
 }
 
 async function refreshActivePlayers() {
-  if (!window.lifeSupabase?.enabled) return renderActivePlayers(null);
+	const localPlayerIsActive = window.__lifeSave?.lifeStatus === 'active' && Boolean(window.__lifeSave.player?.name);
+  if (!window.lifeSupabase?.enabled) return renderActivePlayers(localPlayerIsActive ? 1 : 0);
   try {
 	const count = await window.lifeSupabase.getActivePlayerCount();
-	renderActivePlayers(count);
+	renderActivePlayers(localPlayerIsActive ? Math.max(1, count) : count);
   } catch (error) {
-	renderActivePlayers(null, error?.message || window.lifeSupabase?.lastPresenceError || 'Supabase presence unavailable');
+	renderActivePlayers(localPlayerIsActive ? 1 : 0, error?.message || window.lifeSupabase?.lastPresenceError || 'Supabase presence unavailable');
 	console.warn('LIFE.AI active player count:', error);
   }
 }
@@ -2826,7 +2827,7 @@ window.setInterval(() => {
 	window.lifeSupabase?.updatePresence?.(window.__lifeSave).catch((error) => console.warn('LIFE.AI presence heartbeat:', error));
   }
   refreshActivePlayers();
-}, 5000);
+}, 15000);
 
 async function initializeApplication() {
 	if (startButton) startButton.disabled = true;
