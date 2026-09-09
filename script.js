@@ -250,7 +250,7 @@ function renderActivePlayers(count, detail = '') {
 }
 
 async function refreshActivePlayers() {
-	const localPlayerIsActive = window.__lifeSave?.lifeStatus === 'active' && Boolean(window.__lifeSave.player?.name);
+  const localPlayerIsActive = Boolean(currentUsername);
   if (!window.lifeSupabase?.enabled) return renderActivePlayers(localPlayerIsActive ? 1 : 0);
   try {
 	const count = await window.lifeSupabase.getActivePlayerCount();
@@ -955,6 +955,7 @@ async function acceptUsername(value) {
   if (window.lifeSupabase?.enabled) {
 	try {
 	  await window.lifeSupabase.saveUsername(currentUsername, currentLanguage);
+	  await window.lifeSupabase.updatePresence(null);
 	} catch (error) {
 	  console.warn('LIFE.AI Supabase username sync:', error);
 	}
@@ -2823,9 +2824,7 @@ window.setInterval(() => {
 }, 10000);
 
 window.setInterval(() => {
-  if (window.__lifeSave?.lifeStatus === 'active' && window.__lifeSave.player?.name) {
-	window.lifeSupabase?.updatePresence?.(window.__lifeSave).catch((error) => console.warn('LIFE.AI presence heartbeat:', error));
-  }
+	if (currentUsername) window.lifeSupabase?.updatePresence?.(window.__lifeSave || null).catch((error) => console.warn('LIFE.AI presence heartbeat:', error));
   refreshActivePlayers();
 }, 15000);
 
@@ -2884,7 +2883,11 @@ async function initializeApplication() {
 	} finally {
 	applicationReady = true;
 	if (startButton) startButton.disabled = false;
-	if (currentUsername) showApplicationEntry();
+	if (currentUsername) {
+	  showApplicationEntry();
+	  window.lifeSupabase?.updatePresence?.(window.__lifeSave || null).catch((error) => console.warn('LIFE.AI initial presence:', error));
+	  refreshActivePlayers();
+	}
 	else showUsernameGate();
   }
 }

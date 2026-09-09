@@ -27,7 +27,7 @@ create table if not exists public.games (
 
 create table if not exists public.game_events (
   id bigint generated always as identity primary key,
-  game_id uuid not null references public.games(id) on delete cascade,
+	game_id uuid references public.games(id) on delete set null,
   player_id uuid not null references auth.users(id) on delete cascade,
   event_type text not null default 'decision',
   event_text text,
@@ -50,9 +50,13 @@ create table if not exists public.learning_signals (
 
 create table if not exists public.active_players (
   player_id uuid primary key references auth.users(id) on delete cascade,
-  game_id uuid not null references public.games(id) on delete cascade,
+	game_id uuid references public.games(id) on delete set null,
   last_seen timestamptz not null default now()
 );
+
+alter table public.active_players alter column game_id drop not null;
+alter table public.active_players drop constraint if exists active_players_game_id_fkey;
+alter table public.active_players add constraint active_players_game_id_fkey foreign key (game_id) references public.games(id) on delete set null;
 
 create table if not exists public.player_memories (
   id bigint generated always as identity primary key,
@@ -214,11 +218,7 @@ as $$
   select count(*)::bigint
   from public.active_players
 	where last_seen > now() - interval '20 seconds'
-	and exists (
-	  select 1 from public.games
-	  where games.id = active_players.game_id
-		and games.status = 'active'
-	);
+  ;
 $$;
 
 revoke all on function public.get_active_player_count() from public;

@@ -349,8 +349,8 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 	  if (error) throw error;
 	},
 
-	async updatePresence(save) {
-	  if (!this.enabled || !save?.player?.name) return;
+	async updatePresence(save = null) {
+	  if (!this.enabled) return;
 	  if (this.presenceInFlight) return this.presenceInFlight;
 	  this.presenceInFlight = this._updatePresence(save);
 	  try {
@@ -363,16 +363,15 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 	async _updatePresence(save) {
 	  const user = await this.user();
 	  if (!user) return;
-	  const currentGameId = await this.ensureGame(save, window.currentLanguage || 'es');
-	  if (!currentGameId) return;
-	  const payload = { player_id: user.id, game_id: currentGameId, last_seen: new Date().toISOString() };
+	  const currentGameId = save?.player?.name ? await this.ensureGame(save, window.currentLanguage || 'es') : gameId;
+	  const payload = { player_id: user.id, game_id: currentGameId || null, last_seen: new Date().toISOString() };
 	  const { data: existing, error: readError } = await client.from('active_players').select('player_id').eq('player_id', user.id).maybeSingle();
 	  if (readError) {
 		this.lastPresenceError = readError.message || String(readError);
 		throw readError;
 	  }
 	  const result = existing
-		? await client.from('active_players').update({ game_id: currentGameId, last_seen: payload.last_seen }).eq('player_id', user.id)
+		? await client.from('active_players').update({ game_id: currentGameId || null, last_seen: payload.last_seen }).eq('player_id', user.id)
 		: await client.from('active_players').insert(payload);
 	  if (result.error) {
 		this.lastPresenceError = result.error.message || String(result.error);
