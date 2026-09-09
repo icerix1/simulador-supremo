@@ -252,7 +252,6 @@ function renderActivePlayers(count, detail = '') {
 async function refreshActivePlayers() {
   if (!window.lifeSupabase?.enabled) return renderActivePlayers(null);
   try {
-	if (window.__lifeSave?.lifeStatus === 'active' && window.__lifeSave.player?.name) await window.lifeSupabase.updatePresence(window.__lifeSave);
 	const count = await window.lifeSupabase.getActivePlayerCount();
 	renderActivePlayers(count);
   } catch (error) {
@@ -2822,7 +2821,12 @@ window.setInterval(() => {
   if (window.__lifeSave?.lifeStatus === 'active') saveCurrentGame(window.__lifeSave);
 }, 10000);
 
-window.setInterval(refreshActivePlayers, 5000);
+window.setInterval(() => {
+  if (window.__lifeSave?.lifeStatus === 'active' && window.__lifeSave.player?.name) {
+	window.lifeSupabase?.updatePresence?.(window.__lifeSave).catch((error) => console.warn('LIFE.AI presence heartbeat:', error));
+  }
+  refreshActivePlayers();
+}, 5000);
 
 async function initializeApplication() {
 	if (startButton) startButton.disabled = true;

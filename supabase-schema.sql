@@ -213,7 +213,7 @@ set search_path = public
 as $$
   select count(*)::bigint
   from public.active_players
-  where last_seen > now() - interval '90 seconds'
+	where last_seen > now() - interval '20 seconds'
 	and exists (
 	  select 1 from public.games
 	  where games.id = active_players.game_id

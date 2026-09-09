@@ -21,6 +21,8 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 	lastError: configured ? null : 'Faltan SUPABASE_URL y SUPABASE_ANON_KEY reales en supabase-client.js.',
 	globalLearningConsent: true,
 	lastWorldSnapshotAt: 0,
+	presenceInFlight: null,
+	countInFlight: null,
 
 	async initialize() {
 	  if (!client) {
@@ -349,6 +351,16 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 	async updatePresence(save) {
 	  if (!this.enabled || !save?.player?.name) return;
+	  if (this.presenceInFlight) return this.presenceInFlight;
+	  this.presenceInFlight = this._updatePresence(save);
+	  try {
+		return await this.presenceInFlight;
+	  } finally {
+		this.presenceInFlight = null;
+	  }
+	},
+
+	async _updatePresence(save) {
 	  const user = await this.user();
 	  if (!user) return;
 	  const currentGameId = await this.ensureGame(save, window.currentLanguage || 'es');
@@ -380,12 +392,20 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 	async getActivePlayerCount() {
 	  if (!this.enabled) return null;
-	  const { data, error } = await client.rpc('get_active_player_count');
-	  if (error) {
-		this.lastPresenceError = error.message || String(error);
-		throw error;
+	  if (this.countInFlight) return this.countInFlight;
+	  this.countInFlight = (async () => {
+		const { data, error } = await client.rpc('get_active_player_count');
+		if (error) {
+		  this.lastPresenceError = error.message || String(error);
+		  throw error;
+		}
+		return Number(data) || 0;
+	  })();
+	  try {
+		return await this.countInFlight;
+	  } finally {
+		this.countInFlight = null;
 	  }
-	  return Number(data) || 0;
 	},
 
 	async submitLearningEvent(save, result) {
