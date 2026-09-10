@@ -21,6 +21,8 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 	lastError: configured ? null : 'Faltan SUPABASE_URL y SUPABASE_ANON_KEY reales en supabase-client.js.',
 	globalLearningConsent: true,
 	lastWorldSnapshotAt: 0,
+	lastProfileTimerAt: 0,
+	profileTimerInFlight: null,
 	presenceInFlight: null,
 	countInFlight: null,
 
@@ -51,6 +53,51 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 	  }
 	},
 
+	async saveDecisionValidation(save, analysis, accepted) {
+	  if (!this.enabled || !this.globalLearningConsent || !save?.player?.name) return;
+	  const user = await this.user();
+	  if (!user) return;
+	  const currentGameId = await this.ensureGame(save, window.currentLanguage || 'es');
+	  if (!currentGameId) return;
+	  const { error } = await client.from('learning_signals').insert({
+		player_id: user.id,
+		game_id: currentGameId,
+		signal_type: accepted ? 'decision_validation_accepted' : 'decision_validation_rejected',
+		language: window.currentLanguage || 'es',
+		intent: analysis?.intent || 'unknown',
+		signal_data: {
+		  accepted: accepted === true,
+		  confidence: Number(analysis?.confidence) || 0,
+		  semantic_coverage: Number(analysis?.semanticCoverage) || 0,
+		  ambiguity_count: Array.isArray(analysis?.ambiguity) ? analysis.ambiguity.length : 0,
+		  mutation_allowed: analysis?.mutationAllowed === true,
+		  word_count: String(analysis?.normalized || '').split(/\s+/).filter(Boolean).length,
+		  score: Number(analysis?.score) || 0
+		}
+	  });
+	  if (error) throw error;
+	},
+
+	async recordPlayTime(save = null) {
+	  if (!this.enabled || this.profileTimerInFlight) return this.profileTimerInFlight;
+	  const user = await this.user();
+	  if (!user) return;
+	  const now = Date.now();
+	  const elapsed = this.lastProfileTimerAt ? Math.min(Math.max(0, Math.floor((now - this.lastProfileTimerAt) / 1000)), 120) : 0;
+	  this.lastProfileTimerAt = now;
+	  if (!elapsed) return;
+	  this.profileTimerInFlight = (async () => {
+		window.__lifePlaySeconds = (Number(window.__lifePlaySeconds) || 0) + elapsed;
+		const { error } = await client.rpc('record_player_time', { seconds_to_add: elapsed });
+		if (error) throw error;
+	  })();
+	  try {
+		await this.profileTimerInFlight;
+	  } finally {
+		this.profileTimerInFlight = null;
+	  }
+	},
+
 	async saveWorldSnapshot(save) {
 	  if (!this.enabled || !this.globalLearningConsent || !save?.player?.name) return;
 	  if (Date.now() - this.lastWorldSnapshotAt < 60000) return;
@@ -59,6 +106,25 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 	  const currentGameId = await this.ensureGame(save, window.currentLanguage || 'es');
 	  if (!currentGameId) return;
 	  const compact = (value, limit) => Array.isArray(value) ? value.slice(-limit) : [];
+	  const player = save.player || {};
+	  const diseases = compact(player.diseases, 100);
+	  const inventory = compact(player.inventory, 100);
+	  const events = compact(player.events || save.world?.events, 100);
+	  const relationships = player.relationships || player.relations || {};
+	  const relationshipValues = Array.isArray(relationships) ? relationships : Object.values(relationships);
+	  const severity = diseases.reduce((summary, disease) => {
+		const level = String(disease.severity || disease.level || 'unknown').toLowerCase();
+		summary[level] = (summary[level] || 0) + 1;
+		return summary;
+	  }, {});
+	  const intentCounts = events.reduce((summary, event) => {
+		const intent = event.intent || 'unknown';
+		summary[intent] = (summary[intent] || 0) + 1;
+		return summary;
+	  }, {});
+	  const effectCount = events.reduce((count, event) => count + (Array.isArray(event.effects) ? event.effects.length : 0), 0);
+	  const world = save.world || {};
+	  const memory = save.memory || {};
 	  const { error } = await client.from('learning_signals').insert({
 		player_id: user.id,
 		game_id: currentGameId,
@@ -66,17 +132,41 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 		language: window.currentLanguage || 'es',
 		signal_data: {
 		  life_status: save.lifeStatus,
+		  player_age: Number(player.age) || 0,
+		  player_gender: player.gender || player.sex || null,
 		  age_range: ageRange(save.player.age),
+		  life_day: Number(world.time?.day) || 1,
+		  life_month: Number(world.time?.month) || 1,
+		  life_year: Number(world.time?.year) || 1,
 		  location_count: compact(save.world?.locations, 100).length,
 		  character_count: compact(save.world?.characters, 100).length,
 		  quest_count: compact(save.world?.quests, 100).length,
 		  event_count: compact(save.world?.events, 100).length,
-		  item_count: compact(save.player?.inventory, 100).length,
-		  disease_count: compact(save.player?.diseases, 100).length,
+		  world_event_count: compact(world.events, 100).length,
+		  weather: save.weather?.type || save.weather?.name || save.weather || null,
+		  season: world.time?.season || null,
+		  item_count: inventory.length,
+		  item_type_count: new Set(inventory.map((item) => item.id || item.type || item.name).filter(Boolean)).size,
+		  disease_count: diseases.length,
+		  disease_severity: severity,
 		  chapter_count: compact(save.chapters, 100).length,
-		  skill_names: Object.keys(save.player?.skills || {}).slice(0, 40),
-		  relationship_count: Object.keys(save.player?.relationships || {}).length,
-		  goal_count: compact(save.memory?.goals, 100).length
+		  chapters_completed: compact(save.chapters, 100).filter((chapter) => chapter.completed || chapter.complete).length,
+		  skill_names: Object.keys(player.skills || {}).slice(0, 40),
+		  skill_count: Object.keys(player.skills || {}).length,
+		  relationship_count: relationshipValues.length,
+		  relationship_trust_average: relationshipValues.length ? relationshipValues.reduce((total, relation) => total + (Number(relation.trust) || 0), 0) / relationshipValues.length : 0,
+		  goal_count: compact(save.memory?.goals, 100).length,
+		  note_count: compact(memory.notes, 100).length,
+		  fact_count: compact(memory.facts, 100).length,
+		  plan_count: compact(memory.plans, 100).length,
+		  topic_count: Object.keys(memory.topics || {}).length,
+		  decision_intents: intentCounts,
+		  effect_count: effectCount,
+		  money: Number(player.money) || 0,
+		  energy: Number(player.energy) || 0,
+		  mood: Number(player.mood) || 0,
+		  recent_event_count: events.length,
+		  recent_outcome_count: events.reduce((count, event) => count + (Array.isArray(event.effects) && event.effects.length ? 1 : 0), 0)
 		}
 	  });
 	  if (error) throw error;
@@ -110,6 +200,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 	  this.userId = null;
 	  this.gameId = null;
 	  this.displayName = null;
+	  this.lastProfileTimerAt = 0;
 	},
 
 	async loadConsent() {
@@ -336,12 +427,28 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 		  age_range: ageRange(save.player.age),
 		  life_day: Number(save.world?.time?.day) || 1,
 		  life_month: Number(save.world?.time?.month) || 1,
+		  life_year: Number(save.world?.time?.year) || 1,
 		  chapter_count: Array.isArray(save.chapters) ? save.chapters.length : 0,
-		  skills_count: Object.keys(save.player.skills || {}).length,
-		  relation_count: Array.isArray(save.player.relations) ? save.player.relations.length : 0,
+		  skills_count: Object.keys(player.skills || {}).length,
+		  relation_count: Array.isArray(player.relations) ? player.relations.length : Object.keys(player.relationships || {}).length,
 		  location_count: Array.isArray(save.world?.locations) ? save.world.locations.length : 0,
 		  quest_count: Array.isArray(save.world?.quests) ? save.world.quests.length : 0,
+		  money: Number(player.money) || 0,
+		  energy: Number(player.energy) || 0,
+		  mood: Number(player.mood) || 0,
+		  disease_count: Array.isArray(player.diseases) ? player.diseases.length : 0,
+		  inventory_count: Array.isArray(player.inventory) ? player.inventory.length : 0,
+		  recent_event_count: events.length,
+		  decision_effect_count: Array.isArray(result.effects) ? result.effects.length : 0,
+		  changed_stat_count: Array.isArray(result.changedStats) ? result.changedStats.length : 0,
+		  changed_stat_keys: Array.isArray(result.changedStats) ? result.changedStats.map((change) => change.key).slice(0, 30) : [],
+		  decision_entity_count: result.analysis?.entities ? Object.values(result.analysis.entities).reduce((count, values) => count + (Array.isArray(values) ? values.length : 0), 0) : 0,
+		  decision_accepted: true,
+		  life_status: save.lifeStatus || 'active',
 		  confidence: Number(result.analysis?.confidence) || 0,
+		  semantic_coverage: Number(result.analysis?.semanticCoverage) || 0,
+		  ambiguity_count: Array.isArray(result.analysis?.ambiguity) ? result.analysis.ambiguity.length : 0,
+		  mutation_allowed: result.analysis?.mutationAllowed === true,
 		  sentiment: result.analysis?.sentiment || 'neutral',
 		  effects: Array.isArray(result.effects) ? result.effects.slice(0, 12) : []
 		}

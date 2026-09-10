@@ -13,7 +13,7 @@
 </head>
 <body>
   <main class="life-screen">
-	<div class="screen-status"><span id="appTitle">Unnamed life simulation</span> <span>v0.0.1b</span><span class="supabase-status status-offline" id="supabaseStatus" aria-live="polite">DESCONECTADO</span><span class="username-status" id="usernameStatus" aria-live="polite">USER: —</span><label class="language-control" id="languageLabel" for="languageSelect">LANG:</label><select id="languageSelect" name="lifeLanguage" aria-label="Language" autocomplete="off"><option value="es">ES</option><option value="en">EN</option></select></div>
+	<div class="screen-status"><span id="appTitle">Unnamed life simulation</span> <span>v0.0.1c</span><span class="username-status" id="usernameStatus" aria-live="polite">USER: —</span><label class="language-control" id="languageLabel" for="languageSelect">LANG:</label><select id="languageSelect" name="lifeLanguage" aria-label="Language" autocomplete="off"><option value="es">ES</option><option value="en">EN</option></select></div>
 	<div class="active-players-indicator" id="activePlayersIndicator" aria-live="polite">JUGADORES: —</div>
 	<div class="weather-overlay" id="weatherOverlay" aria-hidden="true"></div>
 	<div class="season-effects" id="seasonEffects" aria-hidden="true"></div>
@@ -35,6 +35,24 @@
 	  <p class="hint" id="usernameHint">Use 2 to 24 letters, numbers, spaces, hyphens or underscores.</p>
 	</section>
 
+	<section class="stats-screen hidden" id="governmentScreen" aria-modal="true" role="dialog" aria-labelledby="governmentTitle">
+	  <div class="stats-window">
+		<button class="close-history" id="closeGovernmentButton" data-close="governmentScreen" type="button">[ X ]</button>
+		<h2 id="governmentTitle">government.json // current government</h2>
+		<p class="history-subtitle" id="governmentSubtitle">// current administration and four-year term</p>
+		<div class="government-dashboard" id="governmentDashboard"></div>
+	  </div>
+	</section>
+
+	<section class="stats-screen hidden" id="playTimeRewardsScreen" aria-modal="true" role="dialog" aria-labelledby="playTimeRewardsTitle" tabindex="-1">
+	  <div class="stats-window rewards-window">
+		<button class="close-history" id="closePlayTimeRewardsButton" type="button">[ X ]</button>
+		<h2 id="playTimeRewardsTitle">rewards.json // play time</h2>
+		<p class="history-subtitle">// rewards for staying in your session</p>
+		<div id="playTimeRewardsContent"></div>
+	  </div>
+	</section>
+
 	<section class="welcome-screen hidden" id="welcomeScreen">
 	  <button class="start-life-button" id="startButton" type="button">START LIFE</button>
 	  <a class="discord-link" id="discordLink" href="https://discord.gg/Tsw2htGAb" target="_blank" rel="noopener noreferrer">[ DISCORD ]</a>
@@ -46,9 +64,9 @@
 		<h2 id="blogTitle">blog.txt // LIFE.AI notes</h2>
 		<p class="history-subtitle" id="blogSubtitle">// ideas, changes and simulator records</p>
 		<article class="blog-entry creator-post" id="blogRelease001a">
-		  <h3 id="blogReleaseTitle">[ ACTUALIZACIÓN ] NUEVA VERSION 0.0.1b</h3>
+		  <h3 id="blogReleaseTitle">[ ACTUALIZACIÓN ] NUEVA VERSION 0.0.1c</h3>
 		  <small id="blogReleaseDate">2026-09-07</small>
-		  <p id="blogReleaseText">Esta actualización mejora el árbol genealógico con familiares generados de forma más completa y organizada. También incorpora un sistema de trabajos y profesiones con ingresos y consumo de energía, además de nuevos ítems que pueden encontrarse durante la historia y añadirse al inventario.</p>
+		  <p id="blogReleaseText">This update adds governments that change every four years, the Presidential Stick play-time reward, inventory sales, smarter LIFE.AI, children and interface improvements.</p>
 		</article>
 	  </div>
 	</section>
@@ -65,18 +83,20 @@
 	</section>
 
 	<section class="story-screen hidden" id="storyScreen">
+	  <div class="story-layout">
 	  <div class="story-editor">
 		<p class="story-prompt"><span class="prompt">C:\LIFE&gt;</span> story.txt</p>
 		<label for="storyInput">How do you want to continue your life?</label>
 		<textarea id="storyInput" rows="8" placeholder="Write what happens next..."></textarea>
 		<button class="save-button" id="saveStoryButton" type="button">[ SAVE ]</button>
-		<button class="history-button menu-button" id="menuButton" type="button">[ MENU ]</button>
+		<button class="history-button menu-button" id="menuButton" type="button" data-open-target="storyEditor" aria-controls="storyScreen">[ MENU ]</button>
+		<button class="history-button play-time-rewards-button" id="playTimeRewardsButton" type="button">[ RECOMPENSAS POR TIEMPO JUGADO ]</button>
 		<div class="file-buttons hidden" id="mainFileButtons">
-		  <button class="history-button" id="chatButton" type="button">[ HABLAR CON LIFE.AI ]</button>
 			  <button class="history-button" id="statsButton" type="button">[ VIEW STATS ]</button>
 		  <button class="history-button" id="careersButton" type="button">[ VIEW CAREERS ]</button>
 		  <button class="history-button" id="familyButton" type="button">[ VIEW FAMILY ]</button>
 		  <button class="history-button" id="inventoryButton" type="button">[ VIEW INVENTORY ]</button>
+		  <button class="history-button" id="governmentButton" type="button">[ GOBIERNOS ]</button>
 		  <button class="history-button" id="worldButton" type="button">[ VIEW WORLD ]</button>
 		  <button class="history-button" id="skillsButton" type="button">[ VIEW SKILLS ]</button>
 		  <button class="history-button" id="relationsButton" type="button">[ VIEW RELATIONSHIPS ]</button>
@@ -94,6 +114,12 @@
 		  <p class="effects-line hidden" id="effectsText"></p>
 		</div>
 	  </div>
+	  </div>
+	  <aside class="work-in-progress-phone" aria-label="Panel de trabajo en proceso">
+		<div class="phone-speaker"></div>
+		<div class="phone-screen"><span>TRABAJO EN PROCESO</span></div>
+		<div class="phone-home-button"></div>
+	  </aside>
 	</section>
 
 	<section class="stats-screen hidden" id="inventoryScreen" aria-modal="true" role="dialog" aria-labelledby="inventoryTitle">
@@ -131,7 +157,7 @@
 	  <div class="stats-window family-window">
 		<button class="close-history" id="closeFamilyButton" data-close="familyScreen" type="button">[ X ]</button>
 		<h2 id="familyTitle">family.json // family tree</h2>
-		<p class="history-subtitle" id="familySubtitle">// randomly generated family members</p>
+		<p class="history-subtitle" id="familySubtitle">// partner, marriage, children and relatives</p>
 		<div class="family-dashboard" id="familyDashboard"></div>
 	  </div>
 	</section>
@@ -160,28 +186,6 @@
 		<h2 id="skillsTitle">skills.json // skills</h2>
 	  <p class="history-subtitle" id="skillsSubtitle">// learned abilities, experience and character growth</p>
 		<div class="skills-dashboard" id="skillsDashboard"></div>
-	  </div>
-	</section>
-
-	<section class="chat-screen hidden" id="chatScreen" aria-modal="true" role="dialog" aria-labelledby="chatTitle">
-	  <div class="chat-window">
-		<button class="close-history" id="closeChatButton" data-close="chatScreen" type="button">[ X ]</button>
-		<h2 id="chatTitle">life.ai // chat_console</h2>
-	  <p class="history-subtitle" id="chatSubtitle">// conversation and learning · this mode does not modify your stats</p>
-		<div class="chat-messages" id="chatMessages" aria-live="polite">
-		  <p class="chat-ai"><span>[ LIFE.AI ]</span> Hello. I can remember what you tell me and change my rules with your instructions.</p>
-		</div>
-		<div class="analysis-panel" id="analysisPanel">
-		  <p class="analysis-title">[ ANALYZER ] waiting for a sentence...</p>
-		  <p id="analysisDetails">Intent: — · Confidence: — · Entities: —</p>
-		  <p id="predictionDetails">Prediction: — · Personality: — · Goal: —</p>
-		</div>
-		<form class="chat-form" id="chatForm">
-		  <span class="prompt">&gt;</span>
-		  <input id="chatInput" type="text" autocomplete="off" placeholder="Write a message..." required>
-		  <button type="submit">[ SEND ]</button>
-		</form>
-		<p class="chat-help">LIFE.AI analyzes the conversation, retrieves context and learns automatically when it detects useful information.</p>
 	  </div>
 	</section>
 

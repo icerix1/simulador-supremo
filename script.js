@@ -3,6 +3,10 @@ const welcomeScreen = document.querySelector('#welcomeScreen');
 const questionScreen = document.querySelector('#questionScreen');
 const statsScreen = document.querySelector('#statsScreen');
 const statsButton = document.querySelector('#statsButton');
+const playTimeRewardsButton = document.querySelector('#playTimeRewardsButton');
+const playTimeRewardsScreen = document.querySelector('#playTimeRewardsScreen');
+const closePlayTimeRewardsButton = document.querySelector('#closePlayTimeRewardsButton');
+const playTimeRewardsContent = document.querySelector('#playTimeRewardsContent');
 const closeStatsButton = document.querySelector('#closeStatsButton');
 const statsExtra = document.querySelector('#statsExtra');
 const careersButton = document.querySelector('#careersButton');
@@ -17,6 +21,10 @@ const inventoryButton = document.querySelector('#inventoryButton');
 const inventoryScreen = document.querySelector('#inventoryScreen');
 const closeInventoryButton = document.querySelector('#closeInventoryButton');
 const inventoryDashboard = document.querySelector('#inventoryDashboard');
+const governmentButton = document.querySelector('#governmentButton');
+const governmentScreen = document.querySelector('#governmentScreen');
+const closeGovernmentButton = document.querySelector('#closeGovernmentButton');
+const governmentDashboard = document.querySelector('#governmentDashboard');
 const currentOccupation = document.querySelector('#currentOccupation');
 const worldButton = document.querySelector('#worldButton');
 const worldScreen = document.querySelector('#worldScreen');
@@ -68,12 +76,6 @@ const occupationStat = document.querySelector('#occupationStat');
 const energyStat = document.querySelector('#energyStat');
 const moodStat = document.querySelector('#moodStat');
 const reputationStat = document.querySelector('#reputationStat');
-const chatButton = document.querySelector('#chatButton');
-const chatScreen = document.querySelector('#chatScreen');
-const closeChatButton = document.querySelector('#closeChatButton');
-const chatForm = document.querySelector('#chatForm');
-const chatInput = document.querySelector('#chatInput');
-const chatMessages = document.querySelector('#chatMessages');
 const analysisDetails = document.querySelector('#analysisDetails');
 const predictionDetails = document.querySelector('#predictionDetails');
 const languageSelect = document.querySelector('#languageSelect');
@@ -93,7 +95,6 @@ const gameOverText = document.querySelector('#gameOverText');
 const gameOverStats = document.querySelector('#gameOverStats');
 const gameOverNewLifeButton = document.querySelector('#gameOverNewLifeButton');
 const closeGameOverButton = document.querySelector('#closeGameOverButton');
-const supabaseStatus = document.querySelector('#supabaseStatus');
 const usernameStatus = document.querySelector('#usernameStatus');
 const activePlayersIndicator = document.querySelector('#activePlayersIndicator');
 const usernameScreen = document.querySelector('#usernameScreen');
@@ -241,6 +242,52 @@ function diseaseById(id) {
   return diseaseCatalog.find((disease) => disease.id === id) || null;
 }
 
+function openPlayTimeRewards() {
+  renderPlayTimeRewards();
+  playTimeRewardsScreen?.classList.remove('hidden');
+  playTimeRewardsScreen?.focus?.();
+}
+
+const governmentCatalog = [
+  { es: { name: 'Gobierno de la Unión', party: 'Partido de la Unión', ideology: 'reformista', policy: 'inversión pública y educación' }, en: { name: 'Union Government', party: 'Union Party', ideology: 'reformist', policy: 'public investment and education' } },
+  { es: { name: 'Administración Federal', party: 'Frente Federal', ideology: 'social', policy: 'salud y protección social' }, en: { name: 'Federal Administration', party: 'Federal Front', ideology: 'social', policy: 'healthcare and social protection' } },
+  { es: { name: 'Gobierno de Renovación', party: 'Movimiento Renovador', ideology: 'liberal', policy: 'innovación y emprendimiento' }, en: { name: 'Renewal Government', party: 'Renewal Movement', ideology: 'liberal', policy: 'innovation and entrepreneurship' } },
+  { es: { name: 'Administración Popular', party: 'Alianza Popular', ideology: 'comunitaria', policy: 'trabajo y desarrollo local' }, en: { name: 'Popular Administration', party: 'Popular Alliance', ideology: 'community-focused', policy: 'work and local development' } }
+];
+
+function currentGovernment(world = readSave().world) {
+  const year = Math.max(1, Number(world?.time?.year) || 1);
+  const term = Math.floor((year - 1) / 4);
+  return { ...governmentCatalog[term % governmentCatalog.length], term, startYear: term * 4 + 1, endYear: term * 4 + 4, year };
+}
+
+function renderGovernmentPanel() {
+  if (!governmentDashboard) return;
+  const government = currentGovernment(readSave().world);
+  const data = government[currentLanguage] || government.en;
+  const en = currentLanguage === 'en';
+  governmentDashboard.replaceChildren();
+  const entries = [
+	[en ? 'Government' : 'Gobierno', data.name],
+	[en ? 'Party' : 'Partido', data.party],
+	[en ? 'Ideology' : 'Ideología', data.ideology],
+	[en ? 'Main policy' : 'Política principal', data.policy],
+	[en ? 'Term' : 'Mandato', `${government.startYear}–${government.endYear}`],
+	[en ? 'World year' : 'Año mundial', government.year]
+  ];
+  entries.forEach(([label, value]) => {
+	const row = document.createElement('p');
+	row.textContent = `${label}: ${value}`;
+	governmentDashboard.append(row);
+  });
+}
+
+listen(playTimeRewardsButton, 'click', () => {
+	openPlayTimeRewards();
+});
+
+listen(closePlayTimeRewardsButton, 'click', () => playTimeRewardsScreen?.classList.add('hidden'));
+
 function renderActivePlayers(count, detail = '') {
   if (!activePlayersIndicator) return;
 	window.__activePlayerCount = Number.isFinite(count) ? count : null;
@@ -289,7 +336,6 @@ function updateDiseases(decision, playerState, effects) {
   const text = normalizeWords(decision).join(' ');
   const diseases = normalizeDiseases(playerState);
   const treatment = /medico|médico|doctor|hospital|medicina|medication|medicine|tratamiento|treatment|curar|heal|descansar|rest/.test(text);
-  const risky = /riesgo|peligro|accidente|atropello|atropellar|caida|caída|choque|enfermo|enfermedad|risk|danger|accident|hit by a car|car crash|ill|illness/.test(text);
   diseases.forEach((entry) => {
 	const definition = diseaseById(entry.id);
 	if (!entry.active || !definition) return;
@@ -306,15 +352,28 @@ function updateDiseases(decision, playerState, effects) {
 	playerState.energy = Math.max(0, (Number(playerState.energy) || 0) - energyLoss);
 	if (definition.severity >= 3 && !entry.controlled && Math.random() < .003) entry.fatalRisk = true;
   });
-  const age = Number(playerState.age) || 0;
-  diseaseCatalog.forEach((definition) => {
-	const chance = definition.onsetChance + (age > 60 ? .002 : 0) + (risky && definition.risks.some((risk) => text.includes(risk)) ? .012 : 0);
-	if (Math.random() < chance) {
-	  if (addDisease(playerState, definition, false)) effects.push(currentLanguage === 'en' ? `new condition: ${definition.names.en}` : `nueva enfermedad: ${definition.names.es}`);
-	}
-  });
   const fatal = diseases.find((entry) => entry.fatalRisk && entry.active);
   return fatal ? (currentLanguage === 'en' ? `A sudden complication of ${diseaseLabel(fatal)} ended your life.` : `Una complicación súbita de ${diseaseLabel(fatal)} terminó con tu vida.`) : '';
+}
+
+function checkTemporalDiseases(save) {
+  const playerState = save?.player;
+  if (!playerState || save.lifeStatus !== 'active') return false;
+  normalizeDiseases(playerState);
+  const age = Number(playerState.age) || 0;
+  const weatherRisk = ['cold', 'rainy'].includes(save.weather) ? .0008 : 0;
+  let added = false;
+  diseaseCatalog.forEach((definition) => {
+	const ageRisk = age > 60 ? .0004 : 0;
+	const chance = (definition.onsetChance * .01) + ageRisk + weatherRisk;
+	if (Math.random() < chance && addDisease(playerState, definition, false)) {
+	  const entry = playerState.diseases[playerState.diseases.length - 1];
+	  entry.discoveredBy = 'world_time';
+	  entry.discoveredAt = new Date().toISOString();
+	  added = true;
+	}
+  });
+  return added;
 }
 
 function hasEnoughNaturalText(value) {
@@ -427,16 +486,18 @@ function normalizeCareerAlias(value) {
 function extractContextualLocation(text) {
   const source = String(text || '').trim();
   const patterns = [
-	/\b(?:voy|vamos|fui|llego|llegue|llegué|viajo|viaje|me mudo|me mudé|me mude|estoy|estaba|me encuentro|me encontré|me encontre|permanezco|quedo)\s+(?:a|al|en|hacia|por)\s+(.+?)(?=[,.!?;]|$)/i,
+	/\b(?:estoy|estaba|me encuentro|me encontré|me encontre|permanezco|quedo)\s+(?:en|por)\s+(.+?)(?=[,.!?;]|$)/i,
+	/\b(?:voy|vamos|fui|llego|llegue|llegué|viajo|viaje|me mudo|me mudé|me mude)\s+(?:a|al|en|hacia|por)\s+(.+?)(?=[,.!?;]|$)/i,
 	/\b(?:go|went|arrive|arrived|travel|traveled|move|moved|i am|i'm|i was|i find myself|i found myself|stay|staying)\s+(?:to|at|in|near)\s+(.+?)(?=[,.!?;]|$)/i,
 	/\b(?:mi ubicaci[oó]n es|ahora estoy en|ahora me encuentro en|my location is|i am currently in)\s+(.+?)(?=[,.!?;]|$)/i
   ];
   for (const pattern of patterns) {
 	const match = source.match(pattern);
 	if (!match) continue;
-	const value = match[1]
-	  .replace(/^(?:el|la|los|las|un|una|a|the|a|an)\s+/i, '')
+	  const value = match[1]
+		.replace(/^(?:el|la|los|las|un|una|a|the|an)\s+/i, '')
 	  .replace(/\s+(?:y|and)\s+(?:encuentro|veo|conozco|find|see|meet)\b.*$/i, '')
+		.replace(/\s+(?:y|and)\s+(?:agarro|agarr[oé]|recojo|levanto|tomo|veo|encuentro|pick|grab|take)\b.*$/i, '')
 	  .trim();
 	if (value) return value;
   }
@@ -445,21 +506,66 @@ function extractContextualLocation(text) {
 
 function detectFoundItem(text) {
   const normalized = normalizeCareerAlias(text);
-  if (!/(encontre|encontrar|hall[eé]|recogi|recoger|found|find|picked up|pick up|discover)/.test(normalized)) return null;
-  return itemAliases.find(({ alias }) => normalized.includes(alias))?.item || null;
+	if (!/(encontre|encontrar|hall[eé]|recogi|recoger|agarre|agarro|agarrar|tome|tomo|tomar|levante|levanto|levantar|junte|junto|juntar|encontre|found|find|pick up|picked up|pick|grab|grabbed|take|took|collect|collected|discover)/.test(normalized)) return null;
+	return extractItemAlias(normalized)?.item || null;
 }
 
-function itemFindProbability(item, location) {
-  const profile = detectPlaceProfile(location);
-  return item.places[profile.id] ?? item.base;
+function extractItemAlias(text) {
+  const normalized = normalizeCareerAlias(text);
+  return itemAliases.find(({ alias }) => normalized.includes(alias)) || null;
+}
+
+function extractAcquiredItemName(text) {
+  const source = normalizeCareerAlias(text);
+  const match = source.match(/\b(?:agarro|agarre|agarrar|recojo|recogi|recoger|levanto|levante|levantar|tomo|tome|tomar|junto|junte|juntar|obtengo|obtuve|obtener|consigo|consegui|conseguir|recibo|recibi|recibir|encuentro|encontre|encontrar|hallo|halle|hallar|me dan|me dieron|pick up|picked up|pick|grab|grabbed|take|took|collect|collected|obtain|obtained|get|got|receive|received|find|found)\s+(?:a|al|el|la|los|las|un|una|unos|unas|some|the|an)?\s*([^,.!?;]+)/i);
+  if (!match) return '';
+  return match[1]
+	.replace(/\s+(?:y|and)\s+(?:lo|la|los|las|algo|then|after)\b.*$/i, '')
+	.replace(/\s+(?:porque|por que|because|so that)\b.*$/i, '')
+	.trim();
+}
+
+function randomItemSaleValue() {
+  return Math.floor(Math.random() * 96) + 5;
+}
+
+function addInventoryItem(playerState, name, location, definition = null) {
+  playerState.inventory = Array.isArray(playerState.inventory) ? playerState.inventory : [];
+	const normalizedName = normalizeCareerAlias(name).replace(/\b(?:que|y|and)\b.*$/i, '').trim();
+  const existing = playerState.inventory.find((entry) => normalizeCareerAlias(entry.name) === normalizedName || (definition && entry.id === definition.id));
+  if (existing) {
+	existing.quantity = (existing.quantity || 0) + 1;
+	if (!Number(existing.saleValue)) existing.saleValue = randomItemSaleValue();
+	return existing;
+  }
+  const entry = {
+	id: definition?.id || `custom-${normalizedName.replace(/\s+/g, '-')}-${Date.now()}`,
+	name: definition?.names?.es || name,
+	quantity: 1,
+	saleValue: randomItemSaleValue(),
+	location,
+	discoveredAt: new Date().toISOString()
+  };
+  playerState.inventory.push(entry);
+  return entry;
 }
 
 function addFoundItem(playerState, item, location) {
-  playerState.inventory = Array.isArray(playerState.inventory) ? playerState.inventory : [];
-  const existing = playerState.inventory.find((entry) => entry.id === item.id);
-  if (existing) existing.quantity = (existing.quantity || 0) + 1;
-  else playerState.inventory.push({ id: item.id, name: item.names.es, quantity: 1, location, discoveredAt: new Date().toISOString() });
-  return existing || playerState.inventory[playerState.inventory.length - 1];
+	return addInventoryItem(playerState, item.names.es, location, item);
+}
+
+function itemSaleValue(entry) {
+  const definition = itemCatalog.find((item) => item.id === entry?.id);
+  if (Number(entry?.saleValue) > 0) return Math.max(1, Math.round(Number(entry.saleValue)));
+  return Math.max(5, Math.round(15 + (Number(definition?.base) || .25) * 85));
+}
+
+function findInventoryItem(text, inventory) {
+  const normalized = normalizeCareerAlias(text);
+  return (inventory || []).find((entry) => {
+	const definition = itemCatalog.find((item) => item.id === entry.id);
+	return normalized.includes(normalizeCareerAlias(entry.name || '')) || definition?.aliases.some((alias) => normalized.includes(normalizeCareerAlias(alias)));
+  });
 }
 
 const careerAliases = careerCatalog
@@ -488,7 +594,7 @@ function careerFamilyLabel(career) {
 }
 
 const itemCatalog = [
-  { id: 'stick', names: { es: 'palo', en: 'stick' }, aliases: ['palo', 'rama', 'ramita', 'stick', 'branch'], places: { outdoors: 0.85, forest: 0.98, park: 0.8, hospital: 0.04, city: 0.25 }, base: 0.55 },
+	{ id: 'stick', names: { es: 'palo', en: 'stick' }, aliases: ['palo', 'madera', 'trozo de madera', 'leña', 'tronco', 'rama', 'ramita', 'tablita', 'stick', 'wood', 'piece of wood', 'firewood', 'log', 'branch', 'plank'], places: { outdoors: 0.85, forest: 0.98, park: 0.8, hospital: 0.04, city: 0.25 }, base: 0.55 },
   { id: 'truck', names: { es: 'camión', en: 'truck' }, aliases: ['camion', 'camión', 'truck', 'lorry'], places: { road: 0.45, city: 0.3, industrial: 0.55, hospital: 0.02, forest: 0.04 }, base: 0.18 },
   { id: 'coin', names: { es: 'moneda', en: 'coin' }, aliases: ['moneda', 'monedas', 'coin', 'coins'], places: { city: 0.45, hospital: 0.3, school: 0.25, outdoors: 0.2, home: 0.3 }, base: 0.35 },
   { id: 'phone', names: { es: 'teléfono', en: 'phone' }, aliases: ['telefono', 'teléfono', 'celular', 'movil', 'móvil', 'phone', 'cellphone'], places: { city: 0.3, hospital: 0.25, school: 0.3, home: 0.5, office: 0.35 }, base: 0.3 },
@@ -551,6 +657,24 @@ function createFamilyMember(role, name, surname, relation) {
   return { id: `${role}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, role, name, surname, relation };
 }
 
+function normalizeFamilyTree(familyTree, player = {}) {
+  const family = familyTree && typeof familyTree === 'object' ? familyTree : generateFamilyTree(player.surname || '');
+  family.members = Array.isArray(family.members) ? family.members : [];
+  family.children = Array.isArray(family.children) ? family.children : [];
+  family.partner = family.partner && typeof family.partner === 'object' ? family.partner : null;
+  family.maritalStatus = family.maritalStatus || (family.partner ? 'dating' : 'single');
+  family.children = family.children.map((child) => ({
+	id: child.id || `child-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+	name: child.name || (currentLanguage === 'en' ? 'Unnamed child' : 'Hijo sin nombre'),
+	surname: child.surname || player.surname || '',
+	age: Math.max(0, Number(child.age) || 0),
+	relation: child.relation || 'child',
+	bornAt: child.bornAt || new Date().toISOString(),
+	otherParent: child.otherParent || family.partner?.name || ''
+  }));
+  return family;
+}
+
 function generateFamilyTree(playerSurname = '') {
   const names = randomNames[currentLanguage] || randomNames.es;
   const surnames = randomSurnames[currentLanguage] || randomSurnames.es;
@@ -586,6 +710,10 @@ function generateFamilyTree(playerSurname = '') {
 	return {
 	paternalSurname,
 	maternalSurname,
+	  surnameSource: playerSurname,
+	  maritalStatus: 'single',
+	  partner: null,
+	  children: [],
 	members
   };
 }
@@ -625,6 +753,12 @@ const creatorPosts = [
 	category: { es: 'ACTUALIZACIÓN', en: 'UPDATE' },
 	title: { es: 'Mundo vivo y sincronización ampliada', en: 'Living world and expanded sync' },
 	text: { es: 'Se amplían los lugares, hobbies, enfermedades y señales que LIFE.AI puede aprender. También se mejora la presencia online y la sincronización segura con Supabase.', en: 'Locations, hobbies, diseases and learning signals have been expanded. Online presence and secure Supabase synchronization have also been improved.' }
+	},
+	{
+	date: '2026-09-09',
+	category: { es: 'ACTUALIZACIÓN', en: 'UPDATE' },
+	title: { es: 'NUEVA VERSION 0.0.1c — Gobiernos y recompensas', en: 'NEW VERSION 0.0.1c — Governments and rewards' },
+	text: { es: 'Llegan los gobiernos de turno, que cambian cada cuatro años, el Palo Presidencial como recompensa por 30 minutos de juego y la venta directa de objetos del inventario. También mejoraron la IA, la posibilidad de tener hijos y la interfaz.', en: 'Current governments now change every four years. The Presidential Stick arrives as a 30-minute play-time reward, along with direct inventory sales. LIFE.AI, having children and the interface also received improvements.' }
 	}
 ];
 
@@ -652,9 +786,11 @@ function renderCurrentOccupation() {
   currentOccupation.classList.toggle('hidden', hideIndicator);
 	const age = Number(save.player?.age) || 0;
 	const characterName = save.player?.name || t('none');
+	const money = Number(save.player?.money) || 0;
+	const location = save.player?.location || (currentLanguage === 'en' ? 'unknown' : 'desconocida');
   currentOccupation.textContent = currentLanguage === 'en'
-	? `CHARACTER: ${characterName} · AGE: ${age} · JOB: ${careerLabel(career)}`
-	: `PERSONAJE: ${characterName} · EDAD: ${age} · TRABAJO: ${careerLabel(career)}`;
+	? `CHARACTER: ${characterName} · AGE: ${age} · JOB: ${careerLabel(career)} · MONEY: $${money} · LOCATION: ${location}`
+	: `PERSONAJE: ${characterName} · EDAD: ${age} · TRABAJO: ${careerLabel(career)} · DINERO: $${money} · UBICACIÓN: ${location}`;
 }
 
 function renderCareersPanel() {
@@ -675,9 +811,39 @@ function renderCareersPanel() {
 
 function renderFamilyPanel() {
   if (!familyDashboard) return;
-  const family = readSave().player?.familyTree;
+	const save = readSave();
+  const family = normalizeFamilyTree(save.player?.familyTree, save.player || {});
   familyDashboard.replaceChildren();
-  if (!family?.members?.length) return;
+	const en = currentLanguage === 'en';
+  const statusLabels = en ? { single: 'single', dating: 'in a relationship', married: 'married', divorced: 'divorced' } : { single: 'soltero/a', dating: 'en pareja', married: 'casado/a', divorced: 'divorciado/a' };
+  const summary = document.createElement('section');
+  summary.className = 'family-group family-status';
+  const summaryTitle = document.createElement('h3');
+  summaryTitle.textContent = `[ ${en ? 'CURRENT FAMILY' : 'FAMILIA ACTUAL'} ]`;
+  summary.append(summaryTitle);
+  const status = document.createElement('p');
+  status.textContent = `${en ? 'Status' : 'Estado civil'}: ${statusLabels[family.maritalStatus] || family.maritalStatus}`;
+  summary.append(status);
+  if (family.partner) {
+	const partner = document.createElement('p');
+	partner.textContent = `${en ? 'Partner' : 'Pareja'}: ${family.partner.name} ${family.partner.surname || ''}${family.maritalStatus === 'married' ? (en ? ' — spouse' : ' — cónyuge') : ''}`;
+	summary.append(partner);
+  }
+  familyDashboard.append(summary);
+  if (family.children.length) {
+	const children = document.createElement('section');
+	children.className = 'family-group family-children';
+	const heading = document.createElement('h3');
+	heading.textContent = `[ ${en ? 'CHILDREN' : 'HIJOS'} ]`;
+	children.append(heading);
+	family.children.forEach((child) => {
+	  const entry = document.createElement('p');
+	  entry.textContent = `${child.name} ${child.surname || ''} — ${en ? 'age' : 'edad'} ${child.age}`;
+	  children.append(entry);
+	});
+	familyDashboard.append(children);
+  }
+  if (!family.members?.length) return;
   const grouped = new Map();
 	family.members.forEach((member) => {
 	const group = member.relation.startsWith('paternal') || member.relation === 'cousin' ? (currentLanguage === 'en' ? 'Paternal family' : 'Familia paterna') : member.relation.startsWith('maternal') || member.relation === 'maternalCousin' ? (currentLanguage === 'en' ? 'Maternal family' : 'Familia materna') : (currentLanguage === 'en' ? 'Close family' : 'Familia cercana');
@@ -717,10 +883,31 @@ function renderInventoryPanel() {
 	const title = document.createElement('h3');
 	title.textContent = `${item?.names[currentLanguage] || entry.name} x${entry.quantity}`;
 	const details = document.createElement('p');
-	details.textContent = currentLanguage === 'en' ? `Found at: ${entry.location || 'unknown place'}` : `Encontrado en: ${entry.location || 'lugar desconocido'}`;
-	card.append(title, details);
+	const saleValue = itemSaleValue(entry);
+	details.textContent = currentLanguage === 'en' ? `Found at: ${entry.location || 'unknown place'} · sale value: ${saleValue} each` : `Encontrado en: ${entry.location || 'lugar desconocido'} · valor de venta: ${saleValue} cada uno`;
+	const sellButton = document.createElement('button');
+	sellButton.type = 'button';
+	sellButton.className = 'history-button inventory-sell-button';
+	sellButton.textContent = currentLanguage === 'en' ? `[ SELL FOR $${saleValue} ]` : `[ VENDER POR $${saleValue} ]`;
+	sellButton.addEventListener('click', () => sellInventoryItem(entry.id));
+	card.append(title, details, sellButton);
 	inventoryDashboard.append(card);
   });
+}
+
+function sellInventoryItem(itemId) {
+  const save = readSave();
+  const inventory = save.player?.inventory || [];
+  const entry = inventory.find((item) => item.id === itemId);
+  if (!entry) return;
+  const value = itemSaleValue(entry);
+  save.player.money = (Number(save.player.money) || 0) + value;
+  entry.quantity = Math.max(0, (Number(entry.quantity) || 0) - 1);
+  save.player.inventory = inventory.filter((item) => item.quantity > 0);
+  saveCurrentGame(save);
+  renderInventoryPanel();
+  renderStats();
+  renderCurrentOccupation();
 }
 function localizedSeason(season) {
   const labels = {
@@ -742,17 +929,6 @@ function localizedStatus(status) {
   return labels[status]?.[currentLanguage] || status;
 }
 
-function localizedPersonality(personality) {
-  const labels = {
-	serio: { es: 'serio', en: 'serious' },
-	aventurero: { es: 'aventurero', en: 'adventurous' },
-	sarcastico: { es: 'sarcástico', en: 'sarcastic' },
-	profesor: { es: 'profesor', en: 'teacher' },
-	narrador: { es: 'narrador', en: 'narrator' }
-  };
-  return labels[personality]?.[currentLanguage] || personality;
-}
-
 const player = {};
 let currentQuestion = 0;
 let lastAnalysis = null;
@@ -766,6 +942,7 @@ window.__lifeGlobalPatterns = [];
 let applicationReady = false;
 let weatherTimer = null;
 let worldClockTimer = null;
+const sessionStartedAt = Date.now();
 
 const weatherTypes = ['cold', 'hot', 'fog', 'rainy'];
 const weatherLabels = {
@@ -781,16 +958,17 @@ const uiText = {
 	usernameTitle: 'IDENTIFICAR USUARIO', usernameIntro: 'Elige un nombre de usuario antes de entrar al simulador de vida.', usernameLabel: 'Nombre de usuario', usernameSubmit: '[ ENTRAR ]', usernameHint: 'Usa de 2 a 24 letras, números, espacios, guiones o guiones bajos.', usernameError: 'ERROR: introduce un nombre de usuario válido.', userStatus: 'USUARIO:',
 	start: 'COMENZAR VIDA', next: '[ ENTER ]', name: '¿Cuál es tu nombre?', surname: '¿Cuál es tu apellido?', age: '¿Cuántos años tienes?', money: '¿Cuánto dinero tienes?', location: '¿Dónde comienza tu historia?', hobby: '¿Cuál es tu hobby?',
 	nameHint: 'Escribe tu nombre.', surnameHint: 'Escribe tu apellido.', ageHint: 'Introduce tu edad.', moneyHint: 'Introduce una cantidad inicial.', locationHint: 'Escribe una ubicación.', hobbyHint: 'Ejemplo: música, fútbol, videojuegos, dibujo...',
-		storyLabel: '¿Cómo quieres continuar tu vida?', storyPlaceholder: 'Escribe lo que sucede a continuación...', save: '[ GUARDAR ]', menu: '[ MENU ]', play: '[ JUGAR ]', blog: '[ BLOG ]', logout: '[ CERRAR SESIÓN ]', logoutConfirm: '¿Quieres cerrar la sesión? La partida se conservará.', history: '[ VER TODAS LAS DECISIONES ]', chat: '[ HABLAR CON LIFE.AI ]', stats: '[ VER ESTADÍSTICAS ]', careers: '[ VER CARRERA ]', family: '[ VER FAMILIA ]', inventory: '[ VER INVENTARIO ]', world: '[ VER MUNDO ]', skills: '[ VER HABILIDADES ]', relations: '[ VER RELACIONES ]', learnFile: '[ CARGAR CONOCIMIENTO ]', export: '[ EXPORTAR PARTIDA ]', import: '[ IMPORTAR PARTIDA ]', reset: '[ NUEVA PARTIDA ]', menuTitle: 'menu.json // panel de control', menuSubtitle: '// todos los módulos de LIFE.AI',
- nameKey: '"nombre"', surnameKey: '"apellido"', ageKey: '"edad"', characterKey: '"personaje"', moneyKey: '"dinero"',
+		storyLabel: '¿Cómo quieres continuar tu vida?', storyPlaceholder: 'Escribe lo que sucede a continuación...', save: '[ GUARDAR ]', menu: '[ MENU ]', play: '[ JUGAR ]', blog: '[ BLOG ]', logout: '[ CERRAR SESIÓN ]', logoutConfirm: '¿Quieres cerrar la sesión? La partida se conservará.', history: '[ VER TODAS LAS DECISIONES ]', stats: '[ VER ESTADÍSTICAS ]', careers: '[ VER CARRERA ]', family: '[ VER FAMILIA ]', inventory: '[ VER INVENTARIO ]', government: '[ GOBIERNOS ]', world: '[ VER MUNDO ]', skills: '[ VER HABILIDADES ]', relations: '[ VER RELACIONES ]', learnFile: '[ CARGAR CONOCIMIENTO ]', export: '[ EXPORTAR PARTIDA ]', import: '[ IMPORTAR PARTIDA ]', reset: '[ NUEVA PARTIDA ]', menuTitle: 'menu.json // panel de control', menuSubtitle: '// todos los módulos de LIFE.AI',
+		 nameKey: '"nombre"', surnameKey: '"apellido"', ageKey: '"edad"', characterKey: '"personaje"', moneyKey: '"dinero"', governmentTitle: 'government.json // gobierno actual', governmentSubtitle: '// administración vigente y mandato de cuatro años',
+	  careersTitle: 'careers.json // catálogo de profesiones', careersSubtitle: '// profesiones disponibles, variantes e ingresos aproximados', familyTitle: 'family.json // árbol familiar', familySubtitle: '// pareja, matrimonio, hijos y familiares', inventoryTitle: 'inventory.json // inventario', inventorySubtitle: '// objetos encontrados durante la historia', worldTitle: 'world.json // mundo viviente', worldSubtitle: '// lugares, personajes, objetivos, eventos y reglas descubiertas', skillsTitle: 'skills.json // habilidades', skillsSubtitle: '// capacidades aprendidas, experiencia y crecimiento', relationsTitle: 'relations.json // relaciones', relationsSubtitle: '// vínculos, confianza y evolución social', statsTitle: 'stats.json // estadísticas', statsSubtitle: '// estado actual de tu vida', historyTitle: 'history.log // historial', historySubtitle: '// decisiones y capítulos guardados', blogTitle: 'blog.txt // notas de LIFE.AI', blogSubtitle: '// ideas, cambios y registros del simulador', playTimeRewardsTitle: 'rewards.json // tiempo jugado', playTimeRewardsSubtitle: '// recompensas por permanecer en tu sesión', playTimeRewardsButton: '[ RECOMPENSAS POR TIEMPO JUGADO ]', saved: '// capítulo guardado correctamente_', gameOverTitle: 'GAME OVER', gameOverText: 'Tu vida ha terminado.', gameOverNewLife: '[ COMENZAR OTRA VIDA ]', gameOverClose: '[ VOLVER AL INICIO ]',
   },
   en: {
 	appTitle: 'Unnamed life simulation', languageLabel: 'LANG:', languageAria: 'Language',
 	usernameTitle: 'IDENTIFY USER', usernameIntro: 'Choose a username before entering the life simulator.', usernameLabel: 'Username', usernameSubmit: '[ ENTER ]', usernameHint: 'Use 2 to 24 letters, numbers, spaces, hyphens or underscores.', usernameError: 'ERROR: enter a valid username.', userStatus: 'USER:',
 	start: 'START LIFE', next: '[ ENTER ]', name: 'What is your name?', surname: 'What is your surname?', age: 'How old are you?', money: 'How much money do you have?', location: 'Where does your story begin?', hobby: 'What is your hobby?',
 	nameHint: 'Write your name.', surnameHint: 'Write your surname.', ageHint: 'Enter your age.', moneyHint: 'Enter an initial amount.', locationHint: 'Write a location.', hobbyHint: 'Example: music, football, games, drawing...',
-		storyLabel: 'How do you want to continue your life?', storyPlaceholder: 'Write what happens next...', save: '[ SAVE ]', menu: '[ MENU ]', play: '[ PLAY ]', blog: '[ BLOG ]', logout: '[ LOG OUT ]', logoutConfirm: 'Do you want to log out? Your game will be preserved.', history: '[ VIEW ALL DECISIONS ]', chat: '[ TALK TO LIFE.AI ]', stats: '[ VIEW STATS ]', careers: '[ VIEW CAREERS ]', family: '[ VIEW FAMILY ]', inventory: '[ VIEW INVENTORY ]', world: '[ VIEW WORLD ]', skills: '[ VIEW SKILLS ]', relations: '[ VIEW RELATIONSHIPS ]', learnFile: '[ LOAD KNOWLEDGE ]', export: '[ EXPORT GAME ]', import: '[ IMPORT GAME ]', reset: '[ NEW GAME ]', menuTitle: 'menu.json // control panel', menuSubtitle: '// all LIFE.AI modules',
-		blogReleaseTitle: '[ UPDATE ] NEW VERSION 0.0.1b', blogReleaseText: 'This update expands the world, diseases, hobbies, locations and secure Supabase synchronization.',
+		storyLabel: 'How do you want to continue your life?', storyPlaceholder: 'Write what happens next...', save: '[ SAVE ]', menu: '[ MENU ]', play: '[ PLAY ]', blog: '[ BLOG ]', logout: '[ LOG OUT ]', logoutConfirm: 'Do you want to log out? Your game will be preserved.', history: '[ VIEW ALL DECISIONS ]', stats: '[ VIEW STATS ]', careers: '[ VIEW CAREERS ]', family: '[ VIEW FAMILY ]', inventory: '[ VIEW INVENTORY ]', government: '[ GOVERNMENTS ]', world: '[ VIEW WORLD ]', skills: '[ VIEW SKILLS ]', relations: '[ VIEW RELATIONSHIPS ]', learnFile: '[ LOAD KNOWLEDGE ]', export: '[ EXPORT GAME ]', import: '[ IMPORT GAME ]', reset: '[ NEW GAME ]', menuTitle: 'menu.json // control panel', menuSubtitle: '// all LIFE.AI modules',
+		blogReleaseTitle: '[ UPDATE ] NEW VERSION 0.0.1c', blogReleaseText: 'This update adds four-year governments, the Presidential Stick play-time reward, inventory sales, smarter LIFE.AI, children and interface improvements.', careersTitle: 'careers.json // career catalog', careersSubtitle: '// available professions, variants and approximate income', familyTitle: 'family.json // family tree', familySubtitle: '// partner, marriage, children and relatives', inventoryTitle: 'inventory.json // inventory', inventorySubtitle: '// objects found during the story', government: '[ GOVERNMENTS ]', governmentTitle: 'government.json // current government', governmentSubtitle: '// current administration and four-year term', worldTitle: 'world.json // living world', worldSubtitle: '// places, characters, goals, events and discovered rules', skillsTitle: 'skills.json // skills', skillsSubtitle: '// learned abilities, experience and character growth', relationsTitle: 'relations.json // relationships', relationsSubtitle: '// bonds, trust and social evolution', statsTitle: 'stats.json // statistics', statsSubtitle: '// current life status', historyTitle: 'history.log // history', historySubtitle: '// saved decisions and chapters', blogTitle: 'blog.txt // LIFE.AI notes', blogSubtitle: '// ideas, changes and simulator records', playTimeRewardsTitle: 'rewards.json // play time', playTimeRewardsSubtitle: '// rewards for staying in your session', playTimeRewardsButton: '[ PLAY TIME REWARDS ]', saved: '// chapter saved successfully_', gameOverTitle: 'GAME OVER', gameOverText: 'Your life has ended.', gameOverNewLife: '[ START ANOTHER LIFE ]', gameOverClose: '[ RETURN TO START ]',
 	}
 };
 
@@ -808,6 +986,7 @@ function startNewLife() {
 	// Keep the new game separate from persistent memory until the player completes setup.
 	window.lifeSupabase?.resetGameReference?.();
 	window.__lifeSave = null;
+	playTimeRewardsScreen?.classList.add('hidden');
   Object.keys(player).forEach((key) => delete player[key]);
 	Object.assign(player, freshPlayer);
   menuScreen.classList.add('hidden');
@@ -896,18 +1075,6 @@ function setText(element, value) {
 
 function setPlaceholder(element, value) {
   if (element) element.placeholder = value;
-}
-
-function renderSupabaseStatus(state, detail = '') {
-  if (!supabaseStatus) return;
-	const connected = state === 'online';
-	const labels = currentLanguage === 'en'
-	? { online: 'CONNECTED', offline: 'DISCONNECTED' }
-	: { online: 'CONECTADO', offline: 'DESCONECTADO' };
-  supabaseStatus.classList.remove('status-pending', 'status-online', 'status-offline');
-  supabaseStatus.classList.add(connected ? 'status-online' : 'status-offline');
-  supabaseStatus.textContent = connected ? labels.online : labels.offline;
-  supabaseStatus.title = detail || supabaseStatus.textContent;
 }
 
 function renderUsernameStatus() {
@@ -1070,27 +1237,23 @@ function applyTranslations() {
   setText(questionHint, t(`${questions[currentQuestion].key}Hint`));
   setText(document.querySelector('.story-editor label'), t('storyLabel'));
   setPlaceholder(storyInput, t('storyPlaceholder'));
-	setText(saveStoryButton, t('save')); setText(historyButton, t('history')); setText(chatButton, t('chat')); setText(statsButton, t('stats')); setText(careersButton, t('careers')); setText(familyButton, t('family')); setText(worldButton, t('world')); setText(skillsButton, t('skills'));
+	setText(saveStoryButton, t('save')); setText(historyButton, t('history')); setText(statsButton, t('stats')); setText(careersButton, t('careers')); setText(familyButton, t('family')); setText(worldButton, t('world')); setText(skillsButton, t('skills'));
 	setText(exportButton, t('export')); setText(importButton, t('import')); setText(resetButton, t('reset')); setText(testGameOverButton, currentLanguage === 'en' ? '[ TEST GAME OVER ]' : '[ PROBAR GAME OVER ]'); setText(savedMessage, t('saved'));
 	setText(relationsButton, t('relations'));
 	setText(learnFileButton, t('learnFile'));
 	setText(careersButton, t('careers')); setText(familyButton, t('family')); setText(inventoryButton, t('inventory'));
-	setText(document.querySelector('#worldTitle'), t('worldTitle')); setText(document.querySelector('#skillsTitle'), t('skillsTitle')); setText(document.querySelector('#relationsTitle'), t('relationsTitle')); setText(document.querySelector('#statsTitle'), t('statsTitle')); setText(document.querySelector('#chatTitle'), t('chatTitle')); setText(document.querySelector('#historyTitle'), t('historyTitle'));
-  setText(document.querySelector('#worldSubtitle'), t('worldSubtitle')); setText(document.querySelector('#skillsSubtitle'), t('skillsSubtitle')); setText(document.querySelector('#relationsSubtitle'), t('relationsSubtitle')); setText(document.querySelector('#statsSubtitle'), t('statsSubtitle')); setText(document.querySelector('#chatSubtitle'), t('chatSubtitle')); setText(document.querySelector('#historySubtitle'), t('historySubtitle'));
+	setText(governmentButton, t('government'));
+	setText(document.querySelector('#worldTitle'), t('worldTitle')); setText(document.querySelector('#skillsTitle'), t('skillsTitle')); setText(document.querySelector('#relationsTitle'), t('relationsTitle')); setText(document.querySelector('#statsTitle'), t('statsTitle')); setText(document.querySelector('#historyTitle'), t('historyTitle'));
+  setText(document.querySelector('#worldSubtitle'), t('worldSubtitle')); setText(document.querySelector('#skillsSubtitle'), t('skillsSubtitle')); setText(document.querySelector('#relationsSubtitle'), t('relationsSubtitle')); setText(document.querySelector('#statsSubtitle'), t('statsSubtitle')); setText(document.querySelector('#historySubtitle'), t('historySubtitle'));
 	setText(document.querySelector('#careersTitle'), t('careersTitle')); setText(document.querySelector('#careersSubtitle'), t('careersSubtitle')); setText(document.querySelector('#familyTitle'), t('familyTitle')); setText(document.querySelector('#familySubtitle'), t('familySubtitle'));
+	setText(document.querySelector('#governmentTitle'), t('governmentTitle')); setText(document.querySelector('#governmentSubtitle'), t('governmentSubtitle'));
 	setText(document.querySelector('#inventoryTitle'), t('inventoryTitle')); setText(document.querySelector('#inventorySubtitle'), t('inventorySubtitle')); setText(inventoryButton, t('inventory'));
+	setText(playTimeRewardsButton, t('playTimeRewardsButton'));
+	setText(document.querySelector('#playTimeRewardsScreen .close-history'), currentLanguage === 'en' ? '[ X ]' : '[ X ]');
 	['nameKey', 'surnameKey', 'ageKey', 'characterKey', 'moneyKey', 'locationKey', 'hobbyKey', 'occupationKey', 'energyKey', 'moodKey', 'reputationKey'].forEach((key) => setText(document.querySelector(`#${key}`), t(key)));
-  setPlaceholder(chatInput, t('chatPlaceholder')); setText(chatForm?.querySelector('button'), t('send')); setText(document.querySelector('.chat-help'), t('chatHelp'));
-  setText(document.querySelector('.analysis-title'), t('analyzer'));
 	setText(document.querySelector('#blogTitle'), t('blogTitle')); setText(document.querySelector('#blogSubtitle'), t('blogSubtitle'));
   setText(document.querySelector('#blogReleaseTitle'), t('blogReleaseTitle')); setText(document.querySelector('#blogReleaseText'), t('blogReleaseText'));
-	const chatGreeting = chatMessages?.querySelector('.chat-ai');
-	if (chatGreeting) {
-	  const label = chatGreeting.querySelector('span');
-	  chatGreeting.replaceChildren(label || document.createElement('span'), document.createTextNode(` ${t('chatGreeting')}`));
-	}
 	renderCreatorBlog();
-  if (lastAnalysis) updateAnalysisView(lastAnalysis); else { setText(analysisDetails, `${t('intent')}: — · ${t('confidence')}: — · ${t('entities')}: —`); setText(predictionDetails, `${t('prediction')}: — · ${t('personality')}: — · ${t('goal')}: —`); }
 }
 
 function changeLanguage(value) {
@@ -1099,8 +1262,6 @@ function changeLanguage(value) {
 	window.currentLanguage = currentLanguage;
   try { localStorage.setItem('lifeLanguage', currentLanguage); } catch { /* almacenamiento opcional */ }
   applyTranslations();
-	if (window.lifeSupabase?.enabled) renderSupabaseStatus('online');
-	else if (window.lifeSupabase) renderSupabaseStatus('offline', window.lifeSupabase.lastError || '');
   if (!historyScreen.classList.contains('hidden')) renderHistory(readSave().chapters);
   if (!worldScreen.classList.contains('hidden')) renderWorldPanel();
   if (!skillsScreen.classList.contains('hidden')) renderSkillsPanel();
@@ -1187,11 +1348,12 @@ function renderCreatorBlog() {
 function renderMenu() {
 	const controls = [
 	['history', () => { renderHistory(readSave().chapters); historyScreen.classList.remove('hidden'); }],
-	['chat', () => { renderChat(readSave().memory.chat || []); chatScreen.classList.remove('hidden'); chatInput.focus(); }],
 	['stats', () => { statsScreen.classList.remove('hidden'); renderStats(); renderFullStats(); }],
 	['careers', () => { renderCareersPanel(); careersScreen.classList.remove('hidden'); }],
 	['family', () => { renderFamilyPanel(); familyScreen.classList.remove('hidden'); }],
 	['inventory', () => { renderInventoryPanel(); inventoryScreen.classList.remove('hidden'); }],
+	['playTimeRewardsButton', openPlayTimeRewards],
+	['government', () => { renderGovernmentPanel(); governmentScreen.classList.remove('hidden'); }],
 	['world', () => { renderWorldPanel(); worldScreen.classList.remove('hidden'); }],
 	['skills', () => { renderSkillsPanel(); skillsScreen.classList.remove('hidden'); }],
 	['relations', () => { renderRelationsPanel(); relationsScreen.classList.remove('hidden'); }],
@@ -1311,33 +1473,6 @@ class StorageManager {
 }
 
 const storage = new StorageManager();
-
-class AdaptivePersonality {
-  choose(text, analysis, memory) {
-	const scores = { serio: 0, aventurero: 0, sarcastico: 0, profesor: 0, narrador: 0 };
-	if (['health', 'risk', 'change_money'].includes(analysis.intent)) scores.serio += 4;
-	if (['travel', 'risk', 'adventure'].includes(analysis.intent) || /viaje|aventura|explorar/i.test(text)) scores.aventurero += 4;
-	if (analysis.intent === 'learn' || analysis.intent === 'planning' || /cómo|como|aprender|estudiar/i.test(text)) scores.profesor += 4;
-	if (memory.episodes.length > 3 && /historia|sucede|vida/i.test(text)) scores.narrador += 3;
-	if (/jaja|broma|gracioso|absurdo/i.test(text)) scores.sarcastico += 3;
-	if (memory.personality?.current) scores[memory.personality.current] += 1;
-	const [mode, score] = Object.entries(scores).sort((a, b) => b[1] - a[1])[0];
-	memory.personality = memory.personality || { current: mode, confidence: 0, history: [] };
-	memory.personality.current = mode;
-	memory.personality.confidence = Math.min(1, score / 6);
-	memory.personality.history.push({ mode, score, intent: analysis.intent, date: new Date().toISOString() });
-	return { mode, confidence: memory.personality.confidence };
-  }
-
-  style(text, personality) {
-	const prefixes = currentLanguage === 'en' ? {
-	  serio: 'I will analyze this carefully.', aventurero: 'The next possibility opens an interesting path.', sarcastico: 'Well, because life clearly could not make this simple.', profesor: 'Let us go step by step.', narrador: 'In this chapter of your story,'
-	} : {
-	  serio: 'Voy a analizarlo con cuidado.', aventurero: 'La próxima posibilidad abre un camino interesante.', sarcastico: 'Bueno, porque claramente la vida no podía hacerlo sencillo.', profesor: 'Veámoslo paso a paso.', narrador: 'En este capítulo de tu historia,'
-	};
-	return `${prefixes[personality.mode] || prefixes.narrador} ${text}`;
-  }
-}
 
 function predictIntent(text, memory) {
   const normalized = normalizeWords(text);
@@ -1569,10 +1704,10 @@ function readGlobalMemory() {
 function createEmptyMemory() {
   return {
 	version: 3, lifeCount: 0, wordCounts: {}, topics: {}, choices: [], notes: [], customRules: [],
-	chat: [], learnedIntents: [], recentInputs: [], sentiment: {}, codeIndex: [],
+	learnedIntents: [], recentInputs: [], sentiment: {}, codeIndex: [],
 	conversationSummaries: [], sessions: [], facts: [], goals: [], preferences: {},
 	searches: [], lastContext: [], updatedAt: null, episodes: [], semanticConcepts: {},
-	personality: { current: 'narrador', confidence: 0, history: [] }, corrections: [],
+	corrections: [],
 	knowledgeGraph: { nodes: [], edges: [] }, plans: [], decay: { halfLifeDays: 30 }
   };
 }
@@ -1641,12 +1776,19 @@ function startWorldClock(save) {
   stopWorldClock();
   if (!save || save.lifeStatus !== 'active' || !save.player?.name) return;
   normalizeWorld(save.world);
+	let diseaseClockTicks = 0;
   worldClockTimer = window.setInterval(() => {
 	if (window.__lifeSave?.lifeStatus !== 'active') return;
 	const activeSave = normalizeSave(window.__lifeSave);
 	advanceWorldTime(activeSave.world, 1);
+	diseaseClockTicks += 1;
+	if (diseaseClockTicks >= 3) {
+	  diseaseClockTicks = 0;
+	  checkTemporalDiseases(activeSave);
+	}
 	window.__lifeSave = activeSave;
 	if (!worldScreen?.classList.contains('hidden')) renderWorldPanel();
+	if (!governmentScreen?.classList.contains('hidden')) renderGovernmentPanel();
   }, 1000);
 }
 
@@ -1674,13 +1816,154 @@ function normalizeSave(save) {
 	const normalized = save && typeof save === 'object' ? save : {};
 	normalized.player = normalized.player || {};
 	normalized.player.inventory = Array.isArray(normalized.player.inventory) ? normalized.player.inventory : [];
+	normalized.player.rewards = normalized.player.rewards && typeof normalized.player.rewards === 'object' ? normalized.player.rewards : {};
 	if (!normalized.player.familyTree || (normalized.player.surname && normalized.player.familyTree.surnameSource !== normalized.player.surname)) normalized.player.familyTree = generateFamilyTree(normalized.player.surname || '');
+	normalized.player.familyTree = normalizeFamilyTree(normalized.player.familyTree, normalized.player);
 	normalized.chapters = Array.isArray(normalized.chapters) ? normalized.chapters : [];
 	normalized.memory = normalizeMemory(normalized.memory || createEmptyMemory());
 	normalized.world = normalizeWorld(normalized.world);
   normalized.weather = normalizeWeather(normalized.weather);
 	normalized.lifeStatus = normalized.lifeStatus === 'ended' ? 'ended' : 'active';
 	return normalized;
+}
+
+function getSessionPlaySeconds() {
+  return Math.max(0, Math.floor((Date.now() - sessionStartedAt) / 1000));
+}
+
+function getRewardPlaySeconds() {
+  return Math.max(getSessionPlaySeconds(), Number(window.__lifePlaySeconds) || 0);
+}
+
+function isConversationMessage(text, analysis) {
+  const normalized = normalizeWords(text).join(' ');
+	const words = normalized.split(/\s+/).filter(Boolean);
+	const pureConversation = /^(como estas|how are you|que haces|qué haces|qué onda|que onda|todo bien|what's up|whats up|are you there)$/i.test(normalized);
+  if (pureConversation) return true;
+  const casualGreeting = words.some((word) => ['hola', 'buenas', 'hey', 'hello', 'hi', 'holi', 'buenasass'].some((term) => closeSemanticWord(word, term) || word.startsWith(`${term}a`) || word.startsWith(`${term}e`)));
+  const greeting = /^(hola|buenas|buenos dias|buenas tardes|buenas noches|hey|hello|hi|holi|chau|adios|adiós|gracias|thank you|thanks|good morning|good afternoon|good evening|good night)$/i.test(normalized) || casualGreeting;
+  const conversation = /\b(quiero charlar|quiero hablar|podemos hablar|podemos charlar|charlar|hablar|conversar|platicar|decime|contame|ayudame|como estas|cómo estás|qué haces|que haces|qué onda|que onda|todo bien|how are you|what are you doing|what's up|whats up|can we talk|let's talk|chat|talk|tell me|help me|who are you|quien eres|qué eres|que eres|are you there|good morning|good afternoon|good evening|good night)\b/i.test(normalized);
+  const action = analysis.actionVerb || analysis.explicitDeclaration || analysis.entities.locations.length || analysis.entities.people.length || analysis.entities.money.length;
+  return (greeting || conversation) && !action;
+}
+
+function getConversationReply(text) {
+  const normalized = normalizeWords(text).join(' ');
+  const en = currentLanguage === 'en';
+	if (/\b(buenas|buenos dias|buenas tardes|buenas noches|good morning|good afternoon|good evening|good night)\b/.test(normalized)) return en ? 'Good day! The simulation is ready whenever you are.' : '¡Buenas! La simulación está lista cuando quieras.';
+  if (/\b(holi|hola|hey|hello|hi)\w*/.test(normalized)) return en ? 'Heyyy! Nice to see you. What are you thinking about?' : '¡Holaaa! Qué bueno verte. ¿En qué estás pensando?';
+  if (/\b(chau|adios|adiós|bye|see you)\b/.test(normalized)) return en ? 'See you later! Your life will be waiting.' : '¡Nos vemos! Tu vida va a estar esperándote.';
+  if (/\b(qué onda|que onda|todo bien|whats up|what's up|what is up)\b/.test(normalized)) return en ? 'All systems are good here. How is your story going?' : '¡Todo tranqui por acá! ¿Cómo viene tu historia?';
+  if (/\b(hola|buenas|buenos dias|buenas tardes|buenas noches|hey|hello|hi)\b/.test(normalized)) return en ? 'Hello. You can talk to me here, or write a clear action when you want to change your life.' : 'Hola. Podés hablar conmigo acá, o escribir una acción clara cuando quieras cambiar tu vida.';
+  if (/\b(como estas|how are you)\b/.test(normalized)) return en ? 'I am ready to listen and help you explore your story.' : 'Estoy lista para escucharte y ayudarte a explorar tu historia.';
+  if (/\b(gracias|thank you|thanks)\b/.test(normalized)) return en ? 'You are welcome. What would you like to talk about?' : 'De nada. ¿Sobre qué te gustaría hablar?';
+  if (/\b(quien eres|que eres|who are you|what are you)\b/.test(normalized)) return en ? 'I am LIFE.AI, the guide for your life simulation.' : 'Soy LIFE.AI, la guía de tu simulación de vida.';
+	if (/\b(ayuda|ayudame|qué puedo hacer|que puedo hacer|help|help me|what can i do|what should i do)\b/.test(normalized)) return en ? 'You can describe a job, a trip, a conversation, a relationship or any event you want to experience. Clear actions change the simulation; questions only start a conversation.' : 'Podés describir un trabajo, un viaje, una conversación, una relación o cualquier evento que quieras vivir. Las acciones claras cambian la simulación; las preguntas solo inician una conversación.';
+  if (/\b(cuéntame|contame|decime|tell me|explain|explicame|explícame|por qué|why|where are you|donde estas|dónde estás)\b/.test(normalized)) return en ? 'I can explain the current story, remember your choices and help you decide what happens next.' : 'Puedo explicarte la historia actual, recordar tus decisiones y ayudarte a decidir qué sucede después.';
+  return en ? 'Of course. Tell me what is on your mind. This message will not change your statistics.' : 'Claro. Contame qué tenés en mente. Este mensaje no va a cambiar tus estadísticas.';
+}
+
+function extractFamilyPersonName(text, analysis) {
+  const match = String(text || '').match(/(?:con|with|to)\s+([a-záéíóúüñ][a-záéíóúüñ'-]*(?:\s+[a-záéíóúüñ][a-záéíóúüñ'-]*){0,2})/i);
+  const candidate = match?.[1]?.replace(/\s+(?:y|and)\s+.*$/i, '').trim();
+  if (candidate && !/^(un|una|uno|a|the|someone|alguien|hijo|hija|child|baby|children)$/i.test(candidate)) return candidate;
+  return analysis?.entities?.people?.[0] || '';
+}
+
+function applyFamilyConsequences(text, playerState, analysis, effects) {
+  if (!analysis.mutationAllowed || analysis.mutationConfidence < .42) return;
+  const normalized = normalizeWords(text).join(' ');
+  if (hasNegation(text)) return;
+  const family = normalizeFamilyTree(playerState.familyTree, playerState);
+  const en = currentLanguage === 'en';
+  const personName = extractFamilyPersonName(text, analysis);
+	const hasRelationship = /\b(pareja|novio|novia|relacion|relación|enamor|salir con|estoy con|dating|girlfriend|boyfriend|partner|relationship|fall in love)\b/.test(normalized);
+  const hasMarriage = /\b(casar|casarme|casamos|casado|casada|boda|matrimonio|marry|married|wedding|spouse|husband|wife)\b/.test(normalized);
+  const hasBreakup = /\b(divorcio|divorciar|divorciamos|separar|terminar la relacion|terminamos|break up|breakup|divorce|separate|end the relationship)\b/.test(normalized);
+  const hasChild = /\b(hijo|hija|hijos|hijas|bebe|bebé|niño|niña|tener hijos|adoptar|child|children|baby|son|daughter|adopt)\b/.test(normalized);
+  const createPartner = () => {
+	const names = randomNames[currentLanguage] || randomNames.es;
+	return { id: `partner-${Date.now()}`, name: personName || randomFrom(names), surname: playerState.surname || randomFrom(randomSurnames[currentLanguage] || randomSurnames.es), relation: 'partner', trust: 25, startedAt: new Date().toISOString() };
+  };
+  if (hasBreakup && family.partner) {
+	family.partner.former = true;
+	family.partner.endedAt = new Date().toISOString();
+	family.maritalStatus = 'divorced';
+	effects.push(en ? `relationship ended with ${family.partner.name}` : `terminó la relación con ${family.partner.name}`);
+  } else if (hasMarriage) {
+	family.partner = family.partner || createPartner();
+	family.partner.marriedAt = family.partner.marriedAt || new Date().toISOString();
+	family.maritalStatus = 'married';
+	effects.push(en ? `married to ${family.partner.name}` : `casado/a con ${family.partner.name}`);
+  } else if (hasRelationship) {
+	family.partner = family.partner || createPartner();
+	if (personName) family.partner.name = personName;
+	family.partner.relation = 'partner';
+	family.maritalStatus = 'dating';
+	effects.push(en ? `partner: ${family.partner.name}` : `pareja: ${family.partner.name}`);
+  }
+  if (hasChild && !hasBreakup) {
+	family.partner = family.partner || createPartner();
+	const quantityMatch = normalized.match(/\b(\d{1,2})\s+(?:hijos?|children)\b/);
+	const quantity = Math.min(4, Math.max(1, Number(quantityMatch?.[1]) || 1));
+	for (let index = 0; index < quantity; index += 1) {
+	  const names = randomNames[currentLanguage] || randomNames.es;
+	  family.children.push({ id: `child-${Date.now()}-${index}`, name: randomFrom(names), surname: family.partner.surname || playerState.surname || '', age: 0, relation: 'child', bornAt: new Date().toISOString(), otherParent: family.partner.name });
+	}
+	effects.push(en ? `${quantity} child${quantity > 1 ? 'ren' : ''} added to the family` : `${quantity} hijo${quantity > 1 ? 's' : ''} añadido${quantity > 1 ? 's' : ''} a la familia`);
+  }
+  playerState.familyTree = family;
+}
+
+function hasInfiniteLifeCollar(save = readSave()) {
+  return save?.player?.rewards?.infinite_life_collar === true || save?.player?.inventory?.some((item) => item.id === 'infinite_life_collar');
+}
+
+function renderPlayTimeRewards() {
+  if (!playTimeRewardsContent) return;
+  const save = readSave();
+  const seconds = getRewardPlaySeconds();
+	const collarRequired = 600;
+  const presidentialRequired = 1800;
+  const unlocked = hasInfiniteLifeCollar(save);
+  const presidentialUnlocked = save?.player?.rewards?.presidential_stick === true || save?.player?.inventory?.some((item) => item.id === 'presidential_stick');
+  const remaining = Math.max(0, collarRequired - seconds);
+  const presidentialRemaining = Math.max(0, presidentialRequired - seconds);
+  const time = `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
+  const remainingTime = `${Math.floor(remaining / 60)}:${String(remaining % 60).padStart(2, '0')}`;
+  playTimeRewardsContent.innerHTML = '';
+  const status = document.createElement('p');
+  status.className = 'reward-status';
+	status.textContent = currentLanguage === 'en' ? `Play time: ${time}` : `Tiempo jugado: ${time}`;
+  playTimeRewardsContent.append(status);
+  const reward = document.createElement('p');
+  reward.className = 'reward-card';
+	reward.textContent = unlocked
+	? (currentLanguage === 'en' ? 'UNLOCKED: COLLAR OF INFINITE LIFE — This reward protects the life from ending due to death.' : 'DESBLOQUEADO: COLLAR DE VIDA INFINITA — Esta recompensa evita que la vida termine por muerte.')
+	: (currentLanguage === 'en' ? `COLLAR OF INFINITE LIFE — Unlocks after 10 minutes. Remaining: ${remainingTime}.` : `COLLAR DE VIDA INFINITA — Se desbloquea después de 10 minutos. Falta: ${remainingTime}.`);
+  playTimeRewardsContent.append(reward);
+	const presidentialReward = document.createElement('p');
+  presidentialReward.className = 'reward-card';
+  presidentialReward.textContent = presidentialUnlocked
+	? (currentLanguage === 'en' ? `UNLOCKED: PRESIDENTIAL STICK — President: ${save.player.name || ''} ${save.player.surname || ''}` : `DESBLOQUEADO: PALO PRESIDENCIAL — Presidente: ${save.player.name || ''} ${save.player.surname || ''}`)
+	: (currentLanguage === 'en' ? `PRESIDENTIAL STICK — Unlocks after 30 minutes. Remaining: ${Math.floor(presidentialRemaining / 60)}:${String(presidentialRemaining % 60).padStart(2, '0')}.` : `PALO PRESIDENCIAL — Se desbloquea después de 30 minutos. Falta: ${Math.floor(presidentialRemaining / 60)}:${String(presidentialRemaining % 60).padStart(2, '0')}.`);
+  playTimeRewardsContent.append(presidentialReward);
+  if (!unlocked && seconds >= required && save?.player) {
+	save.player.rewards.infinite_life_collar = true;
+	save.player.inventory = Array.isArray(save.player.inventory) ? save.player.inventory : [];
+	if (!save.player.inventory.some((item) => item.id === 'infinite_life_collar')) save.player.inventory.push({ id: 'infinite_life_collar', name: 'Collar de vida infinita', quantity: 1, permanent: true });
+	window.__lifeSave = save;
+	saveCurrentGame(save);
+	renderPlayTimeRewards();
+  }
+  if (!presidentialUnlocked && seconds >= presidentialRequired && save?.player) {
+	save.player.rewards.presidential_stick = true;
+	save.player.inventory = Array.isArray(save.player.inventory) ? save.player.inventory : [];
+	if (!save.player.inventory.some((item) => item.id === 'presidential_stick')) save.player.inventory.push({ id: 'presidential_stick', name: currentLanguage === 'en' ? 'Presidential Stick' : 'Palo presidencial', quantity: 1, permanent: true, saleValue: 500, presidentName: save.player.name || '', presidentSurname: save.player.surname || '' });
+	window.__lifeSave = save;
+	saveCurrentGame(save);
+	renderPlayTimeRewards();
+  }
 }
 
 function getTextLanguage(text) {
@@ -1711,7 +1994,7 @@ function normalizeMemory(memory) {
 	memory.version = 3;
 	memory.updatedAt = new Date().toISOString();
 	memory.codeIndex = memory.codeIndex.slice(-200);
-	memory.chat = memory.chat.slice(-500);
+	delete memory.chat;
 	memory.notes = memory.notes.slice(-200);
 	memory.choices = memory.choices.slice(-500);
 	memory.recentInputs = memory.recentInputs.slice(-200);
@@ -1724,12 +2007,9 @@ function normalizeMemory(memory) {
 	memory.episodes = memory.episodes.slice(-300);
 	memory.corrections = memory.corrections.slice(-200);
 	memory.plans = memory.plans.slice(-100);
-	memory.personality = memory.personality || { current: 'narrador', confidence: 0, history: [] };
-	memory.personality.history = Array.isArray(memory.personality.history) ? memory.personality.history.slice(-100) : [];
   memory.notes = memory.notes.map((entry) => normalizeMemoryEntry(entry));
   memory.customRules = memory.customRules.map((entry) => normalizeMemoryEntry(entry));
   memory.recentInputs = memory.recentInputs.map((entry) => normalizeMemoryEntry(entry));
-  memory.chat = memory.chat.map((entry) => normalizeMemoryEntry(entry));
   memory.conversationSummaries = memory.conversationSummaries.map((entry) => normalizeMemoryEntry(entry));
   memory.facts = memory.facts.map((entry) => normalizeMemoryEntry(entry));
   memory.episodes = memory.episodes.map((entry) => normalizeMemoryEntry(entry));
@@ -1864,7 +2144,6 @@ function mergeMemories(first, second) {
 	merged.notes.push(...(memory.notes || []));
 	merged.customRules.push(...(memory.customRules || []));
 	merged.recentInputs.push(...(memory.recentInputs || []));
-	merged.chat.push(...(memory.chat || []));
 	merged.conversationSummaries.push(...(memory.conversationSummaries || []));
 	merged.sessions.push(...(memory.sessions || []));
 	merged.facts.push(...(memory.facts || []));
@@ -1878,7 +2157,6 @@ function mergeMemories(first, second) {
 	Object.entries(memory.semanticConcepts || {}).forEach(([concept, values]) => {
 	  merged.semanticConcepts[concept] = [...new Set([...(merged.semanticConcepts[concept] || []), ...values])];
 	});
-	if (memory.personality?.current) merged.personality = memory.personality;
 	Object.assign(merged.preferences, memory.preferences || {});
 	Object.entries(memory.sentiment || {}).forEach(([tone, count]) => {
 	  merged.sentiment[tone] = (merged.sentiment[tone] || 0) + count;
@@ -1888,7 +2166,6 @@ function mergeMemories(first, second) {
 	merged.notes = merged.notes.slice(-200);
 	merged.customRules = merged.customRules.slice(-100);
 	merged.recentInputs = merged.recentInputs.slice(-200);
-	merged.chat = merged.chat.slice(-500);
 	merged.conversationSummaries = merged.conversationSummaries.slice(-100);
 	merged.sessions = merged.sessions.slice(-100);
 	merged.facts = merged.facts.slice(-300);
@@ -1936,7 +2213,6 @@ class ContextManager {
 	  if (score > 0) candidates.push({ text, type, score, date, metadata });
 	};
 
-	this.memory.chat.forEach((entry) => add(entry.text, entry.role === 'user' ? 'conversation-user' : 'conversation-ai', entry.date, entry));
 	this.memory.notes.forEach((note) => add(note, 'note'));
 	this.memory.recentInputs.forEach((input) => add(input, 'recent-input'));
 	this.memory.conversationSummaries.forEach((summary) => add(summary.text, 'summary', summary.date, summary));
@@ -1945,15 +2221,6 @@ class ContextManager {
 	return candidates.sort((a, b) => b.score - a.score).slice(0, this.limit);
   }
 
-  rememberConversation(message, response, analysis) {
-	const now = new Date().toISOString();
-	this.memory.sessions.push({ id: `session-${Date.now()}`, intent: analysis.intent, topic: strongestTopic(this.memory.topics), lang: currentLanguage, date: now });
-	this.memory.lastContext = this.retrieve(message).map((item) => item.text);
-	if (this.memory.chat.length >= 20 && this.memory.chat.length % 20 === 0) {
-	  this.memory.conversationSummaries.push({ text: `${currentLanguage === 'en' ? 'Conversation about' : 'Conversación sobre'} ${analysis.intent}: ${message.slice(0, 160)}. ${currentLanguage === 'en' ? 'Response' : 'Respuesta'}: ${response.slice(0, 160)}`, intent: analysis.intent, lang: currentLanguage, date: now });
-	}
-	return this.memory.lastContext;
-  }
 }
 
 class CognitiveMemory {
@@ -2036,12 +2303,14 @@ class CognitiveMemory {
 class LifeEngine {
   preparePlayer(playerState) {
 	playerState.energy = Number.isFinite(Number(playerState.energy)) ? Number(playerState.energy) : 100;
+	playerState.health = Number.isFinite(Number(playerState.health)) ? Number(playerState.health) : 100;
 	playerState.reputation = Number.isFinite(Number(playerState.reputation)) ? Number(playerState.reputation) : 0;
 	playerState.mood = playerState.mood || 'estable';
 	playerState.occupation = playerState.occupation || '';
 	playerState.inventory = Array.isArray(playerState.inventory) ? playerState.inventory : [];
 	playerState.skills = playerState.skills || {};
 	playerState.relationships = playerState.relationships || {};
+	playerState.familyTree = normalizeFamilyTree(playerState.familyTree, playerState);
 	playerState.events = Array.isArray(playerState.events) ? playerState.events : [];
 	normalizeDiseases(playerState);
 	return playerState;
@@ -2054,6 +2323,9 @@ class LifeEngine {
 	this.preparePlayer(playerState);
 	const interpretation = interpretDecision(text, memory, world);
 	const analysis = interpretation.analysis;
+	if (isConversationMessage(text, analysis)) {
+	  return { analysis, interpretation, effects: [], event: null, narrative: getConversationReply(text) };
+	}
 	const effects = applyDecisionEffects(text, playerState, analysis);
 	if (analysis.mutationAllowed && analysis.entities.locations?.length) playerState.location = analysis.entities.locations[0];
 	if (analysis.mutationAllowed && analysis.entities.locations?.length) {
@@ -2079,10 +2351,6 @@ class LifeEngine {
 	return { analysis, interpretation, effects, event, narrative: this.generateNarrative(text, memory, playerState, effects, analysis, world) };
   }
 
-  processChat(text, memory) {
-	return { analysis: this.analyze(text, memory), effects: [] };
-  }
-
   applyExtendedConsequences(text, playerState, analysis, effects) {
 	if (!analysis.mutationAllowed || analysis.mutationConfidence < .48) return;
 	// Ensure any explicit location mentioned in the decision updates player state
@@ -2096,6 +2364,7 @@ class LifeEngine {
 	}
 	const words = normalizeWords(text).join(' ');
 	const negated = hasNegation(text);
+	applyFamilyConsequences(text, playerState, analysis, effects);
 	const amountFor = (fallback) => {
 	  const numeric = text.match(/\b\d+(?:[.,]\d+)?\b/);
 	  return numeric ? Number(numeric[0].replace(',', '.')) : (numberFromWords(text) ?? fallback);
@@ -2108,14 +2377,13 @@ class LifeEngine {
 	  effects.push(`${currentLanguage === 'en' ? 'occupation' : 'profesión'}: ${careerLabel(career)}`);
 	}
 	const foundItem = detectFoundItem(text);
-	if (!negated && foundItem) {
-	  const probability = itemFindProbability(foundItem, playerState.location || '');
-	  if (Math.random() <= probability) {
-		const entry = addFoundItem(playerState, foundItem, playerState.location || '');
-		effects.push(currentLanguage === 'en' ? `found: ${foundItem.names.en} x${entry.quantity}` : `encontrado: ${foundItem.names.es} x${entry.quantity}`);
-	  } else {
-		effects.push(currentLanguage === 'en' ? `the find was unlikely here (${Math.round(probability * 100)}%)` : `el hallazgo era poco probable aquí (${Math.round(probability * 100)}%)`);
-	  }
+	const acquiredName = extractAcquiredItemName(text);
+	const acquiredDefinition = foundItem || extractItemAlias(acquiredName)?.item || null;
+	if (!negated && acquiredName) {
+	  const entry = acquiredDefinition
+		? addFoundItem(playerState, acquiredDefinition, playerState.location || '')
+		: addInventoryItem(playerState, acquiredName, playerState.location || '');
+	  effects.push(currentLanguage === 'en' ? `obtained: ${entry.name} x${entry.quantity} · sale value: ${entry.saleValue}` : `obtenido: ${entry.name} x${entry.quantity} · valor de venta: ${entry.saleValue}`);
 	}
 	const change = (property, amount, label) => {
 	  if (negated) return;
@@ -2212,16 +2480,23 @@ const semanticDictionary = {
   creativity: ['escribir', 'dibujar', 'pintar', 'musica', 'cantar', 'crear', 'inventar', 'historia', 'arte', 'write', 'draw', 'paint', 'music', 'sing', 'create', 'invent', 'story', 'art'],
   risk: ['riesgo', 'peligro', 'accidente', 'atropello', 'atropellar', 'caida', 'caída', 'choque', 'enfermedad', 'apostar', 'pelea', 'escapar', 'arriesgar', 'morir', 'muerte', 'muerto', 'fallecer', 'falleció', 'risk', 'danger', 'accident', 'hit by a car', 'car crash', 'fall', 'illness', 'bet', 'fight', 'escape', 'die', 'died', 'death', 'dead', 'dying'],
 	home: ['casa', 'hogar', 'habitacion', 'cocinar', 'comida', 'familia', 'house', 'home', 'room', 'cook', 'food'],
-  communication: ['decir', 'contar', 'explicar', 'preguntar', 'responder', 'escuchar', 'mensaje', 'llamar', 'escribir', 'hablar', 'say', 'tell', 'explain', 'ask', 'answer', 'listen', 'message', 'call', 'write', 'speak'],
+	communication: ['decir', 'contar', 'explicar', 'preguntar', 'responder', 'escuchar', 'mensaje', 'llamar', 'escribir', 'hablar', 'charlar', 'conversar', 'platicar', 'saludar', 'discutir', 'debatir', 'opinar', 'aconsejar', 'prometer', 'confesar', 'say', 'tell', 'explain', 'ask', 'answer', 'listen', 'message', 'call', 'write', 'speak', 'talk', 'chat', 'greet', 'discuss', 'debate', 'advise', 'promise', 'confess'],
   routine: ['mañana', 'tarde', 'noche', 'despertar', 'levantarse', 'bañarse', 'vestirse', 'salir', 'volver', 'rutina', 'morning', 'afternoon', 'night', 'wake', 'get up', 'shower', 'dress', 'leave', 'return', 'routine'],
   family: ['madre', 'padre', 'mama', 'mamá', 'papa', 'papá', 'hijo', 'hija', 'hermano', 'hermana', 'abuelo', 'abuela', 'mother', 'father', 'mom', 'dad', 'son', 'daughter', 'brother', 'sister', 'grandparent'],
   conflict: ['discusión', 'discusion', 'pelea', 'problema', 'enemigo', 'conflicto', 'discutir', 'perdonar', 'mentira', 'discute', 'argument', 'fight', 'problem', 'enemy', 'conflict', 'argue', 'forgive', 'lie'],
   achievement: ['logro', 'éxito', 'exito', 'ganar', 'victoria', 'mejorar', 'conseguir', 'terminar', 'completar', 'achievement', 'success', 'win', 'victory', 'improve', 'achieve', 'finish', 'complete'],
   failure: ['fallar', 'fracasar', 'fracaso', 'perder', 'perdí', 'error', 'equivocarse', 'fall', 'failure', 'lose', 'lost', 'mistake', 'wrong'],
 	nature: ['clima', 'lluvia', 'llover', 'frio', 'frío', 'calor', 'caluroso', 'niebla', 'sol', 'viento', 'tormenta', 'nieve', 'primavera', 'verano', 'otoño', 'otono', 'invierno', 'estacion', 'estación', 'weather', 'rain', 'cold', 'hot', 'fog', 'sun', 'wind', 'storm', 'snow', 'spring', 'summer', 'autumn', 'fall', 'winter', 'season'],
-	objects: ['coche', 'auto', 'casa', 'llave', 'teléfono', 'telefono', 'computadora', 'ordenador', 'portatil', 'portátil', 'libro', 'mesa', 'arma', 'regalo', 'objeto', 'mochila', 'billetera', 'moneda', 'documento', 'herramienta', 'car', 'key', 'phone', 'computer', 'laptop', 'book', 'table', 'weapon', 'gift', 'object', 'backpack', 'wallet', 'coin', 'document', 'tool'],
+  objects: ['coche', 'auto', 'casa', 'llave', 'teléfono', 'telefono', 'computadora', 'ordenador', 'portatil', 'portátil', 'libro', 'mesa', 'arma', 'regalo', 'objeto', 'mochila', 'billetera', 'moneda', 'documento', 'herramienta', 'palo', 'madera', 'rama', 'tronco', 'leña', 'coche', 'car', 'key', 'phone', 'computer', 'laptop', 'book', 'table', 'weapon', 'gift', 'object', 'backpack', 'wallet', 'coin', 'document', 'tool', 'stick', 'wood', 'branch', 'log', 'firewood', 'plank'],
   questions: ['quien', 'quién', 'que', 'qué', 'cuando', 'cuándo', 'donde', 'dónde', 'como', 'cómo', 'por que', 'por qué', 'who', 'what', 'when', 'where', 'how', 'why'],
-  quantity: ['uno', 'una', 'dos', 'tres', 'cuatro', 'cinco', 'diez', 'cien', 'hora', 'día', 'dia', 'semana', 'mes', 'año', 'ano', 'one', 'two', 'three', 'four', 'five', 'ten', 'hundred', 'hour', 'day', 'week', 'month', 'year']
+	quantity: ['uno', 'una', 'dos', 'tres', 'cuatro', 'cinco', 'diez', 'cien', 'hora', 'día', 'dia', 'semana', 'mes', 'año', 'ano', 'one', 'two', 'three', 'four', 'five', 'ten', 'hundred', 'hour', 'day', 'week', 'month', 'year'],
+  food: ['comer', 'comida', 'cocinar', 'cocino', 'desayuno', 'almuerzo', 'cena', 'receta', 'restaurante', 'hambre', 'sed', 'agua', 'pan', 'fruta', 'carne', 'verdura', 'eat', 'food', 'cook', 'cooking', 'breakfast', 'lunch', 'dinner', 'recipe', 'restaurant', 'hungry', 'thirsty', 'water', 'fruit', 'meat', 'vegetable'],
+  housing: ['alquilar', 'alquiler', 'comprar casa', 'vender casa', 'mudarse', 'mudanza', 'vecino', 'vecina', 'barrio', 'departamento', 'piso', 'techo', 'reparar', 'arreglar', 'limpiar', 'alquiler', 'rent', 'renting', 'buy a house', 'sell a house', 'move house', 'neighbor', 'neighborhood', 'apartment', 'flat', 'roof', 'repair', 'fix', 'clean'],
+  leisure: ['jugar', 'videojuego', 'película', 'pelicula', 'serie', 'bailar', 'deporte', 'fútbol', 'futbol', 'pescar', 'nadar', 'pasear', 'hobby', 'juego', 'play', 'game', 'videogame', 'movie', 'film', 'series', 'dance', 'sport', 'football', 'fish', 'swim', 'walk', 'hobby'],
+  technology: ['computadora', 'ordenador', 'celular', 'móvil', 'movil', 'internet', 'red', 'aplicación', 'aplicacion', 'programa', 'código', 'codigo', 'robot', 'tecnología', 'technology', 'computer', 'phone', 'mobile', 'internet', 'network', 'app', 'application', 'software', 'code', 'robot'],
+  law: ['policía', 'policia', 'denuncia', 'juicio', 'abogado', 'ley', 'legal', 'contrato', 'derechos', 'permiso', 'police', 'report', 'trial', 'lawyer', 'law', 'legal', 'contract', 'rights', 'permit'],
+  transport: ['auto', 'coche', 'colectivo', 'autobús', 'autobus', 'tren', 'avión', 'avion', 'bicicleta', 'moto', 'conducir', 'manejar', 'transporte', 'car', 'bus', 'train', 'plane', 'bicycle', 'bike', 'motorcycle', 'drive', 'transport'],
+  decision: ['decidir', 'decido', 'elegir', 'elijo', 'aceptar', 'rechazar', 'intentar', 'probar', 'preferir', 'quiero', 'necesito', 'planeo', 'propongo', 'decide', 'choose', 'accept', 'reject', 'try', 'prefer', 'want', 'need', 'plan', 'propose']
 };
 
 const commonWordAliases = {
@@ -2232,12 +2507,12 @@ const commonWordAliases = {
   trsite: 'triste', preoupado: 'preocupado', ansieda: 'ansiedad', enojdo: 'enojado',
   cansdo: 'cansado', enerjia: 'energia', dinaro: 'dinero', plta: 'plata',
   ahorar: 'ahorrar', comprr: 'comprar', vendr: 'vender', descasar: 'descansar',
-  dormr: 'dormir', ejercico: 'ejercicio', salu: 'salud', medco: 'medico',
+	dormr: 'dormir', ejercico: 'ejercicio', salu: 'salud', medco: 'medico', agaro: 'agarro', agarro: 'agarro', agarre: 'agarre', tomr: 'tomar', levanto: 'levanto', recojo: 'recojo', mdera: 'madera', madrea: 'madera', pal: 'palo',
   cresi: 'creci', creci: 'creci', cumpli: 'cumpli', anio: 'ano', anyo: 'ano',
   maniana: 'manana', demas: 'despues', despues: 'despues', kiero: 'quiero', qiero: 'quiero',
   nesesito: 'necesito', ncesito: 'necesito', xq: 'porque', porke: 'porque',
 	tmb: 'tambien', tambn: 'tambien', ai: 'ahi', llendo: 'yendo', aciendo: 'haciendo', q: 'que', xfa: 'por favor',
-	pls: 'please', plz: 'please', dont: 'do not', cant: 'cannot', wont: 'will not', im: 'i am', ive: 'i have'
+	pls: 'please', plz: 'please', dont: 'do not', cant: 'cannot', wont: 'will not', im: 'i am', ive: 'i have', heyy: 'hey', heyyy: 'hey', holaa: 'hola', holaaa: 'hola', buenass: 'buenas', buenasss: 'buenas'
 };
 
 function editDistance(first, second) {
@@ -2326,6 +2601,15 @@ const intentPatterns = {
 	advance_story: ['quiero', 'decido', 'decidir', 'hago', 'hacer', 'sucede', 'continúo', 'continuo', 'después', 'despues', 'want', 'choose', 'decide', 'do', 'happens', 'continue', 'after']
 };
 
+intentPatterns.change_money.push(...semanticDictionary.money, 'cobrar', 'cobro', 'ganar', 'gano', 'perder dinero', 'cuenta', 'banco', 'préstamo', 'prestamo', 'devolver', 'charge', 'earn', 'lose money', 'bill', 'bank', 'loan', 'refund');
+intentPatterns.change_location.push(...semanticDictionary.transport, 'barrio', 'departamento', 'mudanza', 'destination', 'subway', 'metro');
+intentPatterns.social.push(...semanticDictionary.family, 'visitar a', 'invitar', 'confiar', 'perdonar', 'discutir', 'acompañar', 'visit', 'invite', 'trust', 'forgive', 'argue', 'accompany');
+intentPatterns.health.push(...semanticDictionary.health, 'alimentarme', 'alimentarse', 'respirar', 'terapia', 'psicólogo', 'psicologo', 'dentista', 'vacuna', 'dieta', 'breathe', 'therapy', 'dentist', 'vaccine', 'diet');
+intentPatterns.home.push(...semanticDictionary.housing, ...semanticDictionary.food, 'vivir', 'amoblar', 'ordenar', 'live', 'furnish', 'tidy');
+intentPatterns.creativity.push(...semanticDictionary.creativity, 'fotografía', 'fotografia', 'actuar', 'diseñar', 'diseñar', 'componer', 'photography', 'act', 'design', 'compose');
+intentPatterns.risk.push(...semanticDictionary.risk, 'arriesgarme', 'salvar', 'rescatar', 'enfrentar', 'desafiar', 'risk myself', 'rescue', 'face', 'challenge');
+intentPatterns.advance_story.push(...semanticDictionary.decision, 'entonces', 'luego', 'despues', 'más tarde', 'mas tarde', 'then', 'later');
+
 const hobbyIntentWords = [...knownHobbies, 'hobby', 'afición', 'aficion', 'interés', 'interes', 'interest'];
 intentPatterns.change_hobby.push(...hobbyIntentWords);
 
@@ -2358,6 +2642,11 @@ function analyzeText(text, memory = {}) {
 	 scores.change_location = (scores.change_location || 0) + 5;
 	 scores.travel = (scores.travel || 0) + 2;
   }
+	const explicitLocation = extractContextualLocation(text);
+	if (explicitLocation) {
+	  scores.change_location = (scores.change_location || 0) + 8;
+	  scores.travel = Math.max(0, (scores.travel || 0) - 1);
+	}
 
   const context = inferLocalContext(text, memory);
   const intentCategory = {
@@ -2375,20 +2664,41 @@ function analyzeText(text, memory = {}) {
   const ranked = Object.entries(scores).sort((a, b) => b[1] - a[1]);
   const best = ranked[0] || ['advance_story', 0];
   const second = ranked[1]?.[1] || 0;
-  const confidence = Math.min(.98, Math.max(.12, .35 + best[1] * .15 - (second > 0 ? .05 : 0)));
+	const semanticCoverage = new Set(semanticCategories(text).map((category) => category.category)).size;
+	const confidence = Math.min(.98, Math.max(.08, .28 + best[1] * .15 + Math.min(.18, semanticCoverage * .04) - (second > 0 ? .05 : 0)));
 	const negated = /\b(no|nunca|jamas|jamás|sin|not|never|without)\b/.test(normalized);
 	const question = /\?|^(?:que|qué|como|cómo|por que|por qué|what|how|why|when|where)\b/.test(normalized);
 	const firstPerson = /\b(?:yo|vos|tu|tú|me|mi|mis|tengo|quiero|voy|vivo|soy|estoy|decido|hago|aprendo|trabajo|i|i'm|ive|i've|my|me|we|our)\b/.test(normalized);
-	const actionVerb = /\b(?:quiero|decido|decidir|hago|hacer|voy|viajo|viajar|me mudo|vivo|trabajo|trabajar|laburo|laburar|aprendo|aprender|estudio|estudiar|duermo|dormir|descanso|descansar|compro|comprar|pago|pagar|ahorro|ahorrar|crezco|cumplo|cambio|aumento|pierdo|gano|conozco|ayudo|exploro|i want|i choose|i decide|i do|i go|i travel|i live|i work|i learn|i study|i sleep|i rest|i buy|i pay|i save|i grow|i turn|i change|i increase|i lose|i earn|i meet|i help|i explore)\b/.test(normalized);
+	const actionVerb = /\b(?:quiero|decido|decidir|elijo|elegir|acepto|aceptar|rechazo|rechazar|intento|intentar|pruebo|probar|hago|hacer|voy|viajo|viajar|me mudo|vivo|trabajo|trabajar|laburo|laburar|aprendo|aprender|estudio|estudiar|leo|leer|cocino|cocinar|como|comer|duermo|dormir|descanso|descansar|compro|comprar|vendo|vender|pago|pagar|ahorro|ahorrar|invierto|invertir|crezco|cumplo|cambio|aumento|pierdo|gano|conozco|ayudo|exploro|juego|jugar|escribo|escribir|dibujo|dibujar|arreglo|reparo|limpio|limpiar|conduzco|manejo|nado|corro|salgo|regreso|i want|i choose|i decide|i accept|i reject|i try|i do|i go|i travel|i live|i work|i learn|i study|i read|i cook|i eat|i sleep|i rest|i buy|i sell|i pay|i save|i invest|i grow|i turn|i change|i increase|i lose|i earn|i meet|i help|i explore|i play|i write|i draw|i repair|i clean|i drive|i swim|i run|i leave|i return)\b/.test(normalized);
+	const pickupAction = Boolean(extractAcquiredItemName(normalized));
 	const explicitDeclaration = /\b(?:tengo|mi edad es|mi nombre es|me llamo|mi apellido es|mi dinero es|vivo en|me mudo a|viajo a|my name is|my surname is|my last name is|my money is|i am|i'm|i live in|i move to|i travel to|i have)\b/.test(normalized);
 	const subjectIsOther = context.subject === 'other';
-	const mutationAllowed = !question && !negated && !subjectIsOther && (explicitDeclaration || firstPerson || actionVerb);
-	const mutationConfidence = Math.min(1, confidence + (explicitDeclaration ? .25 : 0) + (firstPerson ? .12 : 0) - (question ? .35 : 0) - (negated ? .35 : 0) - (subjectIsOther ? .3 : 0));
+  const mutationAllowed = !question && !negated && !subjectIsOther && (explicitDeclaration || firstPerson || actionVerb || pickupAction);
+  const mutationConfidence = Math.min(1, confidence + (explicitDeclaration ? .25 : 0) + (firstPerson ? .12 : 0) + (pickupAction ? .2 : 0) - (question ? .35 : 0) - (negated ? .35 : 0) - (subjectIsOther ? .3 : 0));
 	const urgency = /\bahora|urgente|necesito|ya|today|urgent|need|now\b/.test(normalized) ? 'high' : /\bpronto|soon|mañana|tomorrow\b/.test(normalized) ? 'medium' : 'low';
   const sentiment = /\b feliz|alegre|amor|éxito|happy|glad|love|success\b/.test(` ${normalized}`) ? 'positive' : /\b triste|miedo|ansiedad|problema|sad|fear|anxiety|problem\b/.test(` ${normalized}`) ? 'negative' : 'neutral';
 	const closeAlternatives = ranked.filter(([, score]) => score > 0 && best[1] - score <= .8).slice(1, 3);
   const needsClarification = !best[1] || (best[1] <= 1 && second === best[1]) || closeAlternatives.length > 1;
-	return { intent: best[1] ? best[0] : 'unknown', score: best[1], confidence, entities, normalized, negated, question, firstPerson, actionVerb, explicitDeclaration, mutationAllowed, mutationConfidence, urgency, sentiment, needsClarification, alternatives: ranked.slice(1, 4), context, ambiguity: closeAlternatives };
+	return { intent: best[1] ? best[0] : 'unknown', score: best[1], confidence, semanticCoverage, entities, normalized, negated, question, firstPerson, actionVerb, explicitDeclaration, explicitLocation, mutationAllowed, mutationConfidence, urgency, sentiment, needsClarification, alternatives: ranked.slice(1, 4), context, ambiguity: closeAlternatives };
+}
+
+function validateDecisionText(text, analysis = analyzeText(text)) {
+  const words = normalizeWords(text).filter(Boolean);
+  if (!words.length || words.length > 160) return false;
+  if (/^(.)\1{4,}$/.test(words.join(''))) return false;
+	if (/(.)\1{3,}/.test(words.join('')) || /(?:[bcdfghjklmnpqrstvwxyz]){5,}/i.test(words.join(''))) return false;
+  const letters = words.join('').replace(/[^a-záéíóúüñ]/gi, '');
+  const vowels = (letters.match(/[aeiouáéíóúü]/gi) || []).length;
+  if (letters.length >= 6 && (vowels === 0 || vowels / letters.length < .16)) return false;
+	const categories = semanticCategories(text);
+  const recognizedCategory = categories.length > 0;
+  const categoryCoverage = new Set(categories.map((category) => category.category)).size;
+  const recognizedIntent = analysis.intent !== 'unknown' && analysis.score >= 1;
+  const hasStructure = analysis.actionVerb || analysis.firstPerson || analysis.explicitDeclaration || analysis.entities.numbers.length > 0;
+	const hasContext = analysis.context?.subject !== 'unknown' || analysis.entities.locations.length > 0 || analysis.entities.people.length > 0 || analysis.entities.hobbies.length > 0;
+  if (!recognizedCategory && !recognizedIntent && !hasStructure) return false;
+  if (words.length >= 2 && categoryCoverage === 1 && !hasStructure && !hasContext && analysis.score < 2) return false;
+  return true;
 }
 
 function extractEntities(original, normalized) {
@@ -2401,7 +2711,7 @@ function extractEntities(original, normalized) {
 	entities.durations = original.match(/\d+\s*(?:días?|dias?|semanas?|meses?|años?|anos?|days?|weeks?|months?|years?)/gi) || [];
 	entities.dates = original.match(/(?:hoy|mañana|manana|ayer|anteayer|esta noche|este año|este ano|la próxima semana|proxima semana|el mes que viene|today|tomorrow|yesterday|the day before yesterday|tonight|this year|next week|next month)/gi) || [];
 	const name = extractText(original, ['me llamo', 'mi nombre es', 'nuevo nombre', 'my name is', 'call me']);
-  const location = extractContextualLocation(original) || extractText(original, ['me mudo a', 'vivo en', 'viajo a', 'viajo al', 'voy a', 'voy al', 'llego a', 'llego al', 'mi nueva ubicación es', 'mi nueva ubicacion es', 'encuentro un lugar llamado', 'descubro la ciudad de', 'move to', 'live in', 'travel to', 'go to', 'arrive at', 'new location is']);
+	const location = extractContextualLocation(original) || extractText(original, ['me mudo a', 'vivo en', 'estoy en', 'ahora estoy en', 'viajo a', 'viajo al', 'voy a', 'voy al', 'llego a', 'llego al', 'mi nueva ubicación es', 'mi nueva ubicacion es', 'encuentro un lugar llamado', 'descubro la ciudad de', 'move to', 'live in', 'i am in', "i'm in", 'travel to', 'go to', 'arrive at', 'new location is']);
   const hobby = extractText(original, ['mi hobby es', 'mi nuevo hobby es', 'me gusta', 'my hobby is', 'I like']);
   if (name) entities.names.push(name);
   if (location) entities.locations.push(location);
@@ -2488,9 +2798,8 @@ function updateAnalysisView(analysis) {
 	analysisDetails.textContent = `${t('intent')}: ${analysis.intent} · ${t('confidence')}: ${Math.round(analysis.confidence * 100)}% · ${t('entities')}: ${entities} · ${urgencyLabel}: ${analysis.urgency} · ${sentimentLabel}: ${analysis.sentiment} · ${contextLabel}: ${analysis.context?.topic || '—'} · ${subjectLabel}: ${analysis.context?.subject || '—'}`;
 	const memory = mergeMemories(readSave().memory, readGlobalMemory());
 	const predictions = predictIntent(analysis.normalized, memory);
-	const personality = localizedPersonality(memory.personality?.current || 'narrador');
 	const goal = memory.goals.find((item) => item.status === 'active');
-	  predictionDetails.textContent = `${t('prediction')}: ${predictions.join(', ') || '—'} · ${t('personality')}: ${personality} · ${t('goal')}: ${goal ? `${goal.text} (${goal.progress}%)` : '—'}`;
+	  predictionDetails.textContent = `${t('prediction')}: ${predictions.join(', ') || '—'} · ${t('goal')}: ${goal ? `${goal.text} (${goal.progress}%)` : '—'}`;
 	return analysis;
 }
 
@@ -2530,6 +2839,15 @@ function detectLifeEnding(text) {
 }
 
 async function finishLife(decision, savedGame, globalMemory) {
+	if (hasInfiniteLifeCollar(savedGame)) {
+	 savedGame.player.health = Math.max(1, Number(savedGame.player.health) || 1);
+	 savedGame.endedReason = '';
+	 window.__lifeSave = savedGame;
+	 await saveCurrentGame(savedGame);
+	 savedMessage.textContent = currentLanguage === 'en' ? '// infinite life collar protected this life.' : '// el collar de vida infinita protegió esta vida.';
+	 savedMessage.classList.remove('hidden');
+	 return;
+  }
   const now = new Date().toISOString();
 	globalMemory.lifeCount = (Number(globalMemory.lifeCount) || 0) + 1;
   globalMemory.sessions.push({ id: `life-${Date.now()}`, type: 'life-ended', reason: decision.slice(0, 300), player: { ...savedGame.player }, chapters: savedGame.chapters.length, date: now, lang: currentLanguage });
@@ -2541,6 +2859,61 @@ async function finishLife(decision, savedGame, globalMemory) {
   window.__lifeSave = savedGame;
 	await saveCurrentGame(savedGame);
   renderGameOver(savedGame.endedReason, savedGame, globalMemory);
+}
+
+function captureDecisionStats(save) {
+  const playerState = save?.player || {};
+  const worldState = save?.world || {};
+  const relationships = playerState.relationships || playerState.relations || {};
+  return {
+	 age: Number(playerState.age) || 0,
+	 money: Number(playerState.money) || 0,
+	 energy: Number(playerState.energy) || 0,
+	 mood: Number(playerState.mood) || 0,
+	 reputation: Number(playerState.reputation) || 0,
+	 health: Number(playerState.health) || 0,
+	 location: playerState.location || '',
+	 occupation: playerState.occupation || '',
+	 inventory_count: Array.isArray(playerState.inventory) ? playerState.inventory.length : 0,
+	 disease_count: Array.isArray(playerState.diseases) ? playerState.diseases.length : 0,
+	 skill_count: Object.keys(playerState.skills || {}).length,
+	 relationship_count: Array.isArray(relationships) ? relationships.length : Object.keys(relationships).length,
+	 family_children: Array.isArray(playerState.familyTree?.children) ? playerState.familyTree.children.length : 0,
+	 marital_status: playerState.familyTree?.maritalStatus || 'single',
+	 chapter_count: Array.isArray(save?.chapters) ? save.chapters.length : 0,
+	 quest_count: Array.isArray(worldState.quests) ? worldState.quests.length : 0,
+	 location_count: Array.isArray(worldState.locations) ? worldState.locations.length : 0
+  };
+}
+
+function getChangedDecisionStats(before, after) {
+  const labels = {
+	 age: ['Edad', 'Age'], money: ['Dinero', 'Money'], energy: ['Energía', 'Energy'], mood: ['Ánimo', 'Mood'],
+	 reputation: ['Reputación', 'Reputation'], health: ['Salud', 'Health'], location: ['Ubicación', 'Location'],
+	 occupation: ['Profesión', 'Occupation'], inventory_count: ['Objetos', 'Items'], disease_count: ['Enfermedades', 'Diseases'],
+	 skill_count: ['Habilidades', 'Skills'], relationship_count: ['Relaciones', 'Relationships'], family_children: ['Hijos', 'Children'], marital_status: ['Estado civil', 'Marital status'], chapter_count: ['Capítulos', 'Chapters'],
+	 quest_count: ['Misiones', 'Quests'], location_count: ['Lugares descubiertos', 'Discovered places']
+  };
+  return Object.keys(labels).filter((key) => before[key] !== after[key]).map((key) => ({
+	 key,
+	 label: labels[key][currentLanguage === 'en' ? 1 : 0],
+	 before: before[key],
+	 after: after[key],
+	 delta: typeof before[key] === 'number' && typeof after[key] === 'number' ? after[key] - before[key] : null
+  }));
+}
+
+function renderChangedDecisionStats(changes) {
+  if (!changes.length) {
+	 effectsText.textContent = '';
+	 effectsText.classList.add('hidden');
+	 return;
+  }
+  effectsText.textContent = `${currentLanguage === 'en' ? '// changed stats: ' : '// estadísticas modificadas: '}${changes.map((change) => {
+	 const values = change.delta === null ? `${change.before || '—'} → ${change.after || '—'}` : `${change.before} → ${change.after} (${change.delta > 0 ? '+' : ''}${change.delta})`;
+	 return `${change.label}: ${values}`;
+  }).join(' · ')}`;
+  effectsText.classList.remove('hidden');
 }
 
 listen(saveStoryButton, 'click', async () => {
@@ -2556,18 +2929,37 @@ listen(saveStoryButton, 'click', async () => {
 	}
 	const globalMemory = readGlobalMemory();
 	const memory = mergeMemories(savedGame.memory, globalMemory);
+	const decisionAnalysis = analyzeText(decision, memory);
+	if (isConversationMessage(decision, decisionAnalysis)) {
+	  savedMessage.classList.remove('error');
+	  savedMessage.classList.add('hidden');
+	  aiText.textContent = getConversationReply(decision);
+	  renderChangedDecisionStats([]);
+	  aiOutput.classList.remove('hidden');
+	  storyInput.value = '';
+	  return;
+	}
+	if (!validateDecisionText(decision, decisionAnalysis)) {
+	  window.lifeSupabase?.saveDecisionValidation?.(savedGame, decisionAnalysis, false).catch((error) => console.warn('LIFE.AI validation sync:', error));
+	  savedMessage.textContent = currentLanguage === 'en'
+		? '// LIFE.AI could not understand that decision. Write something clearer next time.'
+		: '// LIFE.AI no pudo entender esa decisión. Escribe algo más claro la próxima vez.';
+	  savedMessage.classList.add('error');
+	  savedMessage.classList.remove('hidden');
+	  return;
+	}
+	savedMessage.classList.remove('error');
+	window.lifeSupabase?.saveDecisionValidation?.(savedGame, decisionAnalysis, true).catch((error) => console.warn('LIFE.AI validation sync:', error));
 	const previousAge = Number(savedGame.player.age) || 0;
 	if (detectLifeEnding(decision)) {
 	  learnFrom(decision, globalMemory);
 	  await finishLife(decision, savedGame, globalMemory);
 	  return;
 	}
+	const previousStats = captureDecisionStats(savedGame);
   learnFrom(decision, savedGame.memory);
   learnFrom(decision, globalMemory);
 	const result = lifeEngine.processDecision(decision, savedGame.player, memory, savedGame.world);
-	window.lifeSupabase?.saveEvent?.(savedGame, decision, result).catch((error) => console.warn('LIFE.AI Supabase event sync:', error));
-	window.lifeSupabase?.submitLearningEvent?.(savedGame, result).catch((error) => console.warn('LIFE.AI global learning sync:', error));
-	window.lifeSupabase?.saveLearningSignal?.(savedGame, result, 'decision_state').catch((error) => console.warn('LIFE.AI learning signal sync:', error));
 	const diseaseDeath = result.effects.find((effect) => effect.startsWith('DEATH_CAUSE:'));
 	if (diseaseDeath) {
 	  const reason = diseaseDeath.replace('DEATH_CAUSE:', '').trim();
@@ -2576,6 +2968,8 @@ listen(saveStoryButton, 'click', async () => {
 	}
 	const ageGained = Math.max(0, (Number(savedGame.player.age) || 0) - previousAge);
 	if (ageGained > 0) {
+	  savedGame.player.familyTree = normalizeFamilyTree(savedGame.player.familyTree, savedGame.player);
+	  savedGame.player.familyTree.children.forEach((child) => { child.age = Math.min(120, Math.max(0, Number(child.age) || 0) + ageGained); });
 	  savedGame.world.time.year = Math.max(1, Number(savedGame.world.time.year) || 1) + ageGained;
 	  result.effects.push(currentLanguage === 'en' ? `world year: +${ageGained}` : `año mundial: +${ageGained}`);
 	}
@@ -2587,6 +2981,11 @@ listen(saveStoryButton, 'click', async () => {
 	new PlanningEngine(savedGame.memory).update(decision);
 	new CognitiveMemory(globalMemory).record(decision, result.analysis, result.effects, savedGame.player);
 	new PlanningEngine(globalMemory).update(decision);
+	const changedStats = getChangedDecisionStats(previousStats, captureDecisionStats(savedGame));
+	result.changedStats = changedStats;
+	window.lifeSupabase?.saveEvent?.(savedGame, decision, result).catch((error) => console.warn('LIFE.AI Supabase event sync:', error));
+	window.lifeSupabase?.submitLearningEvent?.(savedGame, result).catch((error) => console.warn('LIFE.AI global learning sync:', error));
+	window.lifeSupabase?.saveLearningSignal?.(savedGame, result, 'decision_state').catch((error) => console.warn('LIFE.AI learning signal sync:', error));
   Object.assign(player, savedGame.player);
 	setWelcomeNavigationVisible(false);
 	lifeEngine.preparePlayer(player);
@@ -2605,8 +3004,7 @@ listen(saveStoryButton, 'click', async () => {
 	}
   savedMessage.classList.remove('hidden');
   aiText.textContent = continuation;
-	effectsText.textContent = result.effects.length ? (currentLanguage === 'en' ? `// effects: ${result.effects.join(' · ')}` : `// efectos: ${result.effects.join(' · ')}`) : (currentLanguage === 'en' ? '// no state changes' : '// no hubo cambios de estado');
-	effectsText.classList.remove('hidden');
+	renderChangedDecisionStats(changedStats);
   aiOutput.classList.remove('hidden');
 	renderStats();
   storyInput.value = '';
@@ -2702,13 +3100,6 @@ listen(closeHistoryButton, 'click', () => {
 	returnToMenuFromPanel(historyScreen);
 });
 
-listen(chatButton, 'click', () => {
-	const messages = readSave().memory.chat || [];
-  renderChat(messages);
-  chatScreen.classList.remove('hidden');
-  chatInput.focus();
-});
-
 listen(statsButton, 'click', () => {
   statsScreen.classList.remove('hidden');
   try {
@@ -2751,58 +3142,6 @@ listen(closeRelationsButton, 'click', () => {
 	returnToMenuFromPanel(relationsScreen);
 });
 
-listen(closeChatButton, 'click', () => {
-	returnToMenuFromPanel(chatScreen);
-});
-
-listen(chatForm, 'submit', async (event) => {
-  event.preventDefault();
-  const message = chatInput.value.trim();
-  if (!message) return;
-
-	let save = readSave();
-	let globalMemory = readGlobalMemory();
-	save.memory = normalizeMemory(save.memory || createEmptyMemory());
-	globalMemory = normalizeMemory(globalMemory || createEmptyMemory());
-	const memory = mergeMemories(save.memory, globalMemory);
-	let response;
-	try {
-	  lastAnalysis = lifeEngine.processChat(message, memory).analysis;
-	  updateAnalysisView(lastAnalysis);
-	  response = generateChatResponse(message, memory, [], lastAnalysis);
-	} catch (error) {
-	  response = currentLanguage === 'en' ? `I understand you want to talk about this: "${message}". Tell me what concerns you or what you would like to achieve.` : `Entiendo que quieres hablar de esto: "${message}". Cuéntame qué parte te preocupa o qué te gustaría conseguir.`;
-	  console.error('LIFE.AI response error:', error);
-	  lastAnalysis = analyzeText(message, memory);
-	}
-
-	const userEntry = { role: 'user', text: message, lang: currentLanguage, date: new Date().toISOString() };
-	const aiEntry = { role: 'ai', text: response, lang: currentLanguage, date: new Date().toISOString() };
-	save.memory.chat.push(userEntry, aiEntry);
-	save.memory.chat = save.memory.chat.slice(-60);
-	window.__lifeSave = save;
-	renderChat(save.memory.chat);
-	chatInput.value = '';
-	chatInput.focus();
-
-	try {
-	  learnFrom(message, save.memory);
-	  learnFrom(message, globalMemory);
-	  new AdaptivePersonality().choose(message, lastAnalysis, save.memory);
-	  new AdaptivePersonality().choose(message, lastAnalysis, globalMemory);
-	  new CognitiveMemory(save.memory).record(message, lastAnalysis, [], save.player);
-	  new CognitiveMemory(globalMemory).record(message, lastAnalysis, [], save.player);
-	  new PlanningEngine(save.memory).detectGoal(message, lastAnalysis);
-	  new PlanningEngine(globalMemory).detectGoal(message, lastAnalysis);
-	  new AutonomousAgent(save.memory).execute(message, response, lastAnalysis);
-	  new AutonomousAgent(globalMemory).execute(message, response, lastAnalysis);
-	  await saveCurrentGame(save);
-	  await saveGlobalMemory(globalMemory);
-	} catch (error) {
-	  console.error('LIFE.AI background learning error:', error);
-	}
-});
-
 try {
   applyTranslations();
 } catch (error) {
@@ -2824,7 +3163,12 @@ window.setInterval(() => {
 }, 10000);
 
 window.setInterval(() => {
-	if (currentUsername) window.lifeSupabase?.updatePresence?.(window.__lifeSave || null).catch((error) => console.warn('LIFE.AI presence heartbeat:', error));
+	if (currentUsername) {
+	  window.lifeSupabase?.updatePresence?.(window.__lifeSave || null).catch((error) => console.warn('LIFE.AI presence heartbeat:', error));
+	  window.lifeSupabase?.recordPlayTime?.(window.__lifeSave || null).catch((error) => console.warn('LIFE.AI play time sync:', error));
+	}
+	window.__lifePlaySeconds = getSessionPlaySeconds();
+	if (window.__lifeSave?.lifeStatus === 'active') renderPlayTimeRewards();
   refreshActivePlayers();
 }, 15000);
 
@@ -2836,8 +3180,6 @@ async function initializeApplication() {
 	currentLanguage = storedLanguage === 'es' ? 'es' : 'en';
 	applyTranslations();
 	const supabaseUser = await window.lifeSupabase?.initialize?.();
-	if (window.lifeSupabase?.enabled && supabaseUser) renderSupabaseStatus('online');
-	else renderSupabaseStatus('offline', window.lifeSupabase?.lastError || (currentLanguage === 'en' ? 'configuration or authentication failed' : 'falló la configuración o autenticación'));
 	if (window.lifeSupabase?.enabled) {
 	  try {
 		window.__lifeGlobalPatterns = await window.lifeSupabase.loadGlobalLearning();
@@ -2866,7 +3208,6 @@ async function initializeApplication() {
 		if (remoteSave?.player?.name && (!window.__lifeSave || remoteUpdated > localUpdated)) window.__lifeSave = normalizeSave(remoteSave);
 	  } catch (error) {
 		console.warn('LIFE.AI Supabase load sync:', error);
-		renderSupabaseStatus('offline', error?.message || String(error));
 	  }
 	}
 	window.__lifeMemory = window.__lifeMemory || readFallbackMemory();
@@ -2943,7 +3284,7 @@ function renderFullStats() {
   const relationships = Object.entries(current.relationships || {}).map(([name, level]) => `${name}: ${level}`).join(' · ') || empty;
   const activeGoals = memory.goals.filter((goal) => goal.status === 'active').map((goal) => `${goal.text} (${goal.progress}%)`).join(' · ') || empty;
 	const diseases = normalizeDiseases(current).filter((disease) => disease.active).map((disease) => `${diseaseLabel(disease)}${disease.controlled ? (currentLanguage === 'en' ? ' (controlled)' : ' (controlada)') : ''}`).join(', ') || empty;
-	statsExtra.textContent = currentLanguage === 'en' ? `recorded events: ${(current.events || []).length} | personal goals: ${activeGoals} | diseases: ${diseases} | personality: ${localizedPersonality(memory.personality?.current || 'narrador')}` : `eventos registrados: ${(current.events || []).length} | objetivos personales: ${activeGoals} | enfermedades: ${diseases} | personalidad: ${localizedPersonality(memory.personality?.current || 'narrador')}`;
+	statsExtra.textContent = currentLanguage === 'en' ? `recorded events: ${(current.events || []).length} | personal goals: ${activeGoals} | diseases: ${diseases}` : `eventos registrados: ${(current.events || []).length} | objetivos personales: ${activeGoals} | enfermedades: ${diseases}`;
 }
 
 function addPanelSection(container, title, entries, emptyText = currentLanguage === 'en' ? 'none' : 'ninguno') {
@@ -3053,6 +3394,17 @@ function applyDecisionEffects(decision, savedPlayer, analysis = analyzeText(deci
 		savedPlayer.hobby = newHobby;
 		effects.push(`hobby: ${newHobby}`);
 	}
+	const sellAction = /\b(vender|vendo|venta|vendi|vendí|sell|sold|sell off|cash out)\b/i.test(text);
+	if (sellAction && savedPlayer.inventory?.length) {
+	  const item = findInventoryItem(decision, savedPlayer.inventory) || savedPlayer.inventory[0];
+	  const quantityMatch = text.match(/\b(\d+)\s+(?:unidades?|items?|objetos?|items?|x)\b/i);
+	  const quantity = Math.min(item.quantity || 1, Math.max(1, Number(quantityMatch?.[1]) || 1));
+	  const value = itemSaleValue(item) * quantity;
+	  item.quantity = (item.quantity || 1) - quantity;
+	  if (item.quantity <= 0) savedPlayer.inventory = savedPlayer.inventory.filter((entry) => entry !== item);
+	  money += value;
+	  effects.push(currentLanguage === 'en' ? `sold ${quantity} ${item.name || 'item'} for +${value} money` : `vendiste ${quantity} ${item.name || 'objeto'} por +${value} dinero`);
+	}
 
 	const career = detectCareer(decision) || careerById(savedPlayer.occupation);
 	if (career || has('trabajo', 'trabajar', 'sueldo', 'contrato', 'negocio', 'work', 'job', 'salary', 'contract', 'business')) {
@@ -3113,8 +3465,9 @@ function applyDecisionEffects(decision, savedPlayer, analysis = analyzeText(deci
 function applyNaturalNumericChanges(decision, playerState, effects) {
   const text = normalizeWords(decision).join(' ');
   const number = '(\\d+(?:[.,]\\d+)?)';
-  const rules = [
+	const rules = [
 	{ property: 'energy', words: ['energia', 'energy', 'cansancio', 'fatiga', 'energy'], up: ['recupero', 'recuperar', 'descanso', 'descansar', 'duermo', 'duerme', 'rest', 'recover'], down: ['pierdo', 'perdi', 'gasto', 'agoto', 'canso', 'fatiga', 'lose', 'spend', 'drain', 'tired'], label: ['energía', 'energy'] },
+	{ property: 'health', words: ['salud', 'health', 'bienestar', 'wellbeing', 'wellness'], up: ['mejoro', 'mejorar', 'recupero', 'recuperar', 'sano', 'sanar', 'curo', 'curar', 'heal', 'recover', 'improve'], down: ['pierdo', 'empeora', 'empeorar', 'enfermo', 'daño', 'dano', 'hurt', 'harm', 'worsen', 'sick'], label: ['salud', 'health'] },
 	{ property: 'reputation', words: ['reputacion', 'reputation', 'fama', 'respeto', 'respect'], up: ['gano', 'ganar', 'sube', 'aumento', 'mejoro', 'gain', 'increase', 'improve'], down: ['pierdo', 'baja', 'disminuye', 'pierde', 'lose', 'decrease', 'lower'], label: ['reputación', 'reputation'] },
 	{ property: 'money', words: ['dinero', 'plata', 'pesos', 'money', 'cash'], up: ['gano', 'cobro', 'recibo', 'aumento', 'ingreso', 'earn', 'receive', 'increase'], down: ['pierdo', 'gasto', 'pago', 'compro', 'disminuye', 'lose', 'spend', 'pay', 'decrease'], label: ['dinero', 'money'] }
   ];
@@ -3123,7 +3476,7 @@ function applyNaturalNumericChanges(decision, playerState, effects) {
 	const declaration = new RegExp(`(?:tengo|ahora tengo|mi|mi actual|actualmente|i have|my|currently)\\D{0,12}(?:${rule.words.join('|')})?\\D{0,12}${number}`,'i').exec(text);
 	if (declaration) {
 	  const value = Math.max(0, Number(declaration[1].replace(',', '.')));
-	  if (rule.property === 'energy') playerState[rule.property] = Math.min(100, value);
+	  if (['energy', 'health'].includes(rule.property)) playerState[rule.property] = Math.min(100, value);
 	  else playerState[rule.property] = value;
 	  effects.push(`${currentLanguage === 'en' ? rule.label[1] : rule.label[0]}: ${playerState[rule.property]}`);
 	  return;
@@ -3134,7 +3487,7 @@ function applyNaturalNumericChanges(decision, playerState, effects) {
 	const isDown = rule.down.some((word) => change[0].includes(word));
 	const amount = Number(change[1].replace(',', '.')) * (isDown ? -1 : 1);
 	const current = Number(playerState[rule.property]) || 0;
-	playerState[rule.property] = Math.max(0, rule.property === 'energy' ? Math.min(100, current + amount) : current + amount);
+	playerState[rule.property] = Math.max(0, ['energy', 'health'].includes(rule.property) ? Math.min(100, current + amount) : current + amount);
 	effects.push(`${currentLanguage === 'en' ? rule.label[1] : rule.label[0]}: ${amount > 0 ? '+' : ''}${amount}`);
   });
 }
@@ -3211,65 +3564,6 @@ function generateFreeLocalResponse(message, memory, analysis, context, effects =
 	: '';
   const effectLine = effects.length ? (en ? ` The local simulation applied: ${effects.join(', ')}.` : ` La simulación local aplicó: ${effects.join(', ')}.`) : '';
   return `${subject}: ${base}${memoryLine}${goalLine}${ambiguityLine}${effectLine}`;
-}
-
-function generateChatResponse(message, memory, effects, analysis = analyzeText(message, memory)) {
-	if (currentLanguage === 'en') return generateEnglishChatResponse(message, memory, effects, analysis);
-	const contextManager = new ContextManager(memory);
-  const context = contextManager.retrieve(message);
-  const topic = strongestTopic(memory.topics);
-	const latestNote = memory.notes.length ? (memory.notes[memory.notes.length - 1].text || memory.notes[memory.notes.length - 1]) : '';
-	  const remembered = latestNote ? ` Recuerdo que me dijiste: "${latestNote.text || latestNote}".` : '';
-	  const latestRuleEntry = memory.customRules && memory.customRules.length ? memory.customRules[memory.customRules.length - 1] : '';
-	  const latestRule = latestRuleEntry && latestRuleEntry.text ? latestRuleEntry.text : latestRuleEntry;
-	  const rule = latestRule ? ` También sigo esta regla: "${latestRule}".` : '';
-  const effectText = effects.length ? ` He actualizado tu personaje: ${effects.join(', ')}.` : '';
-	const entityText = Object.values(analysis.entities).flat().join(', ');
-  const entities = entityText ? ` Detecté: ${entityText}.` : '';
-	const contextText = context.length ? ` Encontré contexto relacionado: "${context[0].text}".` : '';
-	const personality = new AdaptivePersonality().choose(message, analysis, memory);
-	const recentUser = memory.chat.filter((entry) => entry.role === 'user').slice(-3).map((entry) => entry.text);
-	const recentAi = memory.chat.filter((entry) => entry.role === 'ai').slice(-2).map((entry) => entry.text);
-	const directQuestion = /\?$/.test(message);
-	const normalized = normalizeWords(message).join(' ');
-	const conversational = generateFreeLocalResponse(message, memory, analysis, context, effects);
-	const raw = `${conversational}${entities}${contextText} ${remembered}${rule}${effectText}`;
-	const followUps = [
-	  '¿Qué parte te importa más ahora?',
-	  '¿Quieres que lo analicemos con calma o prefieres pasar a una acción concreta?',
-	  '¿Esto viene de algo que ocurrió hoy o es una preocupación que arrastras desde hace tiempo?',
-	  '¿Qué te gustaría que entendiera mejor?'
-	];
-	const followUp = directQuestion || analysis.intent === 'unknown' ? ` ${followUps[(recentUser.length + recentAi.length) % followUps.length]}` : ` ${followUps[(recentUser.length + 1) % followUps.length]}`;
-	return new AdaptivePersonality().style(`${raw}${followUp}`, personality);
-}
-
-function generateEnglishChatResponse(message, memory, effects, analysis) {
-	const context = new ContextManager(memory).retrieve(message);
-  const generated = generateFreeLocalResponse(message, memory, analysis, context, effects);
-  const entityText = Object.values(analysis.entities).flat().join(', ');
-  return `${generated}${entityText ? ` I detected: ${entityText}.` : ''} What would you like to explore next?`;
-}
-
-function renderChat(messages) {
-	chatMessages.replaceChildren();
-	if (!messages.length) {
-		const empty = document.createElement('p');
-		empty.className = 'chat-ai';
-		const label = document.createElement('span');
-		label.textContent = '[ LIFE.AI ] ';
-		empty.append(label, document.createTextNode(currentLanguage === 'en' ? 'Memory clear. Tell me something to start learning.' : 'Memoria limpia. Cuéntame algo para empezar a aprender.'));
-		chatMessages.append(empty);
-	} else messages.forEach((message) => {
-	const item = document.createElement('p');
-	item.className = message.role === 'user' ? 'chat-user' : 'chat-ai';
-	const prefix = message.role === 'user' ? '[ TÚ ] ' : '[ LIFE.AI ] ';
-	const label = document.createElement('span');
-	label.textContent = prefix;
-	item.append(label, document.createTextNode(message.text));
-	chatMessages.append(item);
-	});
-  chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
 function learnFrom(decision, memory) {

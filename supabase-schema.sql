@@ -8,9 +8,14 @@ create table if not exists public.player_profiles (
   display_name text,
   language text not null default 'es',
   consent_global_learning boolean not null default false,
+	total_play_seconds bigint not null default 0 check (total_play_seconds >= 0),
+  last_played_at timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table public.player_profiles add column if not exists total_play_seconds bigint not null default 0;
+alter table public.player_profiles add column if not exists last_played_at timestamptz;
 
 create table if not exists public.games (
   id uuid primary key default gen_random_uuid(),
@@ -100,6 +105,11 @@ create index if not exists player_memories_player_idx on public.player_memories 
 create index if not exists player_diseases_player_idx on public.player_diseases (player_id);
 create index if not exists global_learning_events_created_idx on public.global_learning_events (created_at desc);
 create index if not exists learning_signals_created_idx on public.learning_signals (created_at desc);
+create index if not exists learning_signals_type_created_idx on public.learning_signals (signal_type, created_at desc);
+create index if not exists learning_signals_intent_idx on public.learning_signals (intent);
+create index if not exists learning_signals_validation_idx on public.learning_signals (signal_type, intent, created_at desc);
+create index if not exists player_profiles_played_idx on public.player_profiles (total_play_seconds desc);
+create index if not exists player_profiles_last_played_idx on public.player_profiles (last_played_at desc);
 create index if not exists active_players_seen_idx on public.active_players (last_seen desc);
 
 alter table public.player_profiles enable row level security;
@@ -223,3 +233,46 @@ $$;
 
 revoke all on function public.get_active_player_count() from public;
 grant execute on function public.get_active_player_count() to authenticated;
+
+create or replace function public.record_player_time(seconds_to_add integer)
+returns void
+language sql
+security invoker
+set search_path = public
+as $$
+  update public.player_profiles
+  set total_play_seconds = total_play_seconds + greatest(0, least(seconds_to_add, 120)),
+	  last_played_at = now(),
+	  updated_at = now()
+  where id = auth.uid();
+$$;
+
+revoke all on function public.record_player_time(integer) from public;
+grant execute on function public.record_player_time(integer) to authenticated;
+
+create or replace function public.get_global_signal_stats()
+returns table (
+  signal_type text,
+  intent text,
+  signal_count bigint,
+  average_confidence numeric,
+  last_seen timestamptz
+)
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select
+	signal_type,
+	coalesce(intent, 'unknown') as intent,
+	count(*)::bigint as signal_count,
+	round(avg(nullif((signal_data->>'confidence')::numeric, 0)), 4) as average_confidence,
+	max(created_at) as last_seen
+  from public.learning_signals
+  group by signal_type, coalesce(intent, 'unknown')
+  order by signal_count desc;
+$$;
+
+revoke all on function public.get_global_signal_stats() from public;
+grant execute on function public.get_global_signal_stats() to authenticated;
