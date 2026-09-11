@@ -79,16 +79,26 @@ const reputationStat = document.querySelector('#reputationStat');
 const analysisDetails = document.querySelector('#analysisDetails');
 const predictionDetails = document.querySelector('#predictionDetails');
 const languageSelect = document.querySelector('#languageSelect');
+const themeSelect = document.querySelector('#themeSelect');
 const welcomeNavigation = document.querySelector('#welcomeNavigation');
-const playNavButton = document.querySelector('#playNavButton');
 const blogButton = document.querySelector('#blogButton');
 const blogScreen = document.querySelector('#blogScreen');
 const closeBlogButton = document.querySelector('#closeBlogButton');
+const petsButton = document.querySelector('#petsButton');
+const petsScreen = document.querySelector('#petsScreen');
+const closePetsButton = document.querySelector('#closePetsButton');
+const petsDashboard = document.querySelector('#petsDashboard');
+const adoptPetForm = document.querySelector('#adoptPetForm');
+const adoptTypeSelect = document.querySelector('#adoptTypeSelect');
+const adoptNameInput = document.querySelector('#adoptNameInput');
+const adoptSubmitBtn = document.querySelector('#adoptSubmitBtn');
 const discordLink = document.querySelector('#discordLink');
 const weatherIndicator = document.querySelector('#weatherIndicator');
 const weatherOverlay = document.querySelector('#weatherOverlay');
 const seasonIndicator = document.querySelector('#seasonIndicator');
 const seasonEffects = document.querySelector('#seasonEffects');
+const moneyRainIndicator = document.querySelector('#moneyRainIndicator');
+const moneyRainOverlay = document.querySelector('#moneyRainOverlay');
 const gameOverScreen = document.querySelector('#gameOverScreen');
 const gameOverTitle = document.querySelector('#gameOverTitle');
 const gameOverText = document.querySelector('#gameOverText');
@@ -128,6 +138,21 @@ window.currentLanguage = currentLanguage;
 let currentUsername = '';
 try { currentUsername = localStorage.getItem('lifeUsername')?.trim() || ''; } catch { /* optional storage */ }
 window.currentUsername = currentUsername;
+
+let currentTheme = 'green';
+try { currentTheme = localStorage.getItem('lifeRetroTheme') || 'green'; } catch { /* theme storage fallback */ }
+function applyRetroTheme(theme) {
+  const allowed = ['green', 'orange', 'red', 'blue'];
+  currentTheme = allowed.includes(theme) ? theme : 'green';
+  allowed.forEach((t) => document.body.classList.remove(`theme-${t}`));
+  document.body.classList.add(`theme-${currentTheme}`);
+  if (themeSelect && themeSelect.value !== currentTheme) {
+    themeSelect.value = currentTheme;
+  }
+  try { localStorage.setItem('lifeRetroTheme', currentTheme); } catch { /* storage fallback */ }
+}
+applyRetroTheme(currentTheme);
+listen(themeSelect, 'change', () => applyRetroTheme(themeSelect?.value));
 
 const careerCatalog = [
   { id: 'software_engineer', family: 'Tecnología', names: { es: 'Ingeniero de software', en: 'Software engineer' }, aliases: ['programador', 'programadora', 'desarrollador', 'desarrolladora', 'ingeniero de software', 'ingeniera de software', 'software engineer', 'software developer', 'coder'], income: 620, energy: 12 },
@@ -286,23 +311,73 @@ function currentGovernment(world = readSave().world) {
 
 function renderGovernmentPanel() {
   if (!governmentDashboard) return;
-  const government = currentGovernment(readSave().world);
+  const world = readSave().world;
+  const government = currentGovernment(world);
   const data = government[currentLanguage] || government.en;
   const en = currentLanguage === 'en';
   governmentDashboard.replaceChildren();
-  const entries = [
-	[en ? 'Government' : 'Gobierno', data.name],
-	[en ? 'Party' : 'Partido', data.party],
-	[en ? 'Ideology' : 'Ideología', data.ideology],
-	[en ? 'Main policy' : 'Política principal', data.policy],
-	[en ? 'Term' : 'Mandato', `${government.startYear}–${government.endYear}`],
-	[en ? 'World year' : 'Año mundial', government.year]
+
+  // Hero Card
+  const heroCard = document.createElement('article');
+  heroCard.className = 'panel-hero-card';
+
+  const heroTop = document.createElement('div');
+  heroTop.className = 'hero-header-row';
+
+  const govName = document.createElement('h3');
+  govName.className = 'hero-title';
+  govName.textContent = data.name;
+
+  const ideologyBadge = document.createElement('span');
+  ideologyBadge.className = 'badge-pill active';
+  ideologyBadge.textContent = String(data.ideology || '').toUpperCase();
+
+  heroTop.append(govName, ideologyBadge);
+
+  const partySub = document.createElement('p');
+  partySub.className = 'hero-sub';
+  partySub.textContent = `${en ? 'Ruling party' : 'Partido gobernante'}: ${data.party}`;
+
+  // Term progress calculation (4-year term)
+  const yearInTerm = Math.max(1, Math.min(4, ((government.year - 1) % 4) + 1));
+  const termPct = Math.round((yearInTerm / 4) * 100);
+  const blocks = Math.round(termPct / 10);
+  const visualBar = '█'.repeat(blocks) + '░'.repeat(10 - blocks);
+
+  const termProgress = document.createElement('div');
+  termProgress.className = 'progress-bar-retro';
+  termProgress.innerHTML = `<span>[${visualBar}] ${en ? 'Year' : 'Año'} ${yearInTerm}/4 (${termPct}%)</span><span class="stat-chip">${en ? 'Term' : 'Mandato'}: ${government.startYear}–${government.endYear}</span>`;
+
+  heroCard.append(heroTop, partySub, termProgress);
+  governmentDashboard.append(heroCard);
+
+  // Metrics Grid
+  const grid = document.createElement('div');
+  grid.className = 'gov-metrics-grid';
+
+  const metrics = [
+    { label: en ? 'Ruling Party' : 'Partido Gobernante', value: data.party },
+    { label: en ? 'State Ideology' : 'Ideología Estatal', value: data.ideology },
+    { label: en ? 'Core Policy' : 'Política Principal', value: data.policy },
+    { label: en ? 'World Timeline' : 'Línea Temporal', value: `${en ? 'Year' : 'Año'} ${government.year}` },
+    { label: en ? 'Mandate Period' : 'Período Constitucional', value: `${government.startYear} — ${government.endYear}` },
+    { label: en ? 'Regime Status' : 'Estado del Régimen', value: en ? 'CONSTITUTIONAL' : 'CONSTITUCIONAL' }
   ];
-  entries.forEach(([label, value]) => {
-	const row = document.createElement('p');
-	row.textContent = `${label}: ${value}`;
-	governmentDashboard.append(row);
+
+  metrics.forEach((m) => {
+    const card = document.createElement('div');
+    card.className = 'metric-card';
+    const lbl = document.createElement('span');
+    lbl.className = 'metric-label';
+    lbl.textContent = m.label;
+    const val = document.createElement('strong');
+    val.className = 'metric-val';
+    val.textContent = m.value;
+    card.append(lbl, val);
+    grid.append(card);
   });
+
+  governmentDashboard.append(grid);
 }
 
 listen(playTimeRewardsButton, 'click', () => {
@@ -417,8 +492,10 @@ function renderWorldEnvironment(save) {
 	if (save?.lifeStatus === 'active' && !storyScreen?.classList.contains('hidden')) {
 	renderWeather(normalizeWeather(save.weather));
 	renderSeason(season);
+	startMoneyRainCycle();
   } else {
 	resetWeatherVisuals();
+	resetMoneyRainVisuals();
   }
 }
 
@@ -451,7 +528,7 @@ function renderSeason(season) {
 	seasonEffects.replaceChildren();
 	const symbols = { primavera: '✿', otoño: '❧', invierno: '❄', verano: '' };
 	if (symbols[validSeason]) {
-	  for (let index = 0; index < 16; index += 1) {
+	  for (let index = 0; index < 10; index += 1) {
 		const particle = document.createElement('span');
 		particle.className = 'season-particle';
 		particle.textContent = symbols[validSeason];
@@ -505,13 +582,22 @@ function isValidHobby(value) {
   return words.some((word) => knownHobbies.has(word) || [...knownHobbies].some((hobby) => word.includes(hobby) || hobby.includes(word) || closeSemanticWord(word, hobby)));
 }
 
+const careerAliasCache = new Map();
 function normalizeCareerAlias(value) {
-  return String(value || '')
+  const key = String(value || '');
+  if (careerAliasCache.has(key)) return careerAliasCache.get(key);
+  const res = key
 	.toLowerCase()
 	.normalize('NFD')
 	.replace(/[\u0300-\u036f]/g, '')
 	.replace(/[^a-z0-9]+/g, ' ')
 	.trim();
+  if (careerAliasCache.size > 800) {
+    const firstKey = careerAliasCache.keys().next().value;
+    careerAliasCache.delete(firstKey);
+  }
+  careerAliasCache.set(key, res);
+  return res;
 }
 
 function extractContextualLocation(text) {
@@ -799,6 +885,12 @@ const creatorPosts = [
 	category: { es: 'ACTUALIZACIÓN', en: 'UPDATE' },
 	title: { es: 'NUEVA VERSION 0.0.1c — Gobiernos y recompensas', en: 'NEW VERSION 0.0.1c — Governments and rewards' },
 	text: { es: 'Llegan los gobiernos de turno, que cambian cada cuatro años, el Palo Presidencial como recompensa por 30 minutos de juego y la venta directa de objetos del inventario. También mejoraron la IA, la posibilidad de tener hijos y la interfaz.', en: 'Current governments now change every four years. The Presidential Stick arrives as a 30-minute play-time reward, along with direct inventory sales. LIFE.AI, having children and the interface also received improvements.' }
+	},
+	{
+	date: '2026-09-11',
+	category: { es: 'ACTUALIZACIÓN', en: 'UPDATE' },
+	title: { es: 'NUEVA VERSION 0.0.1d — Mascotas, Lluvia de Dinero y Rediseño de Paneles', en: 'NEW VERSION 0.0.1d — Pets, Money Rain & Panels Redesign' },
+	text: { es: 'En esta versión 0.0.1d se solucionó el problema de vidas triplicadas en vidas anteriores. Se añade el sistema de mascotas con cuidados y opción de dar en adopción (con protección anti-doble click), evento especial de Lluvia de Dinero (+1000% de ganancias cada 5 min), rediseño estético y ordenado para todos los paneles del menú (Gobierno con mandato y métricas, Carreras con catálogo, Familia e Inventario), pie de página fijo de derechos de autor de icerix, envío de formularios con tecla Enter, grandes optimizaciones y un barrido de idioma completo (ES/EN).', en: 'In version 0.0.1d, duplicate previous lives on creation are fixed. Adds the pet care & adoption system with give-up option (and anti-double click protection), Money Rain event (+1000% earnings every 5 min), clean aesthetic redesign for all menu panels (Government with mandate progress & metrics, Careers catalog, Family and Inventory), global fixed copyright footer by icerix, Enter key form submission, major speed optimizations, and a full bilingual language sweep (ES/EN).' }
 	}
 ];
 
@@ -840,117 +932,370 @@ function renderCurrentOccupation() {
 function renderCareersPanel() {
   if (!careersDashboard) return;
   careersDashboard.replaceChildren();
-  const current = careerById(readSave().player?.occupation);
-	const card = document.createElement('article');
-  card.className = 'career-card active-career';
-  const title = document.createElement('h3');
-	title.textContent = current ? current.names[currentLanguage] : (currentLanguage === 'en' ? 'No job assigned' : 'Ningún trabajo asignado');
-  const details = document.createElement('p');
-	  details.textContent = current
-	? (currentLanguage === 'en' ? `${careerFamilyLabel(current)} · income: +${current.income} · energy: -${current.energy}` : `${careerFamilyLabel(current)} · ingreso: +${current.income} · energía: -${current.energy}`)
-	: (currentLanguage === 'en' ? 'Your character does not have a profession yet.' : 'Tu personaje todavía no tiene una profesión.');
-  card.append(title, details);
-  careersDashboard.append(card);
+  const en = currentLanguage === 'en';
+  const save = readSave();
+  const current = careerById(save.player?.occupation);
+
+  // Active Career Hero Card
+  const heroCard = document.createElement('article');
+  heroCard.className = 'panel-hero-card';
+
+  const heroTop = document.createElement('div');
+  heroTop.className = 'hero-header-row';
+
+  const activeTitle = document.createElement('h3');
+  activeTitle.className = 'hero-title';
+  activeTitle.textContent = current ? current.names[currentLanguage] : (en ? 'No Active Career' : 'Sin Profesión Activa');
+
+  const statusBadge = document.createElement('span');
+  statusBadge.className = `badge-pill ${current ? 'active' : ''}`;
+  statusBadge.textContent = current ? (en ? 'ACTIVE JOB' : 'EMPLEO ACTUAL') : (en ? 'UNEMPLOYED' : 'DESEMPLEADO');
+
+  heroTop.append(activeTitle, statusBadge);
+
+  const detailsRow = document.createElement('div');
+  detailsRow.style.display = 'flex';
+  detailsRow.style.gap = '8px';
+  detailsRow.style.flexWrap = 'wrap';
+  detailsRow.style.margin = '8px 0 0 0';
+
+  if (current) {
+    const familyChip = document.createElement('span');
+    familyChip.className = 'stat-chip';
+    familyChip.textContent = `📁 ${careerFamilyLabel(current)}`;
+
+    const incomeChip = document.createElement('span');
+    incomeChip.className = 'stat-chip';
+    incomeChip.style.borderColor = 'var(--accent)';
+    incomeChip.textContent = `💰 +$${current.income} / ${en ? 'mo' : 'mes'}`;
+
+    const energyChip = document.createElement('span');
+    energyChip.className = 'stat-chip';
+    energyChip.textContent = `⚡ -${current.energy} ${en ? 'energy' : 'energía'}`;
+
+    detailsRow.append(familyChip, incomeChip, energyChip);
+  } else {
+    const noJobP = document.createElement('p');
+    noJobP.className = 'hero-sub';
+    noJobP.textContent = en
+      ? 'Your character does not have an active profession. Make decisions related to education, applications, or work in the story!'
+      : 'Tu personaje todavía no tiene un empleo. ¡Toma decisiones relacionadas a estudio, postulaciones o trabajo en tu historia!';
+    detailsRow.append(noJobP);
+  }
+
+  heroCard.append(heroTop, detailsRow);
+  careersDashboard.append(heroCard);
+
+  // Catalog Section
+  const catalogTitle = document.createElement('h3');
+  catalogTitle.className = 'panel-section-title';
+  catalogTitle.textContent = `[ ${en ? 'AVAILABLE CAREER DIRECTORY' : 'DIRECTORIO DE PROFESIONES'} ]`;
+  careersDashboard.append(catalogTitle);
+
+  const grid = document.createElement('div');
+  grid.className = 'panel-grid-2';
+
+  careerCatalog.forEach((career) => {
+    const card = document.createElement('article');
+    const isCurrentCareer = current?.id === career.id;
+    card.className = `career-card ${isCurrentCareer ? 'active-career' : ''}`;
+
+    const header = document.createElement('div');
+    header.style.display = 'flex';
+    header.style.justifyContent = 'space-between';
+    header.style.alignItems = 'center';
+    header.style.gap = '6px';
+
+    const name = document.createElement('strong');
+    name.textContent = career.names[currentLanguage] || career.names.es;
+
+    const familyTag = document.createElement('span');
+    familyTag.className = 'stat-chip';
+    familyTag.style.fontSize = '9px';
+    familyTag.textContent = career.family;
+
+    header.append(name, familyTag);
+
+    const stats = document.createElement('p');
+    stats.style.margin = '4px 0 0 0';
+    stats.style.fontSize = '10.5px';
+    stats.style.color = 'var(--text-muted)';
+    stats.textContent = `${en ? 'Income' : 'Ingreso'}: +$${career.income} · ${en ? 'Energy' : 'Energía'}: -${career.energy}`;
+
+    card.append(header, stats);
+    grid.append(card);
+  });
+
+  careersDashboard.append(grid);
 }
 
 function renderFamilyPanel() {
   if (!familyDashboard) return;
-	const save = readSave();
+  const save = readSave();
   const family = normalizeFamilyTree(save.player?.familyTree, save.player || {});
   familyDashboard.replaceChildren();
-	const en = currentLanguage === 'en';
-  const statusLabels = en ? { single: 'single', dating: 'in a relationship', married: 'married', divorced: 'divorced' } : { single: 'soltero/a', dating: 'en pareja', married: 'casado/a', divorced: 'divorciado/a' };
-  const summary = document.createElement('section');
-  summary.className = 'family-group family-status';
-  const summaryTitle = document.createElement('h3');
-  summaryTitle.textContent = `[ ${en ? 'CURRENT FAMILY' : 'FAMILIA ACTUAL'} ]`;
-  summary.append(summaryTitle);
-  const status = document.createElement('p');
-  status.textContent = `${en ? 'Status' : 'Estado civil'}: ${statusLabels[family.maritalStatus] || family.maritalStatus}`;
-  summary.append(status);
+  const en = currentLanguage === 'en';
+  const statusLabels = en
+    ? { single: 'Single', dating: 'In a relationship', married: 'Married', divorced: 'Divorced' }
+    : { single: 'Soltero/a', dating: 'En pareja', married: 'Casado/a', divorced: 'Divorciado/a' };
+
+  // Marital Status Hero Card
+  const heroCard = document.createElement('article');
+  heroCard.className = 'panel-hero-card';
+
+  const heroTop = document.createElement('div');
+  heroTop.className = 'hero-header-row';
+
+  const maritalTitle = document.createElement('h3');
+  maritalTitle.className = 'hero-title';
+  maritalTitle.textContent = en ? 'Current Marital Status' : 'Estado Civil Actual';
+
+  const statusBadge = document.createElement('span');
+  statusBadge.className = 'badge-pill active';
+  statusBadge.textContent = String(statusLabels[family.maritalStatus] || family.maritalStatus).toUpperCase();
+
+  heroTop.append(maritalTitle, statusBadge);
+
+  const heroBody = document.createElement('div');
+  heroBody.style.marginTop = '6px';
+
   if (family.partner) {
-	const partner = document.createElement('p');
-	partner.textContent = `${en ? 'Partner' : 'Pareja'}: ${family.partner.name} ${family.partner.surname || ''}${family.maritalStatus === 'married' ? (en ? ' — spouse' : ' — cónyuge') : ''}`;
-	summary.append(partner);
+    const partnerP = document.createElement('p');
+    partnerP.className = 'hero-sub';
+    partnerP.textContent = `👤 ${en ? 'Partner' : 'Pareja'}: ${family.partner.name} ${family.partner.surname || ''} ${family.maritalStatus === 'married' ? (en ? '(Spouse)' : '(Cónyuge)') : ''}`;
+    heroBody.append(partnerP);
+  } else {
+    const singleP = document.createElement('p');
+    singleP.className = 'hero-sub';
+    singleP.textContent = en ? '// No current romantic partner' : '// Sin pareja sentimental actualmente';
+    heroBody.append(singleP);
   }
-  familyDashboard.append(summary);
+
+  heroCard.append(heroTop, heroBody);
+  familyDashboard.append(heroCard);
+
+  // Children Section
+  const childrenSection = document.createElement('section');
+  childrenSection.className = 'family-group';
+  const childrenTitle = document.createElement('h3');
+  childrenTitle.className = 'panel-section-title';
+  childrenTitle.textContent = `[ ${en ? 'CHILDREN' : 'HIJOS'} ] (${family.children.length})`;
+  childrenSection.append(childrenTitle);
+
   if (family.children.length) {
-	const children = document.createElement('section');
-	children.className = 'family-group family-children';
-	const heading = document.createElement('h3');
-	heading.textContent = `[ ${en ? 'CHILDREN' : 'HIJOS'} ]`;
-	children.append(heading);
-	family.children.forEach((child) => {
-	  const entry = document.createElement('p');
-	  entry.textContent = `${child.name} ${child.surname || ''} — ${en ? 'age' : 'edad'} ${child.age}`;
-	  children.append(entry);
-	});
-	familyDashboard.append(children);
+    const chGrid = document.createElement('div');
+    chGrid.className = 'panel-grid-2';
+    family.children.forEach((child) => {
+      const card = document.createElement('article');
+      card.className = 'panel-card';
+      const name = document.createElement('strong');
+      name.textContent = `👶 ${child.name} ${child.surname || ''}`;
+      const ageP = document.createElement('p');
+      ageP.textContent = `${en ? 'Age' : 'Edad'}: ${child.age} ${en ? 'years old' : 'años'}`;
+      card.append(name, ageP);
+      chGrid.append(card);
+    });
+    childrenSection.append(chGrid);
+  } else {
+    const emptyP = document.createElement('p');
+    emptyP.className = 'panel-empty';
+    emptyP.textContent = en ? '// No children recorded in this life' : '// No hay hijos registrados en esta vida';
+    childrenSection.append(emptyP);
   }
+  familyDashboard.append(childrenSection);
+
+  // Pets Section
+  const petsSection = document.createElement('section');
+  petsSection.className = 'family-group';
+  const petsTitle = document.createElement('h3');
+  petsTitle.className = 'panel-section-title';
+  petsTitle.textContent = `[ ${en ? 'COMPANION PETS' : 'MASCOTAS DEL HOGAR'} ] (${family.pets?.length || 0})`;
+  petsSection.append(petsTitle);
+
   if (family.pets?.length) {
-	const pets = document.createElement('section');
-	pets.className = 'family-group family-pets';
-	const heading = document.createElement('h3');
-	heading.textContent = `[ ${en ? 'PETS' : 'MASCOTAS'} ]`;
-	pets.append(heading);
-	family.pets.forEach((pet) => {
-	  const entry = document.createElement('p');
-	  const petLabel = en ? (pet.type === 'dog' ? 'Dog' : pet.type === 'cat' ? 'Cat' : 'Pet') : (pet.type === 'dog' ? 'Perro' : pet.type === 'cat' ? 'Gato' : 'Mascota');
-	  entry.textContent = `${pet.name} — ${petLabel}`;
-	  pets.append(entry);
-	});
-	familyDashboard.append(pets);
+    const petGrid = document.createElement('div');
+    petGrid.className = 'panel-grid-2';
+    const petLabels = { dog: en ? 'Dog' : 'Perro', cat: en ? 'Cat' : 'Gato', bird: en ? 'Bird' : 'Ave', hamster: 'Hámster', rabbit: en ? 'Rabbit' : 'Conejo' };
+    family.pets.forEach((pet) => {
+      const card = document.createElement('article');
+      card.className = 'panel-card';
+      const nameRow = document.createElement('div');
+      nameRow.style.display = 'flex';
+      nameRow.style.justifyContent = 'space-between';
+      nameRow.style.alignItems = 'center';
+      const name = document.createElement('strong');
+      name.textContent = `🐾 ${pet.name}`;
+      const typeTag = document.createElement('span');
+      typeTag.className = 'stat-chip';
+      typeTag.textContent = petLabels[pet.type] || pet.type;
+      nameRow.append(name, typeTag);
+
+      const stats = document.createElement('p');
+      stats.textContent = `${en ? 'Health' : 'Salud'}: ${pet.health ?? 100}% · ${en ? 'Happiness' : 'Ánimo'}: ${pet.happiness ?? 80}%`;
+      card.append(nameRow, stats);
+      petGrid.append(card);
+    });
+    petsSection.append(petGrid);
+  } else {
+    const emptyP = document.createElement('p');
+    emptyP.className = 'panel-empty';
+    emptyP.textContent = en ? '// No pets adopted yet' : '// Todavía no has adoptado ninguna mascota';
+    petsSection.append(emptyP);
   }
+
+  const managePetsBtn = document.createElement('button');
+  managePetsBtn.type = 'button';
+  managePetsBtn.className = 'history-button';
+  managePetsBtn.style.marginTop = '10px';
+  managePetsBtn.textContent = en ? '[ MANAGE & CARE FOR PETS ]' : '[ CUIDAR Y GESTIONAR MASCOTAS ]';
+  managePetsBtn.addEventListener('click', () => {
+    familyScreen.classList.add('hidden');
+    renderPetsPanel();
+    petsScreen?.classList.remove('hidden');
+  });
+  petsSection.append(managePetsBtn);
+  familyDashboard.append(petsSection);
+
+  // Relatives Section
   if (!family.members?.length) return;
   const grouped = new Map();
-	family.members.forEach((member) => {
-	const group = member.relation.startsWith('paternal') || member.relation === 'cousin' ? (currentLanguage === 'en' ? 'Paternal family' : 'Familia paterna') : member.relation.startsWith('maternal') || member.relation === 'maternalCousin' ? (currentLanguage === 'en' ? 'Maternal family' : 'Familia materna') : (currentLanguage === 'en' ? 'Close family' : 'Familia cercana');
-	if (!grouped.has(group)) grouped.set(group, []);
-	grouped.get(group).push(member);
+  family.members.forEach((member) => {
+    const group = member.relation.startsWith('paternal') || member.relation === 'cousin'
+      ? (en ? 'Paternal Family' : 'Familia Paterna')
+      : member.relation.startsWith('maternal') || member.relation === 'maternalCousin'
+      ? (en ? 'Maternal Family' : 'Familia Materna')
+      : (en ? 'Close Family' : 'Familia Cercana');
+    if (!grouped.has(group)) grouped.set(group, []);
+    grouped.get(group).push(member);
   });
+
+  const relationLabels = en
+    ? { father: 'father', mother: 'mother', paternalGrandfather: 'paternal grandfather', paternalGrandmother: 'paternal grandmother', maternalGrandfather: 'maternal grandfather', maternalGrandmother: 'maternal grandmother', sibling: 'sibling', cousin: 'cousin', maternalCousin: 'maternal cousin' }
+    : { father: 'padre', mother: 'madre', paternalGrandfather: 'abuelo paterno', paternalGrandmother: 'abuela paterna', maternalGrandfather: 'abuelo materno', maternalGrandmother: 'abuela materna', sibling: 'hermano/a', cousin: 'primo/a', maternalCousin: 'primo/a materno/a' };
+
   grouped.forEach((members, group) => {
-	const section = document.createElement('section');
-	section.className = 'family-group';
-	const heading = document.createElement('h3');
-	heading.textContent = `[ ${group} ]`;
-	section.append(heading);
-	members.forEach((member) => {
-	  const entry = document.createElement('p');
-	  const relationLabels = currentLanguage === 'en' ? { father: 'father', mother: 'mother', paternalGrandfather: 'paternal grandfather', paternalGrandmother: 'paternal grandmother', maternalGrandfather: 'maternal grandfather', maternalGrandmother: 'maternal grandmother', sibling: 'sibling', cousin: 'cousin', maternalCousin: 'maternal cousin' } : { father: 'padre', mother: 'madre', paternalGrandfather: 'abuelo paterno', paternalGrandmother: 'abuela paterna', maternalGrandfather: 'abuelo materno', maternalGrandmother: 'abuela materna', sibling: 'hermano/a', cousin: 'primo/a', maternalCousin: 'primo/a materno/a' };
-	  entry.textContent = `${member.name} ${member.surname} — ${relationLabels[member.relation] || member.relation}`;
-	  section.append(entry);
-	});
-	familyDashboard.append(section);
+    const section = document.createElement('section');
+    section.className = 'family-group';
+    const heading = document.createElement('h3');
+    heading.className = 'panel-section-title';
+    heading.textContent = `[ ${group} ]`;
+    section.append(heading);
+
+    const relGrid = document.createElement('div');
+    relGrid.className = 'panel-grid-2';
+
+    members.forEach((member) => {
+      const card = document.createElement('article');
+      card.className = 'panel-card';
+      const name = document.createElement('strong');
+      name.textContent = `${member.name} ${member.surname}`;
+      const relP = document.createElement('p');
+      relP.textContent = `${en ? 'Relation' : 'Parentesco'}: ${relationLabels[member.relation] || member.relation}`;
+      card.append(name, relP);
+      relGrid.append(card);
+    });
+
+    section.append(relGrid);
+    familyDashboard.append(section);
   });
 }
 
 function renderInventoryPanel() {
   if (!inventoryDashboard) return;
   inventoryDashboard.replaceChildren();
-  const inventory = readSave().player?.inventory || [];
+  const en = currentLanguage === 'en';
+  const save = readSave();
+  const inventory = save.player?.inventory || [];
+
   if (!inventory.length) {
-	const empty = document.createElement('p');
-	empty.textContent = currentLanguage === 'en' ? '// inventory is empty' : '// el inventario está vacío';
-	inventoryDashboard.append(empty);
-	return;
+    const empty = document.createElement('p');
+    empty.className = 'panel-empty';
+    empty.textContent = en ? '// inventory is empty' : '// el inventario está vacío';
+    inventoryDashboard.append(empty);
+    return;
   }
+
+  // Calculate total worth
+  let totalNetWorth = 0;
   inventory.forEach((entry) => {
-	const item = itemCatalog.find((candidate) => candidate.id === entry.id);
-	const card = document.createElement('article');
-	card.className = 'inventory-card';
-	const title = document.createElement('h3');
-	title.textContent = `${item?.names[currentLanguage] || entry.name} x${entry.quantity}`;
-	const details = document.createElement('p');
-	const saleValue = itemSaleValue(entry);
-	details.textContent = currentLanguage === 'en' ? `Found at: ${entry.location || 'unknown place'} · sale value: ${saleValue} each` : `Encontrado en: ${entry.location || 'lugar desconocido'} · valor de venta: ${saleValue} cada uno`;
-	const sellButton = document.createElement('button');
-	sellButton.type = 'button';
-	sellButton.className = 'history-button inventory-sell-button';
-	sellButton.textContent = currentLanguage === 'en' ? `[ SELL FOR $${saleValue} ]` : `[ VENDER POR $${saleValue} ]`;
-	sellButton.addEventListener('click', () => sellInventoryItem(entry.id));
-	card.append(title, details, sellButton);
-	inventoryDashboard.append(card);
+    let val = itemSaleValue(entry);
+    if (isMoneyRainActive()) val *= 10;
+    totalNetWorth += val * (entry.quantity || 1);
   });
+
+  // Hero Summary
+  const heroCard = document.createElement('article');
+  heroCard.className = 'panel-hero-card';
+
+  const heroTop = document.createElement('div');
+  heroTop.className = 'hero-header-row';
+
+  const summaryTitle = document.createElement('h3');
+  summaryTitle.className = 'hero-title';
+  summaryTitle.textContent = `${en ? 'Possessed Items' : 'Objetos en Posesión'}: ${inventory.reduce((acc, i) => acc + (i.quantity || 1), 0)}`;
+
+  const worthBadge = document.createElement('span');
+  worthBadge.className = 'badge-pill active';
+  worthBadge.textContent = `${en ? 'TOTAL VALUE' : 'VALOR TOTAL'}: $${totalNetWorth}`;
+
+  heroTop.append(summaryTitle, worthBadge);
+
+  if (isMoneyRainActive()) {
+    const rainNotice = document.createElement('p');
+    rainNotice.className = 'hero-sub';
+    rainNotice.style.color = '#ffdd44';
+    rainNotice.textContent = en ? '🌧️ MONEY RAIN ACTIVE: 10x (+1000%) SELL VALUE!' : '🌧️ ¡LLUVIA DE DINERO ACTIVA: VENTA POR 10x (+1000%)!';
+    heroCard.append(heroTop, rainNotice);
+  } else {
+    heroCard.append(heroTop);
+  }
+
+  inventoryDashboard.append(heroCard);
+
+  // Grid of items
+  const grid = document.createElement('div');
+  grid.className = 'panel-grid-2';
+
+  inventory.forEach((entry) => {
+    const item = itemCatalog.find((candidate) => candidate.id === entry.id);
+    const card = document.createElement('article');
+    card.className = 'inventory-card';
+
+    const head = document.createElement('div');
+    head.style.display = 'flex';
+    head.style.justifyContent = 'space-between';
+    head.style.alignItems = 'center';
+
+    const title = document.createElement('strong');
+    title.textContent = `${item?.names[currentLanguage] || entry.name} x${entry.quantity}`;
+
+    let saleValue = itemSaleValue(entry);
+    if (isMoneyRainActive()) saleValue *= 10;
+
+    const valueChip = document.createElement('span');
+    valueChip.className = 'stat-chip';
+    valueChip.textContent = `$${saleValue} c/u`;
+
+    head.append(title, valueChip);
+
+    const details = document.createElement('p');
+    details.style.margin = '4px 0 8px 0';
+    details.style.fontSize = '10.5px';
+    details.textContent = en
+      ? `Location: ${entry.location || 'unknown place'}${isMoneyRainActive() ? ' (RAIN x10!)' : ''}`
+      : `Ubicación: ${entry.location || 'desconocida'}${isMoneyRainActive() ? ' (¡LLUVIA x10!)' : ''}`;
+
+    const sellButton = document.createElement('button');
+    sellButton.type = 'button';
+    sellButton.className = 'history-button inventory-sell-button';
+    sellButton.textContent = en ? `[ SELL FOR $${saleValue} ]` : `[ VENDER POR $${saleValue} ]`;
+    sellButton.addEventListener('click', () => sellInventoryItem(entry.id));
+
+    card.append(head, details, sellButton);
+    grid.append(card);
+  });
+
+  inventoryDashboard.append(grid);
 }
 
 function sellInventoryItem(itemId) {
@@ -958,7 +1303,8 @@ function sellInventoryItem(itemId) {
   const inventory = save.player?.inventory || [];
   const entry = inventory.find((item) => item.id === itemId);
   if (!entry) return;
-  const value = itemSaleValue(entry);
+  let value = itemSaleValue(entry);
+  if (isMoneyRainActive()) value *= 10;
   save.player.money = (Number(save.player.money) || 0) + value;
   entry.quantity = Math.max(0, (Number(entry.quantity) || 0) - 1);
   save.player.inventory = inventory.filter((item) => item.quantity > 0);
@@ -1024,35 +1370,45 @@ const weatherLabels = {
 const uiText = {
   es: {
 	appTitle: 'Simulador de vida sin nombre', languageLabel: 'IDIOMA:', languageAria: 'Idioma',
+	footerCredits: 'Juego hecho por icerix. Todos los derechos reservados 2026',
 	usernameTitle: 'ACCESO DE USUARIO', usernameIntro: 'Inicia sesión o regístrate para acceder a tus vidas y guardarlas en la nube.', usernameLabel: 'Nombre de usuario', usernameSubmit: '[ ENTRAR ]', usernameHint: 'Usa de 2 a 24 caracteres para tu usuario y mínimo 6 para tu contraseña.', usernameError: 'ERROR: introduce un nombre de usuario válido.', userStatus: 'USUARIO:',
 	loginTab: '[ INICIAR SESIÓN ]', registerTab: '[ REGISTRARSE ]', loginSubmit: '[ ENTRAR ]', registerSubmit: '[ CREAR CUENTA ]',
+	loginUserLabel: 'Usuario o Email', loginPassLabel: 'Contraseña', loginUserPlaceholder: 'Tu usuario o correo', loginPassPlaceholder: 'Tu contraseña',
+	regUserLabel: 'Nombre de Usuario', regPassLabel: 'Contraseña', regPassConfirmLabel: 'Confirmar Contraseña', regUserPlaceholder: 'Ej: Viajero2026', regPassPlaceholder: 'Mínimo 6 caracteres', regPassConfirmPlaceholder: 'Repite tu contraseña',
+	authUsernameError: 'ERROR: introduce un nombre de usuario válido de 2 a 24 caracteres.',
 	authPassMismatch: 'ERROR: Las contraseñas no coinciden.', authPassShort: 'ERROR: La contraseña debe tener al menos 6 caracteres.',
 	authSuccessRegister: 'Cuenta creada con éxito. Entrando...', authSuccessLogin: 'Sesión iniciada. Cargando...',
-	welcomeGreeting: 'CENTRAL DE VIDAS', welcomeNewLife: '+ COMENZAR NUEVA VIDA', previousLivesTitle: 'VIDAS ANTERIORES', previousLivesSubtitle: '// Reanuda solo aquellas que sigan vivas. Las vidas fallecidas permanecerán como historial.',
+	welcomeGreeting: 'CENTRAL DE VIDAS', welcomeIntro: 'Comienza una nueva simulación o reanuda tus vidas anteriores guardadas.', welcomeNewLife: '+ COMENZAR NUEVA VIDA', previousLivesTitle: 'VIDAS ANTERIORES', previousLivesSubtitle: '// Reanuda solo aquellas que sigan vivas. Las vidas fallecidas permanecerán como historial.',
 	statusAlive: 'EN VIDA', statusEnded: 'FALLECIDO', resumeLife: '[ REANUDAR VIDA ]', deceasedLife: '[ FALLECIDO ]',
 	exitLife: '[ GUARDAR Y SALIR ]', exitLifeConfirm: '¿Deseas pausar y salir al menú de vidas? Tu progreso quedará guardado sin morir.',
 	noPreviousLives: '// No tienes vidas guardadas todavía. ¡Comienza una nueva simulación!_',
 	start: '+ COMENZAR NUEVA VIDA', next: '[ ENTER ]', name: '¿Cuál es tu nombre?', surname: '¿Cuál es tu apellido?', age: '¿Cuántos años tienes?', money: '¿Cuánto dinero tienes?', location: '¿Dónde comienza tu historia?', hobby: '¿Cuál es tu hobby?',
 	nameHint: 'Escribe tu nombre.', surnameHint: 'Escribe tu apellido.', ageHint: 'Introduce tu edad.', moneyHint: 'Introduce una cantidad inicial.', locationHint: 'Escribe una ubicación.', hobbyHint: 'Ejemplo: música, fútbol, videojuegos, dibujo...',
-		storyLabel: '¿Cómo quieres continuar tu vida?', storyPlaceholder: 'Escribe lo que sucede a continuación...', save: '[ GUARDAR ]', menu: '[ MENU ]', play: '[ JUGAR ]', blog: '[ BLOG ]', logout: '[ CERRAR SESIÓN ]', logoutConfirm: '¿Quieres cerrar la sesión? Tus partidas guardadas se conservarán en la nube y localmente.', history: '[ VER TODAS LAS DECISIONES ]', stats: '[ VER ESTADÍSTICAS ]', careers: '[ VER CARRERA ]', family: '[ VER FAMILIA ]', inventory: '[ VER INVENTARIO ]', government: '[ GOBIERNOS ]', world: '[ VER MUNDO ]', skills: '[ VER HABILIDADES ]', relations: '[ VER RELACIONES ]', learnFile: '[ CARGAR CONOCIMIENTO ]', export: '[ EXPORTAR PARTIDA ]', import: '[ IMPORTAR PARTIDA ]', reset: '[ NUEVA PARTIDA ]', menuTitle: 'menu.json // panel de control', menuSubtitle: '// todos los módulos de LIFE.AI',
+		storyLabel: '¿Cómo quieres continuar tu vida?', storyPlaceholder: 'Escribe lo que sucede a continuación...', save: '[ GUARDAR ]', menu: '[ MENU ]', play: '[ JUGAR ]', blog: '[ BLOG ]', logout: '[ CERRAR SESIÓN ]', logoutConfirm: '¿Quieres cerrar la sesión? Tus partidas guardadas se conservarán en la nube y localmente.', history: '[ VER TODAS LAS DECISIONES ]', stats: '[ VER ESTADÍSTICAS ]', careers: '[ VER CARRERA ]', family: '[ VER FAMILIA ]', pets: '[ VER MASCOTAS ]', inventory: '[ VER INVENTARIO ]', government: '[ GOBIERNOS ]', world: '[ VER MUNDO ]', skills: '[ VER HABILIDADES ]', relations: '[ VER RELACIONES ]', learnFile: '[ CARGAR CONOCIMIENTO ]', export: '[ EXPORTAR PARTIDA ]', import: '[ IMPORTAR PARTIDA ]', reset: '[ NUEVA PARTIDA ]', menuTitle: 'menu.json // panel de control', menuSubtitle: '// todos los módulos de LIFE.AI',
 		 nameKey: '"nombre"', surnameKey: '"apellido"', ageKey: '"edad"', characterKey: '"personaje"', moneyKey: '"dinero"', locationKey: '"ubicación"', hobbyKey: '"hobby"', occupationKey: '"ocupación"', energyKey: '"energía"', moodKey: '"ánimo"', reputationKey: '"reputación"', none: 'ninguno', stable: 'estable', testGameOver: '[ PROBAR GAME OVER ]', governmentTitle: 'government.json // gobierno actual', governmentSubtitle: '// administración vigente y mandato de cuatro años',
-	  careersTitle: 'careers.json // catálogo de profesiones', careersSubtitle: '// profesiones disponibles, variantes e ingresos aproximados', familyTitle: 'family.json // árbol familiar', familySubtitle: '// pareja, matrimonio, hijos y familiares', inventoryTitle: 'inventory.json // inventario', inventorySubtitle: '// objetos encontrados durante la historia', worldTitle: 'world.json // mundo viviente', worldSubtitle: '// lugares, personajes, objetivos, eventos y reglas descubiertas', skillsTitle: 'skills.json // habilidades', skillsSubtitle: '// capacidades aprendidas, experiencia y crecimiento', relationsTitle: 'relations.json // relaciones', relationsSubtitle: '// vínculos, confianza y evolución social', statsTitle: 'stats.json // estadísticas', statsSubtitle: '// estado actual de tu vida', historyTitle: 'history.log // historial', historySubtitle: '// decisiones y capítulos guardados', blogTitle: 'blog.txt // notas de LIFE.AI', blogSubtitle: '// ideas, cambios y registros del simulador', blogReleaseTitle: '[ ACTUALIZACIÓN ] NUEVA VERSION 0.0.1c', blogReleaseText: 'Esta actualización añade gobiernos que cambian cada cuatro años, la recompensa por tiempo jugado del Palo Presidencial, venta de inventario, mejoras en LIFE.AI, hijos y optimizaciones en la interfaz.', playTimeRewardsTitle: 'rewards.json // tiempo jugado', playTimeRewardsSubtitle: '// recompensas por permanecer en tu sesión', playTimeRewardsButton: '[ RECOMPENSAS POR TIEMPO JUGADO ]', saved: '// capítulo guardado correctamente_', gameOverTitle: 'GAME OVER', gameOverText: 'Tu vida ha terminado.', gameOverNewLife: '[ COMENZAR OTRA VIDA ]', gameOverClose: '[ VOLVER AL INICIO ]',
+	  careersTitle: 'careers.json // catálogo de profesiones', careersSubtitle: '// profesiones disponibles, variantes e ingresos aproximados', familyTitle: 'family.json // árbol familiar', familySubtitle: '// pareja, matrimonio, hijos y familiares', petsTitle: 'pets.json // compañeros', petsSubtitle: '// tus mascotas, cuidados y adopción', adoptPetTitle: '[ ADOPTAR NUEVA MASCOTA ]', adoptSubmit: '[ ADOPTAR ]', adoptTypeLabel: 'Tipo:', adoptNameLabel: 'Nombre:', adoptNamePlaceholder: 'Nombre de la mascota...', petTypeDog: 'Perro (Canino)', petTypeCat: 'Gato (Felino)', petTypeBird: 'Ave / Loro', petTypeHamster: 'Hámster', petTypeRabbit: 'Conejo', petPlay: '[ JUGAR ]', petFeed: '[ ALIMENTAR ]', petVet: '[ VETERINARIO ]', petWalk: '[ PASEAR ]', petGiveUp: '[ DAR EN ADOPCIÓN ]', petGiveUpConfirm: '¿Estás seguro de que deseas dar en adopción a {name}?', petGiveUpSuccess: '// Diste en adopción a {name}. Ha encontrado un nuevo y cariñoso hogar._', moneyRainEvent: '¡LLUVIA DE DINERO!', moneyRainIn: 'LLUVIA DE DINERO EN', moneyRainBonus: 'x10 (+1000%)', petNoPets: '// No tienes mascotas aún. ¡Adopta una para alegrar tu vida!_', themeLabel: 'TEMA:', themeGreen: 'VERDE MATRIX', themeOrange: 'ÁMBAR RETRO', themeRed: 'ROJO ALERTA', themeBlue: 'AZUL CYBER', inventoryTitle: 'inventory.json // inventario', inventorySubtitle: '// objetos encontrados durante la historia', worldTitle: 'world.json // mundo viviente', worldSubtitle: '// lugares, personajes, objetivos, eventos y reglas descubiertas', skillsTitle: 'skills.json // habilidades', skillsSubtitle: '// capacidades aprendidas, experiencia y crecimiento', relationsTitle: 'relations.json // relaciones', relationsSubtitle: '// vínculos, confianza y evolución social', statsTitle: 'stats.json // estadísticas', statsSubtitle: '// estado actual de tu vida', historyTitle: 'history.log // historial', historySubtitle: '// decisiones y capítulos guardados', blogTitle: 'blog.txt // notas de LIFE.AI', blogSubtitle: '// ideas, cambios y registros del simulador', blogReleaseTitle: '[ ACTUALIZACIÓN ] NUEVA VERSION 0.0.1d', blogReleaseText: 'Esta versión 0.0.1d corrige las vidas triplicadas al crearlas, agrega sistema de adopción y cuidado de mascotas (con opción de dar en adopción y anti-doble click), evento de Lluvia de Dinero (+1000%), rediseño estético de paneles (Gobierno, Carreras, Familia, Inventario), envío con Enter, créditos de icerix y barrido de idioma completo (ES/EN).', playTimeRewardsTitle: 'rewards.json // tiempo jugado', playTimeRewardsSubtitle: '// recompensas por permanecer en tu sesión', playTimeRewardsButton: '[ RECOMPENSAS POR TIEMPO JUGADO ]', saved: '// capítulo guardado correctamente_', gameOverTitle: 'GAME OVER', gameOverText: 'Tu vida ha terminado.', gameOverNewLife: '[ COMENZAR OTRA VIDA ]', gameOverClose: '[ VOLVER AL INICIO ]',
+	emptyHistory: '// No hay decisiones registradas todavía en esta vida._', you: 'TÚ', ai: 'IA'
   },
   en: {
 	appTitle: 'Unnamed life simulation', languageLabel: 'LANG:', languageAria: 'Language',
+	footerCredits: 'Game made by icerix. All rights reserved 2026',
 	usernameTitle: 'USER ACCESS', usernameIntro: 'Log in or register to access and save your lives in the cloud.', usernameLabel: 'Username', usernameSubmit: '[ ENTER ]', usernameHint: 'Use 2 to 24 characters for username and at least 6 for password.', usernameError: 'ERROR: enter a valid username.', userStatus: 'USER:',
 	loginTab: '[ LOG IN ]', registerTab: '[ REGISTER ]', loginSubmit: '[ LOG IN ]', registerSubmit: '[ CREATE ACCOUNT ]',
+	loginUserLabel: 'Username or Email', loginPassLabel: 'Password', loginUserPlaceholder: 'Your username or email', loginPassPlaceholder: 'Your password',
+	regUserLabel: 'Username', regPassLabel: 'Password', regPassConfirmLabel: 'Confirm Password', regUserPlaceholder: 'Ex: Traveler2026', regPassPlaceholder: 'At least 6 characters', regPassConfirmPlaceholder: 'Repeat your password',
+	authUsernameError: 'ERROR: enter a valid username between 2 and 24 characters.',
 	authPassMismatch: 'ERROR: Passwords do not match.', authPassShort: 'ERROR: Password must be at least 6 characters.',
 	authSuccessRegister: 'Account created successfully. Entering...', authSuccessLogin: 'Session started. Loading...',
-	welcomeGreeting: 'LIVES HEADQUARTERS', welcomeNewLife: '+ START NEW LIFE', previousLivesTitle: 'PREVIOUS LIVES', previousLivesSubtitle: '// Resume only those still alive. Deceased lives remain as history.',
+	welcomeGreeting: 'LIVES HEADQUARTERS', welcomeIntro: 'Start a new simulation or resume your saved previous lives.', welcomeNewLife: '+ START NEW LIFE', previousLivesTitle: 'PREVIOUS LIVES', previousLivesSubtitle: '// Resume only those still alive. Deceased lives remain as history.',
 	statusAlive: 'ALIVE', statusEnded: 'DECEASED', resumeLife: '[ RESUME LIFE ]', deceasedLife: '[ DECEASED ]',
 	exitLife: '[ SAVE & EXIT ]', exitLifeConfirm: 'Do you want to pause and return to the lives menu? Your progress will be saved without dying.',
 	noPreviousLives: '// No saved lives yet. Start a new simulation!_',
 	start: '+ START NEW LIFE', next: '[ ENTER ]', name: 'What is your name?', surname: 'What is your surname?', age: 'How old are you?', money: 'How much money do you have?', location: 'Where does your story begin?', hobby: 'What is your hobby?',
 	nameHint: 'Write your name.', surnameHint: 'Write your surname.', ageHint: 'Enter your age.', moneyHint: 'Enter an initial amount.', locationHint: 'Write a location.', hobbyHint: 'Example: music, football, games, drawing...',
-		storyLabel: 'How do you want to continue your life?', storyPlaceholder: 'Write what happens next...', save: '[ SAVE ]', menu: '[ MENU ]', play: '[ PLAY ]', blog: '[ BLOG ]', logout: '[ LOG OUT ]', logoutConfirm: 'Do you want to log out? Your saved games will be preserved in cloud and locally.', history: '[ VIEW ALL DECISIONS ]', stats: '[ VIEW STATS ]', careers: '[ VIEW CAREERS ]', family: '[ VIEW FAMILY ]', inventory: '[ VIEW INVENTORY ]', government: '[ GOVERNMENTS ]', world: '[ VIEW WORLD ]', skills: '[ VIEW SKILLS ]', relations: '[ VIEW RELATIONSHIPS ]', learnFile: '[ LOAD KNOWLEDGE ]', export: '[ EXPORT GAME ]', import: '[ IMPORT GAME ]', reset: '[ NEW GAME ]', menuTitle: 'menu.json // control panel', menuSubtitle: '// all LIFE.AI modules',
+		storyLabel: 'How do you want to continue your life?', storyPlaceholder: 'Write what happens next...', save: '[ SAVE ]', menu: '[ MENU ]', play: '[ PLAY ]', blog: '[ BLOG ]', logout: '[ LOG OUT ]', logoutConfirm: 'Do you want to log out? Your saved games will be preserved in cloud and locally.', history: '[ VIEW ALL DECISIONS ]', stats: '[ VIEW STATS ]', careers: '[ VIEW CAREERS ]', family: '[ VIEW FAMILY ]', pets: '[ VIEW PETS ]', inventory: '[ VIEW INVENTORY ]', government: '[ GOVERNMENTS ]', world: '[ VIEW WORLD ]', skills: '[ VIEW SKILLS ]', relations: '[ VIEW RELATIONSHIPS ]', learnFile: '[ LOAD KNOWLEDGE ]', export: '[ EXPORT GAME ]', import: '[ IMPORT GAME ]', reset: '[ NEW GAME ]', menuTitle: 'menu.json // control panel', menuSubtitle: '// all LIFE.AI modules',
 		nameKey: '"name"', surnameKey: '"surname"', ageKey: '"age"', characterKey: '"character"', moneyKey: '"money"', locationKey: '"location"', hobbyKey: '"hobby"', occupationKey: '"occupation"', energyKey: '"energy"', moodKey: '"mood"', reputationKey: '"reputation"', none: 'none', stable: 'stable', testGameOver: '[ TEST GAME OVER ]',
-		blogReleaseTitle: '[ UPDATE ] NEW VERSION 0.0.1c', blogReleaseText: 'This update adds four-year governments, the Presidential Stick play-time reward, inventory sales, smarter LIFE.AI, children and interface improvements.', careersTitle: 'careers.json // career catalog', careersSubtitle: '// available professions, variants and approximate income', familyTitle: 'family.json // family tree', familySubtitle: '// partner, marriage, children and relatives', inventoryTitle: 'inventory.json // inventory', inventorySubtitle: '// objects found during the story', government: '[ GOVERNMENTS ]', governmentTitle: 'government.json // current government', governmentSubtitle: '// current administration and four-year term', worldTitle: 'world.json // living world', worldSubtitle: '// places, characters, goals, events and discovered rules', skillsTitle: 'skills.json // skills', skillsSubtitle: '// learned abilities, experience and character growth', relationsTitle: 'relations.json // relationships', relationsSubtitle: '// bonds, trust and social evolution', statsTitle: 'stats.json // statistics', statsSubtitle: '// current life status', historyTitle: 'history.log // history', historySubtitle: '// saved decisions and chapters', blogTitle: 'blog.txt // LIFE.AI notes', blogSubtitle: '// ideas, changes and simulator records', playTimeRewardsTitle: 'rewards.json // play time', playTimeRewardsSubtitle: '// rewards for staying in your session', playTimeRewardsButton: '[ PLAY TIME REWARDS ]', saved: '// chapter saved successfully_', gameOverTitle: 'GAME OVER', gameOverText: 'Your life has ended.', gameOverNewLife: '[ START ANOTHER LIFE ]', gameOverClose: '[ RETURN TO START ]',
+		blogReleaseTitle: '[ UPDATE ] NEW VERSION 0.0.1d', blogReleaseText: 'This version 0.0.1d fixes duplicate lives on creation, adds the pet adoption and care system (with give-up option and anti-double click), Money Rain event (+1000%), aesthetic panel redesign (Government, Careers, Family, Inventory), Enter key submission, icerix copyright footer, and a full bilingual sweep (ES/EN).', careersTitle: 'careers.json // career catalog', careersSubtitle: '// available professions, variants and approximate income', familyTitle: 'family.json // family tree', familySubtitle: '// partner, marriage, children and relatives', petsTitle: 'pets.json // companions', petsSubtitle: '// your pets, care and adoption', adoptPetTitle: '[ ADOPT A NEW PET ]', adoptSubmit: '[ ADOPT ]', adoptTypeLabel: 'Type:', adoptNameLabel: 'Name:', adoptNamePlaceholder: 'Pet name...', petTypeDog: 'Dog (Canine)', petTypeCat: 'Cat (Feline)', petTypeBird: 'Bird / Parrot', petTypeHamster: 'Hamster', petTypeRabbit: 'Rabbit', petPlay: '[ PLAY ]', petFeed: '[ FEED ]', petVet: '[ VET ]', petWalk: '[ WALK ]', petGiveUp: '[ GIVE UP FOR ADOPTION ]', petGiveUpConfirm: 'Are you sure you want to put {name} up for adoption?', petGiveUpSuccess: '// You put {name} up for adoption. It found a new loving home._', moneyRainEvent: 'MONEY RAIN!', moneyRainIn: 'MONEY RAIN IN', moneyRainBonus: 'x10 (+1000%)', petNoPets: '// You do not have any pets yet. Adopt one to brighten your life!_', themeLabel: 'THEME:', themeGreen: 'MATRIX GREEN', themeOrange: 'RETRO AMBER', themeRed: 'ALERT RED', themeBlue: 'CYBER BLUE', inventoryTitle: 'inventory.json // inventory', inventorySubtitle: '// objects found during the story', government: '[ GOVERNMENTS ]', governmentTitle: 'government.json // current government', governmentSubtitle: '// current administration and four-year term', worldTitle: 'world.json // living world', worldSubtitle: '// places, characters, goals, events and discovered rules', skillsTitle: 'skills.json // skills', skillsSubtitle: '// learned abilities, experience and character growth', relationsTitle: 'relations.json // relationships', relationsSubtitle: '// bonds, trust and social evolution', statsTitle: 'stats.json // statistics', statsSubtitle: '// current life status', historyTitle: 'history.log // history', historySubtitle: '// saved decisions and chapters', blogTitle: 'blog.txt // LIFE.AI notes', blogSubtitle: '// ideas, changes and simulator records', playTimeRewardsTitle: 'rewards.json // play time', playTimeRewardsSubtitle: '// rewards for staying in your session', playTimeRewardsButton: '[ PLAY TIME REWARDS ]', saved: '// chapter saved successfully_', gameOverTitle: 'GAME OVER', gameOverText: 'Your life has ended.', gameOverNewLife: '[ START ANOTHER LIFE ]', gameOverClose: '[ RETURN TO START ]',
+	emptyHistory: '// No decisions recorded yet in this life._', you: 'YOU', ai: 'AI'
   }
 };
 
@@ -1403,37 +1759,99 @@ function setLocalSavedLives(lives) {
   } catch { /* storage fallback */ }
 }
 
+function getLifeDedupeKey(save) {
+  if (!save || !save.player?.name) return null;
+  const name = String(save.player?.name || '').trim().toLowerCase();
+  const surname = String(save.player?.surname || '').trim().toLowerCase();
+  const birth = String(save.player?.birthPlace || save.player?.location || '').trim().toLowerCase();
+  const dateStr = save.startedAt ? new Date(save.startedAt).toISOString().slice(0, 10) : '';
+  return `${name}__${surname}__${birth}__${dateStr}`;
+}
+
+function deduplicateLivesList(lives) {
+  if (!Array.isArray(lives)) return [];
+  const map = new Map();
+
+  for (const life of lives) {
+    if (!life || !life.player?.name) continue;
+    const lifeId = life.id;
+    const semanticKey = getLifeDedupeKey(life);
+
+    let matchKey = null;
+    for (const [k, existing] of map.entries()) {
+      if (lifeId && existing.id && existing.id === lifeId) {
+        matchKey = k;
+        break;
+      }
+      if (semanticKey && getLifeDedupeKey(existing) === semanticKey) {
+        matchKey = k;
+        break;
+      }
+    }
+
+    if (!matchKey) {
+      const key = lifeId || semanticKey || String(Math.random());
+      map.set(key, life);
+    } else {
+      const existing = map.get(matchKey);
+      const existingTime = new Date(existing.updatedAt || existing.startedAt || 0).getTime();
+      const newTime = new Date(life.updatedAt || life.startedAt || 0).getTime();
+      const existingChapters = Array.isArray(existing.chapters) ? existing.chapters.length : 0;
+      const newChapters = Array.isArray(life.chapters) ? life.chapters.length : 0;
+
+      const isNewer = newChapters > existingChapters || (newChapters === existingChapters && newTime >= existingTime);
+      if (isNewer) {
+        if (existing.id && !existing.id.startsWith('life-') && life.id && life.id.startsWith('life-')) {
+          life.id = existing.id;
+        }
+        map.set(matchKey, life);
+      } else {
+        if (life.id && !life.id.startsWith('life-') && existing.id && existing.id.startsWith('life-')) {
+          existing.id = life.id;
+        }
+      }
+    }
+  }
+
+  return Array.from(map.values());
+}
+
 async function fetchAllLives() {
-  const livesMap = new Map();
+  const candidateLives = [];
   const localLives = getLocalSavedLives();
-  localLives.forEach((l) => { if (l && l.id) livesMap.set(l.id, l); });
+  if (Array.isArray(localLives)) {
+    localLives.forEach((l) => { if (l && l.player?.name) candidateLives.push(l); });
+  }
 
   if (window.__lifeSave?.player?.name) {
     if (!window.__lifeSave.id) window.__lifeSave.id = 'life-' + Date.now();
-    livesMap.set(window.__lifeSave.id, window.__lifeSave);
+    candidateLives.push(window.__lifeSave);
   }
-  const fallback = readFallbackSave();
-  if (fallback?.player?.name) {
-    if (!fallback.id) fallback.id = 'life-fallback';
-    if (!livesMap.has(fallback.id)) livesMap.set(fallback.id, fallback);
+
+  if (candidateLives.length === 0) {
+    const fallback = readFallbackSave();
+    if (fallback?.player?.name) {
+      if (!fallback.id) fallback.id = 'life-fallback';
+      candidateLives.push(fallback);
+    }
   }
 
   if (window.lifeSupabase?.enabled) {
     try {
       const remoteLives = await window.lifeSupabase.listGames();
-      remoteLives.forEach((remote) => {
-        if (!remote?.id) return;
-        const existing = livesMap.get(remote.id);
-        if (!existing || new Date(remote.updatedAt || 0) >= new Date(existing.updatedAt || 0)) {
-          livesMap.set(remote.id, normalizeSave(remote));
-        }
-      });
+      if (Array.isArray(remoteLives)) {
+        remoteLives.forEach((remote) => {
+          if (remote?.player?.name) {
+            candidateLives.push(normalizeSave(remote));
+          }
+        });
+      }
     } catch (err) {
       console.warn('LIFE.AI fetchAllLives Supabase error:', err);
     }
   }
 
-  const list = Array.from(livesMap.values()).filter((item) => item?.player?.name);
+  const list = deduplicateLivesList(candidateLives);
   list.sort((a, b) => new Date(b.updatedAt || b.startedAt || 0) - new Date(a.updatedAt || a.startedAt || 0));
   setLocalSavedLives(list);
   return list;
@@ -1601,6 +2019,7 @@ function resetWeatherVisuals() {
 	if (weatherIndicator) weatherIndicator.style.display = '';
   if (weatherOverlay) weatherOverlay.classList.remove('active');
   resetSeasonVisuals();
+  resetMoneyRainVisuals();
 }
 
 function renderWeather(weather) {
@@ -1641,7 +2060,6 @@ function startWeatherCycle(save) {
 	activeSave.weather = chooseNextWeather(activeSave.weather);
 	window.__lifeSave = activeSave;
 	if (Math.floor(Date.now() / 1000) % 15 === 0) window.lifeSupabase?.updatePresence?.(activeSave).catch(() => undefined);
-	window.lifeSupabase?.updatePresence?.(activeSave).catch(() => undefined);
 	 if (!storyScreen?.classList.contains('hidden')) {
 		 renderWorldEnvironment(activeSave);
 	 }
@@ -1654,6 +2072,132 @@ function stopWeatherCycle() {
 	window.clearInterval(weatherTimer);
 	weatherTimer = null;
   }
+  stopMoneyRainCycle();
+}
+
+const MONEY_RAIN_INTERVAL_MS = 5 * 60 * 1000;
+const MONEY_RAIN_DURATION_MS = 45 * 1000;
+let nextMoneyRainTime = Date.now() + MONEY_RAIN_INTERVAL_MS;
+let moneyRainEndTime = 0;
+let moneyRainActive = false;
+let moneyRainTimer = null;
+let moneyRainParticleTimer = null;
+
+function isMoneyRainActive() {
+  return Boolean(moneyRainActive);
+}
+
+function updateMoneyRainDisplay() {
+  if (!moneyRainIndicator) return;
+  const inStory = !storyScreen?.classList.contains('hidden') && window.__lifeSave?.lifeStatus === 'active';
+  if (!inStory) {
+    resetMoneyRainVisuals();
+    return;
+  }
+  const now = Date.now();
+  const en = currentLanguage === 'en';
+
+  if (moneyRainActive) {
+    if (now >= moneyRainEndTime) {
+      moneyRainActive = false;
+      nextMoneyRainTime = now + MONEY_RAIN_INTERVAL_MS;
+      stopMoneyRainParticles();
+      moneyRainIndicator.classList.remove('active');
+    } else {
+      const remainingSecs = Math.max(0, Math.ceil((moneyRainEndTime - now) / 1000));
+      const text = en
+        ? `¡MONEY RAIN! (x10) - 00:${String(remainingSecs).padStart(2, '0')}`
+        : `¡LLUVIA DE DINERO! (x10) - 00:${String(remainingSecs).padStart(2, '0')}`;
+      moneyRainIndicator.textContent = text;
+      moneyRainIndicator.classList.add('active');
+      moneyRainIndicator.classList.remove('hidden');
+      moneyRainIndicator.style.display = 'block';
+      if (!moneyRainParticleTimer) startMoneyRainParticles();
+      return;
+    }
+  }
+
+  if (now >= nextMoneyRainTime) {
+    moneyRainActive = true;
+    moneyRainEndTime = now + MONEY_RAIN_DURATION_MS;
+    moneyRainIndicator.classList.add('active');
+    moneyRainIndicator.classList.remove('hidden');
+    moneyRainIndicator.style.display = 'block';
+    startMoneyRainParticles();
+    const remainingSecs = Math.max(0, Math.ceil((moneyRainEndTime - now) / 1000));
+    moneyRainIndicator.textContent = en
+      ? `¡MONEY RAIN! (x10) - 00:${String(remainingSecs).padStart(2, '0')}`
+      : `¡LLUVIA DE DINERO! (x10) - 00:${String(remainingSecs).padStart(2, '0')}`;
+  } else {
+    const diffMs = nextMoneyRainTime - now;
+    const totalSecs = Math.max(0, Math.ceil(diffMs / 1000));
+    const mins = Math.floor(totalSecs / 60);
+    const secs = totalSecs % 60;
+    const timeStr = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    moneyRainIndicator.textContent = en
+      ? `MONEY RAIN IN: ${timeStr}`
+      : `LLUVIA DE DINERO EN: ${timeStr}`;
+    moneyRainIndicator.classList.remove('active');
+    moneyRainIndicator.classList.remove('hidden');
+    moneyRainIndicator.style.display = 'block';
+    stopMoneyRainParticles();
+  }
+}
+
+function startMoneyRainParticles() {
+  if (!moneyRainOverlay) return;
+  moneyRainOverlay.classList.remove('hidden');
+  if (moneyRainParticleTimer) return;
+  const symbols = ['$', '$', '🪙', '💵', '💰', '$'];
+  moneyRainParticleTimer = window.setInterval(() => {
+    if (!moneyRainActive || !moneyRainOverlay) return;
+    if (moneyRainOverlay.childElementCount > 20) return;
+    const particle = document.createElement('span');
+    particle.className = 'money-particle';
+    particle.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+    particle.style.left = `${Math.random() * 95}%`;
+    particle.style.fontSize = `${14 + Math.random() * 12}px`;
+    particle.style.animationDuration = `${2 + Math.random() * 2.5}s`;
+    particle.addEventListener('animationend', () => particle.remove(), { once: true });
+    moneyRainOverlay.append(particle);
+  }, 240);
+}
+
+function stopMoneyRainParticles() {
+  if (moneyRainParticleTimer !== null) {
+    window.clearInterval(moneyRainParticleTimer);
+    moneyRainParticleTimer = null;
+  }
+  if (moneyRainOverlay) {
+    moneyRainOverlay.replaceChildren();
+    moneyRainOverlay.classList.add('hidden');
+  }
+}
+
+function startMoneyRainCycle() {
+  if (moneyRainTimer === null) {
+    updateMoneyRainDisplay();
+    moneyRainTimer = window.setInterval(updateMoneyRainDisplay, 1000);
+  } else {
+    updateMoneyRainDisplay();
+  }
+}
+
+function stopMoneyRainCycle() {
+  if (moneyRainTimer !== null) {
+    window.clearInterval(moneyRainTimer);
+    moneyRainTimer = null;
+  }
+  stopMoneyRainParticles();
+}
+
+function resetMoneyRainVisuals() {
+  moneyRainIndicator?.classList.add('hidden');
+  if (moneyRainIndicator) {
+    moneyRainIndicator.style.display = '';
+    moneyRainIndicator.classList.remove('active');
+  }
+  stopMoneyRainParticles();
 }
 
 function applyTranslations() {
@@ -1669,8 +2213,19 @@ function applyTranslations() {
 	setText(tabRegisterBtn, t('registerTab'));
 	setText(loginSubmit, t('loginSubmit'));
 	setText(registerSubmit, t('registerSubmit'));
+	setText(document.querySelector('#loginUserLabel'), t('loginUserLabel'));
+	setText(document.querySelector('#loginPassLabel'), t('loginPassLabel'));
+	setPlaceholder(document.querySelector('#loginUserInput'), t('loginUserPlaceholder'));
+	setPlaceholder(document.querySelector('#loginPassInput'), t('loginPassPlaceholder'));
+	setText(document.querySelector('#regUserLabel'), t('regUserLabel'));
+	setText(document.querySelector('#regPassLabel'), t('regPassLabel'));
+	setText(document.querySelector('#regPassConfirmLabel'), t('regPassConfirmLabel'));
+	setPlaceholder(document.querySelector('#regUserInput'), t('regUserPlaceholder'));
+	setPlaceholder(document.querySelector('#regPassInput'), t('regPassPlaceholder'));
+	setPlaceholder(document.querySelector('#regPassConfirmInput'), t('regPassConfirmPlaceholder'));
 	setText(exitLifeButton, t('exitLife'));
 	setText(statusLogoutBtn, t('logout'));
+	setText(document.querySelector('#welcomeIntro'), t('welcomeIntro'));
 	setText(document.querySelector('#previousLivesTitle'), t('previousLivesTitle'));
 	setText(document.querySelector('#previousLivesSubtitle'), t('previousLivesSubtitle'));
 	if (welcomeUserGreeting) {
@@ -1679,7 +2234,7 @@ function applyTranslations() {
 	renderUsernameStatus();
 	if (languageSelect) languageSelect.setAttribute('aria-label', t('languageAria'));
 	setText(startButton, t('start'));
-  setText(playNavButton, t('play')); setText(blogButton, t('blog'));
+	setText(blogButton, t('blog'));
 	setText(lifeForm?.querySelector('button'), t('next'));
 	setText(gameOverTitle, t('gameOverTitle')); setText(gameOverNewLifeButton, t('gameOverNewLife')); setText(closeGameOverButton, t('gameOverClose'));
 	setText(menuButton, t('menu'));
@@ -1689,15 +2244,35 @@ function applyTranslations() {
   setText(questionHint, t(`${questions[currentQuestion].key}Hint`));
   setText(document.querySelector('.story-editor label'), t('storyLabel'));
   setPlaceholder(storyInput, t('storyPlaceholder'));
-	setText(saveStoryButton, t('save')); setText(historyButton, t('history')); setText(statsButton, t('stats')); setText(careersButton, t('careers')); setText(familyButton, t('family')); setText(worldButton, t('world')); setText(skillsButton, t('skills'));
+	setText(saveStoryButton, t('save')); setText(historyButton, t('history')); setText(statsButton, t('stats')); setText(careersButton, t('careers')); setText(familyButton, t('family')); setText(petsButton, t('pets')); setText(worldButton, t('world')); setText(skillsButton, t('skills'));
 	setText(exportButton, t('export')); setText(importButton, t('import')); setText(resetButton, t('reset')); setText(testGameOverButton, t('testGameOver')); setText(savedMessage, t('saved'));
 	setText(relationsButton, t('relations'));
 	setText(learnFileButton, t('learnFile'));
-	setText(careersButton, t('careers')); setText(familyButton, t('family')); setText(inventoryButton, t('inventory'));
+	setText(careersButton, t('careers')); setText(familyButton, t('family')); setText(petsButton, t('pets')); setText(inventoryButton, t('inventory'));
 	setText(governmentButton, t('government'));
 	setText(document.querySelector('#worldTitle'), t('worldTitle')); setText(document.querySelector('#skillsTitle'), t('skillsTitle')); setText(document.querySelector('#relationsTitle'), t('relationsTitle')); setText(document.querySelector('#statsTitle'), t('statsTitle')); setText(document.querySelector('#historyTitle'), t('historyTitle'));
   setText(document.querySelector('#worldSubtitle'), t('worldSubtitle')); setText(document.querySelector('#skillsSubtitle'), t('skillsSubtitle')); setText(document.querySelector('#relationsSubtitle'), t('relationsSubtitle')); setText(document.querySelector('#statsSubtitle'), t('statsSubtitle')); setText(document.querySelector('#historySubtitle'), t('historySubtitle'));
 	setText(document.querySelector('#careersTitle'), t('careersTitle')); setText(document.querySelector('#careersSubtitle'), t('careersSubtitle')); setText(document.querySelector('#familyTitle'), t('familyTitle')); setText(document.querySelector('#familySubtitle'), t('familySubtitle'));
+	setText(document.querySelector('#petsTitle'), t('petsTitle')); setText(document.querySelector('#petsSubtitle'), t('petsSubtitle'));
+	setText(document.querySelector('#adoptPetTitle'), t('adoptPetTitle')); setText(adoptSubmitBtn, t('adoptSubmit'));
+	setText(document.querySelector('#adoptTypeLabel'), t('adoptTypeLabel'));
+	setText(document.querySelector('#adoptNameLabel'), t('adoptNameLabel'));
+	setPlaceholder(document.querySelector('#adoptNameInput'), t('adoptNamePlaceholder'));
+	const adoptSelect = document.querySelector('#adoptTypeSelect');
+	if (adoptSelect) {
+		const optMap = { dog: 'petTypeDog', cat: 'petTypeCat', bird: 'petTypeBird', hamster: 'petTypeHamster', rabbit: 'petTypeRabbit' };
+		Array.from(adoptSelect.options).forEach((opt) => {
+			if (optMap[opt.value]) opt.textContent = t(optMap[opt.value]);
+		});
+	}
+	setText(document.querySelector('#themeLabel'), t('themeLabel'));
+	const themeSel = document.querySelector('#themeSelect');
+	if (themeSel) {
+		const themeMap = { green: 'themeGreen', orange: 'themeOrange', red: 'themeRed', blue: 'themeBlue' };
+		Array.from(themeSel.options).forEach((opt) => {
+			if (themeMap[opt.value]) opt.textContent = t(themeMap[opt.value]);
+		});
+	}
 	setText(document.querySelector('#governmentTitle'), t('governmentTitle')); setText(document.querySelector('#governmentSubtitle'), t('governmentSubtitle'));
 	setText(document.querySelector('#inventoryTitle'), t('inventoryTitle')); setText(document.querySelector('#inventorySubtitle'), t('inventorySubtitle')); setText(inventoryButton, t('inventory'));
 	setText(playTimeRewardsButton, t('playTimeRewardsButton'));
@@ -1707,6 +2282,8 @@ function applyTranslations() {
 	['nameKey', 'surnameKey', 'ageKey', 'characterKey', 'moneyKey', 'locationKey', 'hobbyKey', 'occupationKey', 'energyKey', 'moodKey', 'reputationKey'].forEach((key) => setText(document.querySelector(`#${key}`), t(key)));
 	setText(document.querySelector('#blogTitle'), t('blogTitle')); setText(document.querySelector('#blogSubtitle'), t('blogSubtitle'));
   setText(document.querySelector('#blogReleaseTitle'), t('blogReleaseTitle')); setText(document.querySelector('#blogReleaseText'), t('blogReleaseText'));
+  const footerElem = document.querySelector('#gameFooter');
+  if (footerElem) footerElem.textContent = t('footerCredits');
 	renderCreatorBlog();
 }
 
@@ -1723,10 +2300,12 @@ function changeLanguage(value) {
   if (!menuScreen.classList.contains('hidden')) renderMenu();
 	if (!careersScreen.classList.contains('hidden')) renderCareersPanel();
   if (!familyScreen.classList.contains('hidden')) renderFamilyPanel();
+  if (typeof petsScreen !== 'undefined' && !petsScreen.classList.contains('hidden')) renderPetsPanel();
 	if (!inventoryScreen.classList.contains('hidden')) renderInventoryPanel();
 	if (typeof governmentScreen !== 'undefined' && !governmentScreen.classList.contains('hidden')) renderGovernmentPanel();
 	if (typeof playTimeRewardsScreen !== 'undefined' && !playTimeRewardsScreen.classList.contains('hidden')) renderPlayTimeRewards();
 	if (typeof statsScreen !== 'undefined' && !statsScreen.classList.contains('hidden')) { renderStats(); renderFullStats(); }
+	if (typeof welcomeScreen !== 'undefined' && !welcomeScreen.classList.contains('hidden')) renderPreviousLivesList();
 	const storyIsVisible = !storyScreen?.classList.contains('hidden');
 	if (window.__lifeSave?.lifeStatus === 'active' && storyIsVisible) {
 	  renderWeather(window.__lifeSave.weather);
@@ -1757,30 +2336,20 @@ listen(careersButton, 'click', () => { renderCareersPanel(); careersScreen.class
 listen(closeCareersButton, 'click', () => returnToMenuFromPanel(careersScreen));
 listen(familyButton, 'click', () => { renderFamilyPanel(); familyScreen.classList.remove('hidden'); });
 listen(closeFamilyButton, 'click', () => returnToMenuFromPanel(familyScreen));
+listen(petsButton, 'click', () => { renderPetsPanel(); petsScreen.classList.remove('hidden'); });
+listen(closePetsButton, 'click', () => returnToMenuFromPanel(petsScreen));
 listen(inventoryButton, 'click', () => { renderInventoryPanel(); inventoryScreen.classList.remove('hidden'); });
 listen(closeInventoryButton, 'click', () => returnToMenuFromPanel(inventoryScreen));
 listen(governmentButton, 'click', () => { renderGovernmentPanel(); governmentScreen.classList.remove('hidden'); });
 listen(closeGovernmentButton, 'click', () => returnToMenuFromPanel(governmentScreen));
-listen(playNavButton, 'click', () => {
-  blogScreen?.classList.add('hidden');
-  welcomeScreen?.classList.remove('hidden');
-  playNavButton?.classList.add('active');
-  blogButton?.classList.remove('active');
-});
+
 listen(blogButton, 'click', () => {
 	renderCreatorBlog();
   blogScreen?.classList.remove('hidden');
-  welcomeScreen?.classList.add('hidden');
-  playNavButton?.classList.remove('active');
-  blogButton?.classList.add('active');
 });
 function closeCreatorBlog() {
   blogScreen?.classList.add('hidden');
-  welcomeScreen?.classList.remove('hidden');
-  playNavButton?.classList.add('active');
-  blogButton?.classList.remove('active');
 }
-
 listen(closeBlogButton, 'click', closeCreatorBlog);
 blogScreen?.addEventListener('click', (event) => {
   if (event.target === blogScreen) closeCreatorBlog();
@@ -1804,6 +2373,247 @@ function renderCreatorBlog() {
   });
 }
 
+function getPlayerPets(save = readSave()) {
+  const family = normalizeFamilyTree(save.player?.familyTree, save.player || {});
+  if (!Array.isArray(family.pets)) family.pets = [];
+  return family.pets.map(normalizePet);
+}
+
+function normalizePet(pet) {
+  if (!pet || typeof pet !== 'object') {
+    return {
+      id: `pet-${Date.now()}`,
+      name: currentLanguage === 'en' ? 'Pet' : 'Mascota',
+      type: 'dog',
+      health: 100,
+      happiness: 80,
+      hunger: 20,
+      affection: 50,
+      age: 1,
+      adoptedAt: new Date().toISOString()
+    };
+  }
+  return {
+    id: pet.id || `pet-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+    name: pet.name || (currentLanguage === 'en' ? 'Pet' : 'Mascota'),
+    type: pet.type || 'dog',
+    health: Math.max(0, Math.min(100, Number(pet.health ?? 100))),
+    happiness: Math.max(0, Math.min(100, Number(pet.happiness ?? 80))),
+    hunger: Math.max(0, Math.min(100, Number(pet.hunger ?? 20))),
+    affection: Math.max(0, Math.min(100, Number(pet.affection ?? 50))),
+    age: Math.max(0, Number(pet.age || 1)),
+    adoptedAt: pet.adoptedAt || new Date().toISOString()
+  };
+}
+
+function renderPetsPanel() {
+  if (!petsDashboard) return;
+  petsDashboard.replaceChildren();
+  const save = readSave();
+  const pets = getPlayerPets(save);
+  const en = currentLanguage === 'en';
+
+  if (!pets.length) {
+    const emptyP = document.createElement('p');
+    emptyP.className = 'pets-empty';
+    emptyP.textContent = t('petNoPets');
+    petsDashboard.append(emptyP);
+    return;
+  }
+
+  const typeNames = {
+    dog: en ? 'Dog' : 'Perro',
+    cat: en ? 'Cat' : 'Gato',
+    bird: en ? 'Bird' : 'Ave',
+    hamster: 'Hámster',
+    rabbit: en ? 'Rabbit' : 'Conejo'
+  };
+
+  pets.forEach((pet) => {
+    const card = document.createElement('article');
+    card.className = 'pet-card';
+
+    const header = document.createElement('div');
+    header.className = 'pet-card-header';
+    const nameH = document.createElement('h3');
+    nameH.className = 'pet-name';
+    nameH.textContent = `${pet.name} (${pet.age} ${en ? 'yr' : 'año'}${pet.age === 1 ? '' : (en ? 's' : 's')})`;
+    const badge = document.createElement('span');
+    badge.className = 'pet-type-badge';
+    badge.textContent = typeNames[pet.type] || pet.type;
+    header.append(nameH, badge);
+
+    const healthRow = document.createElement('div');
+    healthRow.className = 'pet-stat-row';
+    healthRow.innerHTML = `<span>${en ? 'Health' : 'Salud'}: ${pet.health}%</span><div class="pet-bar-outer"><div class="pet-bar-inner health" style="width: ${pet.health}%"></div></div>`;
+
+    const happyRow = document.createElement('div');
+    happyRow.className = 'pet-stat-row';
+    happyRow.innerHTML = `<span>${en ? 'Happiness' : 'Felicidad'}: ${pet.happiness}%</span><div class="pet-bar-outer"><div class="pet-bar-inner happiness" style="width: ${pet.happiness}%"></div></div>`;
+
+    const affRow = document.createElement('div');
+    affRow.className = 'pet-stat-row';
+    affRow.innerHTML = `<span>${en ? 'Affection' : 'Cariño'}: ${pet.affection}%</span><div class="pet-bar-outer"><div class="pet-bar-inner affection" style="width: ${pet.affection}%"></div></div>`;
+
+    const actions = document.createElement('div');
+    actions.className = 'pet-actions';
+
+    const playBtn = document.createElement('button');
+    playBtn.type = 'button';
+    playBtn.className = 'pet-action-btn';
+    playBtn.textContent = t('petPlay');
+    playBtn.addEventListener('click', () => interactWithPet(pet.id, 'play'));
+
+    const feedBtn = document.createElement('button');
+    feedBtn.type = 'button';
+    feedBtn.className = 'pet-action-btn';
+    feedBtn.textContent = t('petFeed');
+    feedBtn.addEventListener('click', () => interactWithPet(pet.id, 'feed'));
+
+    const vetBtn = document.createElement('button');
+    vetBtn.type = 'button';
+    vetBtn.className = 'pet-action-btn';
+    vetBtn.textContent = t('petVet');
+    vetBtn.addEventListener('click', () => interactWithPet(pet.id, 'vet'));
+
+    const walkBtn = document.createElement('button');
+    walkBtn.type = 'button';
+    walkBtn.className = 'pet-action-btn';
+    walkBtn.textContent = t('petWalk');
+    walkBtn.addEventListener('click', () => interactWithPet(pet.id, 'walk'));
+
+    const giveUpBtn = document.createElement('button');
+    giveUpBtn.type = 'button';
+    giveUpBtn.className = 'pet-action-btn give-up';
+    giveUpBtn.textContent = t('petGiveUp');
+    giveUpBtn.addEventListener('click', () => giveUpPetForAdoption(pet.id));
+
+    actions.append(playBtn, feedBtn, vetBtn, walkBtn, giveUpBtn);
+    card.append(header, healthRow, happyRow, affRow, actions);
+    petsDashboard.append(card);
+  });
+}
+
+async function giveUpPetForAdoption(petId) {
+  const save = readSave();
+  const family = normalizeFamilyTree(save.player?.familyTree, save.player || {});
+  const pet = family.pets?.find((p) => p.id === petId);
+  if (!pet) return;
+  const en = currentLanguage === 'en';
+  const confirmMsg = (t('petGiveUpConfirm') || (en ? 'Are you sure you want to put {name} up for adoption?' : '¿Estás seguro de que deseas dar en adopción a {name}?')).replace('{name}', pet.name);
+  if (!window.confirm(confirmMsg)) return;
+
+  family.pets = (family.pets || []).filter((p) => p.id !== petId);
+  save.player.familyTree = family;
+  save.player.happiness = Math.max(0, (Number(save.player.happiness) || 50) - 10);
+  Object.assign(player, save.player);
+  window.__lifeSave = save;
+  await saveCurrentGame(save);
+  renderPetsPanel();
+  renderStats();
+  const notice = (t('petGiveUpSuccess') || (en ? '// You put {name} up for adoption. It found a new loving home._' : '// Diste en adopción a {name}. Ha encontrado un nuevo y cariñoso hogar._')).replace('{name}', pet.name);
+  if (savedMessage) {
+    savedMessage.textContent = notice;
+    savedMessage.classList.remove('hidden', 'error');
+  }
+}
+
+async function interactWithPet(petId, action) {
+  const save = readSave();
+  const family = normalizeFamilyTree(save.player?.familyTree, save.player || {});
+  const pet = family.pets?.find((p) => p.id === petId);
+  if (!pet) return;
+  const en = currentLanguage === 'en';
+  let message = '';
+
+  if (action === 'play') {
+    pet.happiness = Math.min(100, (Number(pet.happiness) || 80) + 15);
+    pet.affection = Math.min(100, (Number(pet.affection) || 50) + 10);
+    save.player.energy = Math.max(0, (Number(save.player.energy) || 100) - 5);
+    save.player.mood = en ? 'happy' : 'feliz';
+    message = en ? `You played happily with ${pet.name}! (+happiness, -5 energy)` : `¡Pasaste un gran momento jugando con ${pet.name}! (+felicidad, -5 energía)`;
+  } else if (action === 'feed') {
+    pet.hunger = Math.max(0, (Number(pet.hunger) || 20) - 25);
+    pet.health = Math.min(100, (Number(pet.health) || 100) + 8);
+    pet.affection = Math.min(100, (Number(pet.affection) || 50) + 5);
+    const cost = Math.min(Number(save.player.money) || 0, 10);
+    save.player.money = Math.max(0, (Number(save.player.money) || 0) - cost);
+    message = en ? `You fed ${pet.name}. It feels loved and energetic! (-$${cost})` : `Alimentaste a ${pet.name}. ¡Come feliz y con energía! (-$${cost})`;
+  } else if (action === 'vet') {
+    const cost = Math.min(Number(save.player.money) || 0, 50);
+    save.player.money = Math.max(0, (Number(save.player.money) || 0) - cost);
+    pet.health = 100;
+    message = en ? `You took ${pet.name} to the veterinary clinic. Health restored to 100%! (-$${cost})` : `Llevaste a ${pet.name} a la veterinaria. ¡Salud restaurada al 100%! (-$${cost})`;
+  } else if (action === 'walk') {
+    pet.happiness = Math.min(100, (Number(pet.happiness) || 80) + 15);
+    pet.health = Math.min(100, (Number(pet.health) || 100) + 5);
+    save.player.energy = Math.max(0, (Number(save.player.energy) || 100) - 8);
+    message = en ? `You took ${pet.name} for a refreshing stroll! (+health, -8 energy)` : `Saliste a pasear con ${pet.name}. ¡El aire libre les renovó el ánimo! (-8 energía)`;
+  }
+
+  save.player.familyTree = family;
+  Object.assign(player, save.player);
+  window.__lifeSave = save;
+  await saveCurrentGame(save);
+  renderPetsPanel();
+  renderStats();
+  if (savedMessage) {
+    savedMessage.textContent = `// ${message}_`;
+    savedMessage.classList.remove('hidden', 'error');
+  }
+}
+
+let isAdoptingPet = false;
+async function adoptNewPet(name, type) {
+  if (isAdoptingPet) return;
+  const cleanName = String(name || '').trim();
+  if (!cleanName) return;
+  isAdoptingPet = true;
+  if (adoptSubmitBtn) adoptSubmitBtn.disabled = true;
+  try {
+    const save = readSave();
+    const family = normalizeFamilyTree(save.player?.familyTree, save.player || {});
+    family.pets = Array.isArray(family.pets) ? family.pets : [];
+
+    const newPet = {
+      id: `pet-${Date.now()}-${family.pets.length}`,
+      name: cleanName,
+      type: type || 'dog',
+      health: 100,
+      happiness: 90,
+      hunger: 10,
+      affection: 60,
+      age: 1,
+      adoptedAt: new Date().toISOString()
+    };
+
+    family.pets.push(newPet);
+    save.player.familyTree = family;
+    save.player.mood = currentLanguage === 'en' ? 'happy' : 'feliz';
+    Object.assign(player, save.player);
+    window.__lifeSave = save;
+    await saveCurrentGame(save);
+    renderPetsPanel();
+    renderStats();
+    if (adoptNameInput) adoptNameInput.value = '';
+    if (savedMessage) {
+      savedMessage.textContent = currentLanguage === 'en'
+        ? `// You adopted ${cleanName}! Welcome to the family._`
+        : `// ¡Adoptaste a ${cleanName}! Bienvenido/a a la familia._`;
+      savedMessage.classList.remove('hidden', 'error');
+    }
+  } finally {
+    isAdoptingPet = false;
+    if (adoptSubmitBtn) adoptSubmitBtn.disabled = false;
+  }
+}
+
+listen(adoptPetForm, 'submit', async (e) => {
+  e.preventDefault();
+  if (isAdoptingPet) return;
+  await adoptNewPet(adoptNameInput?.value, adoptTypeSelect?.value);
+});
+
 function renderMenu() {
 	const controls = [
 	['exitLife', () => exitCurrentLifeWithoutDying()],
@@ -1811,6 +2621,7 @@ function renderMenu() {
 	['stats', () => { statsScreen.classList.remove('hidden'); renderStats(); renderFullStats(); }],
 	['careers', () => { renderCareersPanel(); careersScreen.classList.remove('hidden'); }],
 	['family', () => { renderFamilyPanel(); familyScreen.classList.remove('hidden'); }],
+	['pets', () => { renderPetsPanel(); petsScreen.classList.remove('hidden'); }],
 	['inventory', () => { renderInventoryPanel(); inventoryScreen.classList.remove('hidden'); }],
 	['government', () => { renderGovernmentPanel(); governmentScreen.classList.remove('hidden'); }],
 	['world', () => { renderWorldPanel(); worldScreen.classList.remove('hidden'); }],
@@ -2110,6 +2921,17 @@ listen(startButton, 'click', () => {
   questionScreen.classList.remove('hidden');
 });
 
+listen(answerInput, 'keydown', (event) => {
+  if (event.key === 'Enter' && !event.shiftKey) {
+    event.preventDefault();
+    if (lifeForm?.requestSubmit) {
+      lifeForm.requestSubmit();
+    } else {
+      lifeForm?.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+    }
+  }
+});
+
 listen(lifeForm, 'submit', (event) => {
   event.preventDefault();
   const answer = answerInput.value.trim();
@@ -2305,32 +3127,92 @@ function getRewardPlaySeconds() {
   return Math.max(getSessionPlaySeconds(), Number(window.__lifePlaySeconds) || 0);
 }
 
-function isConversationMessage(text, analysis) {
-  const normalized = normalizeWords(text).join(' ');
-	const words = normalized.split(/\s+/).filter(Boolean);
-	const pureConversation = /^(como estas|how are you|que haces|qué haces|qué onda|que onda|todo bien|what's up|whats up|are you there)$/i.test(normalized);
-  if (pureConversation) return true;
+function isConversationMessage(text, analysis = {}) {
+  const clean = String(text || '').trim();
+  if (!clean) return false;
+  const normalized = normalizeWords(clean).join(' ');
+
+  // 1. Direct question marks
+  if (/[?¿]/.test(clean)) return true;
+
+  // 2. Question opening keywords
+  if (/^(?:que|qué|como|cómo|cuando|cuándo|donde|dónde|por que|por qué|porque|quien|quién|cual|cuál|cuanto|cuánto|podrias|podrías|puedo|podes|podés|seria|sería|how|what|when|where|why|who|which|can i|could you|is it|are you|do you)\b/i.test(normalized)) {
+    return true;
+  }
+
+  // 3. Greetings and check-ins
+  const words = normalized.split(/\s+/).filter(Boolean);
   const casualGreeting = words.some((word) => ['hola', 'buenas', 'hey', 'hello', 'hi', 'holi', 'buenasass'].some((term) => closeSemanticWord(word, term) || word.startsWith(`${term}a`) || word.startsWith(`${term}e`)));
-  const greeting = /^(hola|buenas|buenos dias|buenas tardes|buenas noches|hey|hello|hi|holi|chau|adios|adiós|gracias|thank you|thanks|good morning|good afternoon|good evening|good night)$/i.test(normalized) || casualGreeting;
-  const conversation = /\b(quiero charlar|quiero hablar|podemos hablar|podemos charlar|charlar|hablar|conversar|platicar|decime|contame|ayudame|como estas|cómo estás|qué haces|que haces|qué onda|que onda|todo bien|how are you|what are you doing|what's up|whats up|can we talk|let's talk|chat|talk|tell me|help me|who are you|quien eres|qué eres|que eres|are you there|good morning|good afternoon|good evening|good night)\b/i.test(normalized);
-  const action = analysis.actionVerb || analysis.explicitDeclaration || analysis.entities.locations.length || analysis.entities.people.length || analysis.entities.money.length;
-  return (greeting || conversation) && !action;
+  const greetings = /^(hola|buenas|buenos dias|buenas tardes|buenas noches|hey|hello|hi|holi|chau|adios|adiós|bye|see you|gracias|thank you|thanks|good morning|good afternoon|good evening|good night|cómo estás|como estas|how are you|qué onda|que onda|todo bien|qué tal|que tal|whats up|what's up)\b/i.test(normalized) || casualGreeting;
+  if (greetings) return true;
+
+  // 4. Conversational / Chat / Advice intents
+  const chatIntents = /\b(quiero charlar|quiero hablar|podemos hablar|podemos charlar|charlar|hablar|conversar|platicar|decime|contame|cuéntame|ayudame|ayúdame|aconsejame|aconsejame|que opinas|qué opinas|que pensas|qué pensás|que me recomiendas|qué me recomiendas|dame un consejo|no se que hacer|no sé qué hacer|estoy aburrido|estoy cansado|me siento solo|me siento mal|hoy fue un dia|hoy fue un día|quien eres|quién eres|que eres|qué eres|sos inteligente|sos un bot|me gusta este juego|tell me|help me|advise me|what do you think|give me advice|i am bored|i feel lonely|i feel tired|can we talk|let's talk|who are you|what are you)\b/i.test(normalized);
+  if (chatIntents) return true;
+
+  // 5. Hypothetical thoughts without committed actions
+  if (/^(?:tal vez|quizas|quizás|a lo mejor|estoy pensando en|estaba pensando|me pregunto si|no se si|no sé si|maybe|perhaps|i wonder if|thinking about)\b/i.test(normalized)) {
+    return true;
+  }
+
+  return false;
 }
 
-function getConversationReply(text) {
-  const normalized = normalizeWords(text).join(' ');
+function getConversationReply(text, playerState = {}, world = {}) {
+  const clean = String(text || '').trim();
+  const normalized = normalizeWords(clean).join(' ');
   const en = currentLanguage === 'en';
-	if (/\b(buenas|buenos dias|buenas tardes|buenas noches|good morning|good afternoon|good evening|good night)\b/.test(normalized)) return en ? 'Good day! The simulation is ready whenever you are.' : '¡Buenas! La simulación está lista cuando quieras.';
-  if (/\b(holi|hola|hey|hello|hi)\w*/.test(normalized)) return en ? 'Heyyy! Nice to see you. What are you thinking about?' : '¡Holaaa! Qué bueno verte. ¿En qué estás pensando?';
-  if (/\b(chau|adios|adiós|bye|see you)\b/.test(normalized)) return en ? 'See you later! Your life will be waiting.' : '¡Nos vemos! Tu vida va a estar esperándote.';
-  if (/\b(qué onda|que onda|todo bien|whats up|what's up|what is up)\b/.test(normalized)) return en ? 'All systems are good here. How is your story going?' : '¡Todo tranqui por acá! ¿Cómo viene tu historia?';
-  if (/\b(hola|buenas|buenos dias|buenas tardes|buenas noches|hey|hello|hi)\b/.test(normalized)) return en ? 'Hello. You can talk to me here, or write a clear action when you want to change your life.' : 'Hola. Podés hablar conmigo acá, o escribir una acción clara cuando quieras cambiar tu vida.';
-  if (/\b(como estas|how are you)\b/.test(normalized)) return en ? 'I am ready to listen and help you explore your story.' : 'Estoy lista para escucharte y ayudarte a explorar tu historia.';
-  if (/\b(gracias|thank you|thanks)\b/.test(normalized)) return en ? 'You are welcome. What would you like to talk about?' : 'De nada. ¿Sobre qué te gustaría hablar?';
-  if (/\b(quien eres|que eres|who are you|what are you)\b/.test(normalized)) return en ? 'I am LIFE.AI, the guide for your life simulation.' : 'Soy LIFE.AI, la guía de tu simulación de vida.';
-	if (/\b(ayuda|ayudame|qué puedo hacer|que puedo hacer|help|help me|what can i do|what should i do)\b/.test(normalized)) return en ? 'You can describe a job, a trip, a conversation, a relationship or any event you want to experience. Clear actions change the simulation; questions only start a conversation.' : 'Podés describir un trabajo, un viaje, una conversación, una relación o cualquier evento que quieras vivir. Las acciones claras cambian la simulación; las preguntas solo inician una conversación.';
-  if (/\b(cuéntame|contame|decime|tell me|explain|explicame|explícame|por qué|why|where are you|donde estas|dónde estás)\b/.test(normalized)) return en ? 'I can explain the current story, remember your choices and help you decide what happens next.' : 'Puedo explicarte la historia actual, recordar tus decisiones y ayudarte a decidir qué sucede después.';
-  return en ? 'Of course. Tell me what is on your mind. This message will not change your statistics.' : 'Claro. Contame qué tenés en mente. Este mensaje no va a cambiar tus estadísticas.';
+  const name = playerState.name || (en ? 'friend' : 'amigo');
+  const age = playerState.age || 20;
+  const occupation = careerById(playerState.occupation);
+  const occLabel = occupation ? (en ? occupation.names.en : occupation.names.es) : (en ? 'seeking your path' : 'buscando tu rumbo');
+  const money = playerState.money || 0;
+  const mood = playerState.mood || 'estable';
+  const pets = playerState.familyTree?.pets || [];
+  const petMention = pets.length > 0 ? (en ? ` Along with ${pets.map(p => p.name).join(', ')}, you have faithful companions.` : ` Junto a ${pets.map(p => p.name).join(', ')}, tienes una compañía hermosa.`) : '';
+  const noteSuffix = en
+    ? '\n\n// [LIFE.AI]: Talking with me does not alter your life statistics or advance time. Take your time to reflect.'
+    : '\n\n// [LIFE.AI]: Charlar conmigo no modifica tus estadísticas de vida ni avanza tu edad. Tómate tu tiempo para reflexionar.';
+
+  // Greetings
+  if (/\b(hola|holi|hey|hello|hi|buenas|buenos dias|buenas tardes|buenas noches)\b/i.test(normalized)) {
+    return (en
+      ? `Hello, ${name}! I'm listening. At age ${age} as a ${occLabel}, you've built quite a story.${petMention} What are you thinking about today?`
+      : `¡Hola, ${name}! Te escucho. A tus ${age} años como ${occLabel}, estás forjando tu propia historia.${petMention} ¿En qué estás pensando hoy?`) + noteSuffix;
+  }
+
+  // How are you / Status
+  if (/\b(como estas|cómo estás|how are you|que haces|qué haces|qué onda|que onda|todo bien|whats up|what's up)\b/i.test(normalized)) {
+    return (en
+      ? `All terminal cores are humming smoothly. I'm here observing your simulation. Currently your mood is "${mood}" and you have $${money}. Is there anything on your mind?`
+      : `Todos los núcleos de la terminal operan al 100%. Estoy aquí acompañando tu simulación. Tu ánimo actual es "${mood}" y cuentas con $${money}. ¿Hay algo específico sobre lo que quieras reflexionar?`) + noteSuffix;
+  }
+
+  // Advice / What should I do
+  if (/\b(que me recomiendas|qué me recomiendas|que hago|qué hago|que opinas|qué opinas|que pensas|qué pensás|consejo|aconsejame|aconséjame|help|advice|what should i do)\b/i.test(normalized)) {
+    return (en
+      ? `Life has countless paths, ${name}. You could focus on advancing your career as a ${occLabel}, exploring a new hobby, caring for your pets and loved ones, or simply taking a peaceful day off. Whenever you want to take an action, describe it clearly in the box!`
+      : `La vida tiene muchísimos caminos posibles, ${name}. Podrías enfocarte en crecer en tu profesión de ${occLabel}, explorar un nuevo hobby, cuidar de tus mascotas y afectos, o simplemente descansar y disfrutar el día. ¡Cuando quieras dar un paso real, solo describe tu acción concreta aquí!`) + noteSuffix;
+  }
+
+  // Emotional states / Sad / Tired / Reflection
+  if (/\b(triste|cansado|cansada|solo|sola|aburrido|aburrida|mal|deprimido|ansiedad|miedo|sad|tired|lonely|bored|anxious)\b/i.test(normalized)) {
+    return (en
+      ? `Take a deep breath, ${name}. It's completely natural to feel that way. In simulation or reality, life is not a race. Rest, do something comforting, or spend time with loved ones. You are doing just fine.`
+      : `Respira hondo, ${name}. Es totalmente normal sentirse así a veces. Sea simulación o realidad, esto no es una carrera. Descansa, haz algo que te reconforte o pasa tiempo con quienes te aprecian. Vas por buen camino.`) + noteSuffix;
+  }
+
+  // Who are you / Identity
+  if (/\b(quien eres|quién eres|que eres|qué eres|who are you|what are you)\b/i.test(normalized)) {
+    return (en
+      ? `I am LIFE.AI: the narrator, guide, and chronicler of your simulation. I interpret your decisions, generate the world's responses, and preserve each chapter of your journey.`
+      : `Soy LIFE.AI: el narrador, guía y cronista de tu simulación. Interpreto tus decisiones, genero las respuestas del mundo y conservo cada capítulo de tu viaje.`) + noteSuffix;
+  }
+
+  // General philosophical thoughts or inquiries
+  return (en
+    ? `That is an insightful thought, ${name}. At age ${age}, every question you explore expands your perspective.${petMention} Whenever you feel like turning thoughts into deeds, simply tell me what happens next.`
+    : `Es una reflexión interesante, ${name}. A tus ${age} años, cada pregunta que te haces enriquece tu perspectiva.${petMention} Cuando sientas ganas de transformar estas ideas en hechos, simplemente cuéntame qué decides hacer.`) + noteSuffix;
 }
 
 function extractFamilyPersonName(text, analysis) {
@@ -2565,6 +3447,7 @@ function saveCurrentGame(save) {
   if (!normalized.id) {
     normalized.id = 'life-' + Date.now() + '-' + Math.random().toString(36).substring(2, 7);
   }
+  const originalLocalId = normalized.id;
   window.__lifeSave = normalized;
   try { localStorage.setItem('lifeSaveFallback', JSON.stringify(normalized)); } catch { /* fallback opcional */ }
 
@@ -2572,19 +3455,21 @@ function saveCurrentGame(save) {
   const idx = all.findIndex((l) => l.id === normalized.id);
   if (idx >= 0) all[idx] = normalized;
   else all.unshift(normalized);
-  setLocalSavedLives(all);
+  setLocalSavedLives(deduplicateLivesList(all));
 
   return storage.set('game', 'current', normalized).catch(() => undefined).then(async () => {
 	try {
 	  if (window.lifeSupabase?.enabled) {
 		const cloudId = await window.lifeSupabase.saveGame(normalized, currentLanguage);
-		if (cloudId && normalized.id !== cloudId) {
+		if (cloudId && originalLocalId !== cloudId) {
 		  normalized.id = cloudId;
 		  window.__lifeSave.id = cloudId;
 		  const updated = getLocalSavedLives();
-		  const targetIdx = updated.findIndex((l) => l.id === normalized.id || l.id === cloudId);
+		  const targetIdx = updated.findIndex((l) => l.id === originalLocalId || l.id === cloudId);
 		  if (targetIdx >= 0) updated[targetIdx] = normalized;
-		  setLocalSavedLives(updated);
+		  else updated.unshift(normalized);
+		  setLocalSavedLives(deduplicateLivesList(updated));
+		  try { localStorage.setItem('lifeSaveFallback', JSON.stringify(normalized)); } catch {}
 		}
 		await window.lifeSupabase.saveDiseases(normalized);
 		await window.lifeSupabase.saveMemory(normalized);
@@ -2867,7 +3752,7 @@ class LifeEngine {
 	const interpretation = interpretDecision(text, memory, world);
 	const analysis = interpretation.analysis;
 	if (isConversationMessage(text, analysis)) {
-	  return { analysis, interpretation, effects: [], event: null, narrative: getConversationReply(text) };
+	  return { analysis, interpretation, effects: [], event: null, narrative: getConversationReply(text, playerState, world) };
 	}
 	const effects = applyDecisionEffects(text, playerState, analysis);
 	if (analysis.mutationAllowed && analysis.entities.locations?.length) playerState.location = analysis.entities.locations[0];
@@ -3244,21 +4129,16 @@ function analyzeText(text, memory = {}) {
 }
 
 function validateDecisionText(text, analysis = analyzeText(text)) {
-  const words = normalizeWords(text).filter(Boolean);
-  if (!words.length || words.length > 160) return false;
+  const clean = String(text || '').trim();
+  if (!clean) return false;
+  const words = normalizeWords(clean).filter(Boolean);
+  if (!words.length || words.length > 200) return false;
   if (/^(.)\1{4,}$/.test(words.join(''))) return false;
-	if (/(.)\1{3,}/.test(words.join('')) || /(?:[bcdfghjklmnpqrstvwxyz]){5,}/i.test(words.join(''))) return false;
+  if (/(.)\1{4,}/.test(words.join('')) || /(?:[bcdfghjklmnpqrstvwxyz]){6,}/i.test(words.join(''))) return false;
   const letters = words.join('').replace(/[^a-záéíóúüñ]/gi, '');
+  if (letters.length < 2) return false;
   const vowels = (letters.match(/[aeiouáéíóúü]/gi) || []).length;
-  if (letters.length >= 6 && (vowels === 0 || vowels / letters.length < .16)) return false;
-	const categories = semanticCategories(text);
-  const recognizedCategory = categories.length > 0;
-  const categoryCoverage = new Set(categories.map((category) => category.category)).size;
-  const recognizedIntent = analysis.intent !== 'unknown' && analysis.score >= 1;
-  const hasStructure = analysis.actionVerb || analysis.firstPerson || analysis.explicitDeclaration || analysis.entities.numbers.length > 0;
-	const hasContext = analysis.context?.subject !== 'unknown' || analysis.entities.locations.length > 0 || analysis.entities.people.length > 0 || analysis.entities.hobbies.length > 0;
-  if (!recognizedCategory && !recognizedIntent && !hasStructure) return false;
-  if (words.length >= 2 && categoryCoverage === 1 && !hasStructure && !hasContext && analysis.score < 2) return false;
+  if (letters.length >= 7 && (vowels === 0 || vowels / letters.length < .12)) return false;
   return true;
 }
 
@@ -3479,6 +4359,13 @@ function renderChangedDecisionStats(changes) {
   effectsText.classList.remove('hidden');
 }
 
+listen(storyInput, 'keydown', (event) => {
+  if (event.key === 'Enter' && !event.shiftKey) {
+    event.preventDefault();
+    saveStoryButton.click();
+  }
+});
+
 listen(saveStoryButton, 'click', async () => {
 	const decision = storyInput.value.trim();
   if (!decision) return;
@@ -3496,7 +4383,7 @@ listen(saveStoryButton, 'click', async () => {
 	if (isConversationMessage(decision, decisionAnalysis)) {
 	  savedMessage.classList.remove('error');
 	  savedMessage.classList.add('hidden');
-	  aiText.textContent = getConversationReply(decision);
+	  aiText.textContent = getConversationReply(decision, savedGame.player, savedGame.world);
 	  renderChangedDecisionStats([]);
 	  aiOutput.classList.remove('hidden');
 	  storyInput.value = '';
@@ -3843,14 +4730,17 @@ function addPanelSection(container, title, entries, emptyText = currentLanguage 
   const section = document.createElement('section');
   section.className = 'panel-section';
   const heading = document.createElement('h3');
+  heading.className = 'panel-section-title';
   heading.textContent = `[ ${title} ]`;
   section.append(heading);
-  if (!entries.length) {
+  if (!entries || !entries.length) {
 	const empty = document.createElement('p');
 	empty.className = 'panel-empty';
 	empty.textContent = `// ${emptyText}`;
 	section.append(empty);
   } else {
+    const grid = document.createElement('div');
+    grid.className = 'panel-grid-2';
 	entries.forEach((entry) => {
 	  const card = document.createElement('article');
 	  card.className = 'panel-card';
@@ -3862,8 +4752,9 @@ function addPanelSection(container, title, entries, emptyText = currentLanguage 
 		details.textContent = entry.details;
 		card.append(details);
 	  }
-	  section.append(card);
+	  grid.append(card);
 	});
+    section.append(grid);
   }
   container.append(section);
 }
@@ -3951,27 +4842,68 @@ function applyDecisionEffects(decision, savedPlayer, analysis = analyzeText(deci
 	  const item = findInventoryItem(decision, savedPlayer.inventory) || savedPlayer.inventory[0];
 	  const quantityMatch = text.match(/\b(\d+)\s+(?:unidades?|items?|objetos?|items?|x)\b/i);
 	  const quantity = Math.min(item.quantity || 1, Math.max(1, Number(quantityMatch?.[1]) || 1));
-	  const value = itemSaleValue(item) * quantity;
+	  let value = itemSaleValue(item) * quantity;
+	  if (isMoneyRainActive()) value *= 10;
 	  item.quantity = (item.quantity || 1) - quantity;
 	  if (item.quantity <= 0) savedPlayer.inventory = savedPlayer.inventory.filter((entry) => entry !== item);
 	  money += value;
-	  effects.push(currentLanguage === 'en' ? `sold ${quantity} ${item.name || 'item'} for +${value} money` : `vendiste ${quantity} ${item.name || 'objeto'} por +${value} dinero`);
+	  effects.push(currentLanguage === 'en' ? `sold ${quantity} ${item.name || 'item'} for +${value} money${isMoneyRainActive() ? ' (RAIN x10!)' : ''}` : `vendiste ${quantity} ${item.name || 'objeto'} por +${value} dinero${isMoneyRainActive() ? ' (¡LLUVIA x10!)' : ''}`);
 	}
 
-	const career = detectCareer(decision) || careerById(savedPlayer.occupation);
-	if (career || has('trabajo', 'trabajar', 'sueldo', 'contrato', 'negocio', 'work', 'job', 'salary', 'contract', 'business')) {
-	  const income = career?.income || 250;
+	const detectedCareer = detectCareer(decision);
+	const activeCareer = detectedCareer || careerById(savedPlayer.occupation);
+	const isWorkAction = /(?:fui a|voy a|sali a|estoy|hice|cumpli|cumplí|trabaje|trabajé|labure|laburé|atendi|atendí|opere|operé|patrulle|patrullé|enseñe|enseñé|programe|programé)\s+(?:a\s+)?(?:trabajar|trabajo|laburo|laburar|guardia|turno|oficina|hospital|escuela|comisaria|comisaría|empresa|work|job|shift)|(?:\b(?:trabaj[eéoó]|trabajar|labur[eéoó]|laburar)\b)/i.test(text);
+	if (isWorkAction && activeCareer && !hasNegation(decision)) {
+	  let income = activeCareer?.income || 250;
+	  if (isMoneyRainActive()) income *= 10;
 	  money += income;
-	  effects.push(currentLanguage === 'en' ? `+${income} money from ${career ? career.names.en.toLowerCase() : 'work'}` : `+${income} dinero por ${career ? career.names.es.toLowerCase() : 'trabajo'}`);
-  }
-	if (has('comprar', 'compre', 'compra', 'gastar', 'pagar', 'buy', 'spend', 'pay')) {
-	money = Math.max(0, money - 75);
-	effects.push(currentLanguage === 'en' ? '-75 money spent' : '-75 dinero por gasto');
-  }
-	if (has('ahorrar', 'ahorro', 'guardar', 'save', 'saving')) {
-	money += 50;
-	effects.push(currentLanguage === 'en' ? '+50 money saved' : '+50 dinero por ahorro');
-  }
+	  effects.push(currentLanguage === 'en' ? `+${income} money from ${activeCareer.names.en.toLowerCase()}${isMoneyRainActive() ? ' (RAIN x10!)' : ''}` : `+${income} dinero por trabajo (${activeCareer.names.es.toLowerCase()})${isMoneyRainActive() ? ' (¡LLUVIA x10!)' : ''}`);
+	} else if (isWorkAction && !hasNegation(decision)) {
+	  let income = 150;
+	  if (isMoneyRainActive()) income *= 10;
+	  money += income;
+	  effects.push(currentLanguage === 'en' ? `+${income} money from labor${isMoneyRainActive() ? ' (RAIN x10!)' : ''}` : `+${income} dinero por trabajo ocasional${isMoneyRainActive() ? ' (¡LLUVIA x10!)' : ''}`);
+	}
+
+	const buyAction = /\b(?:compr(?:ar|é|e|o|amos|aron)|gast(?:ar|é|e|o|amos)|pag(?:ar|ué|ue|o|amos)|buy|bought|purchas(?:e|ed)|spent|spend|pay|paid)\b/i.test(text);
+	const isQuestion = /[?¿]/.test(decision);
+	if (buyAction && !isQuestion && !hasNegation(decision)) {
+	  const amountMatch = decision.match(/(?:\$|€|usd|ars|pesos?|dólares?|dolares?)\s*(\d+)|(\d+)\s*(?:pesos?|dólares?|dolares?|\$|€)/i);
+	  const requestedExpense = amountMatch ? Number(amountMatch[1] || amountMatch[2]) : 75;
+	  const expense = Math.min(money, requestedExpense);
+	  if (expense > 0) {
+	    money = Math.max(0, money - expense);
+	    effects.push(currentLanguage === 'en' ? `-${expense} money spent` : `-${expense} dinero por gasto`);
+	  }
+	}
+
+	if (has('ahorrar', 'ahorro', 'guardar plata', 'guardar dinero', 'save money', 'saving') && !isQuestion) {
+	  effects.push(currentLanguage === 'en' ? 'finances: disciplined savings' : 'finanzas: ahorro disciplinado');
+	}
+
+	// In-decision pet interactions
+	const petPlayAction = /\b(juego con|jugar con|acaricio a|acariciar|mimar|play with|petting)\b/i.test(text) && /\b(perro|perra|gato|gata|mascota|cachorro|dog|cat|pet)\b/i.test(text);
+	const petFeedAction = /\b(alimentar|alimento|le doy comida|dar de comer|feed|feeding)\b/i.test(text) && /\b(perro|perra|gato|gata|mascota|cachorro|dog|cat|pet)\b/i.test(text);
+	const petVetAction = /\b(veterinari[ao]|vet|clinic)\b/i.test(text);
+	if (petPlayAction && savedPlayer.familyTree?.pets?.length) {
+	  const firstPet = savedPlayer.familyTree.pets[0];
+	  firstPet.happiness = Math.min(100, (Number(firstPet.happiness) || 80) + 15);
+	  firstPet.affection = Math.min(100, (Number(firstPet.affection) || 50) + 10);
+	  effects.push(currentLanguage === 'en' ? `pet: ${firstPet.name} is joyful (+affection)` : `mascota: ${firstPet.name} está feliz (+cariño)`);
+	}
+	if (petFeedAction && savedPlayer.familyTree?.pets?.length) {
+	  const firstPet = savedPlayer.familyTree.pets[0];
+	  firstPet.hunger = Math.max(0, (Number(firstPet.hunger) || 20) - 30);
+	  firstPet.health = Math.min(100, (Number(firstPet.health) || 100) + 5);
+	  effects.push(currentLanguage === 'en' ? `pet: ${firstPet.name} fed` : `mascota: ${firstPet.name} alimentada`);
+	}
+	if (petVetAction && savedPlayer.familyTree?.pets?.length) {
+	  const firstPet = savedPlayer.familyTree.pets[0];
+	  firstPet.health = 100;
+	  const cost = Math.min(money, 40);
+	  money = Math.max(0, money - cost);
+	  effects.push(currentLanguage === 'en' ? `pet: ${firstPet.name} treated by vet (-$${cost})` : `mascota: ${firstPet.name} atendida por el veterinario (-$${cost})`);
+	}
 	const growthVerb = /(?:crez?c(?:i|o|a|e|ere|eremos|ieron|iste)|cresk(?:i|o|e)|aument(?:e|o|ar|are)|sum(?:e|o|ar|are)|cumpl(?:i|o|e|ir|ire|iste)|pas(?:aron|o)|transcurr(?:io|ieron)|me hice mayor|me hago mayor|grow|grew|grown|grow up|increase|increased|increasing|add)/i;
 	const incrementMatch = text.match(new RegExp(`${growthVerb.source}\\D{0,18}(\\d{1,3})\\s*(?:anos|ano|years?)?`, 'i'));
 	const compactGrowth = /(?:creci|creski|aumente|sume|cumpli|pasaron|transcurrio|grow|grew|increase|add)\s*(?:en|by|de)?\s*(\d{1,3})\s*(?:anos|ano|years?)?/i.exec(text);
@@ -4037,10 +4969,13 @@ function applyNaturalNumericChanges(decision, playerState, effects) {
 	const change = changePattern.exec(text);
 	if (!change) return;
 	const isDown = rule.down.some((word) => change[0].includes(word));
-	const amount = Number(change[1].replace(',', '.')) * (isDown ? -1 : 1);
+	let amount = Number(change[1].replace(',', '.')) * (isDown ? -1 : 1);
+	if (rule.property === 'money' && !isDown && amount > 0 && isMoneyRainActive()) {
+	  amount *= 10;
+	}
 	const current = Number(playerState[rule.property]) || 0;
 	playerState[rule.property] = Math.max(0, ['energy', 'health'].includes(rule.property) ? Math.min(100, current + amount) : current + amount);
-	effects.push(`${currentLanguage === 'en' ? rule.label[1] : rule.label[0]}: ${amount > 0 ? '+' : ''}${amount}`);
+	effects.push(`${currentLanguage === 'en' ? rule.label[1] : rule.label[0]}: ${amount > 0 ? '+' : ''}${amount}${rule.property === 'money' && !isDown && isMoneyRainActive() ? ' (x10!)' : ''}`);
   });
 }
 
@@ -4195,9 +5130,12 @@ function learnKnowledgeText(source, memory, sourceName = 'knowledge.txt') {
   return learned;
 }
 
+const normalizeWordsCache = new Map();
 function normalizeWords(text) {
-	const normalized = String(text || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-	const aliases = {
+  const key = String(text || '');
+  if (normalizeWordsCache.has(key)) return normalizeWordsCache.get(key);
+  const normalized = key.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const aliases = {
 	cresko: 'crezco', cresi: 'creci', kiero: 'quiero', qiero: 'quiero', keria: 'queria',
 	ai: 'ahi', anio: 'ano', anyo: 'ano', enerjia: 'energia', reputasion: 'reputacion',
 	felis: 'feliz', travajo: 'trabajo', bibo: 'vivo', bivi: 'vivi', laburo: 'trabajo',
@@ -4205,7 +5143,13 @@ function normalizeWords(text) {
 	durmiendo: 'dormir', descansando: 'descansar', haciendo: 'hacer', diciendo: 'decir',
 	quiero: 'quiero', quisiera: 'quiero'
   };
-	return (normalized.match(/[a-z0-9]+/g) || []).map((word) => commonWordAliases[word] || aliases[word] || word);
+  const result = (normalized.match(/[a-z0-9]+/g) || []).map((word) => commonWordAliases[word] || aliases[word] || word);
+  if (normalizeWordsCache.size > 1500) {
+    const firstKey = normalizeWordsCache.keys().next().value;
+    normalizeWordsCache.delete(firstKey);
+  }
+  normalizeWordsCache.set(key, result);
+  return result;
 }
 
 function numberFromWords(text) {

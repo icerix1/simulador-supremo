@@ -15,23 +15,31 @@
 
 <body>
 	<main class="life-screen">
-		<div class="screen-status"><span id="appTitle">Unnamed life simulation</span> <span>v0.0.1c</span><span
-				class="username-status" id="usernameStatus" aria-live="polite">USER: —</span><button
-				class="status-logout-btn hidden" id="statusLogoutBtn" type="button" title="Cerrar sesión">[ LOGOUT ]</button><label
-				class="language-control" id="languageLabel" for="languageSelect">LANG:</label><select
-				id="languageSelect" name="lifeLanguage" aria-label="Language" autocomplete="off">
+		<div class="screen-status">
+			<span id="appTitle">Unnamed life simulation</span> <span>v0.0.1d</span>
+			<span class="username-status" id="usernameStatus" aria-live="polite">USER: —</span>
+			<button class="status-logout-btn hidden" id="statusLogoutBtn" type="button" title="Cerrar sesión">[ LOGOUT ]</button>
+			<button class="status-tool-btn" id="blogButton" type="button" title="Ver notas y novedades de LIFE.AI">[ BLOG.TXT ]</button>
+			<label class="theme-control" id="themeLabel" for="themeSelect">TEMA:</label>
+			<select id="themeSelect" name="lifeTheme" aria-label="Tema de color retro" autocomplete="off">
+				<option value="green">VERDE</option>
+				<option value="orange">ÁMBAR</option>
+				<option value="red">ROJO</option>
+				<option value="blue">AZUL</option>
+			</select>
+			<label class="language-control" id="languageLabel" for="languageSelect">LANG:</label>
+			<select id="languageSelect" name="lifeLanguage" aria-label="Language" autocomplete="off">
 				<option value="es">ES</option>
 				<option value="en">EN</option>
-			</select></div>
+			</select>
+		</div>
 		<div class="active-players-indicator" id="activePlayersIndicator" aria-live="polite">JUGADORES: —</div>
 		<div class="weather-overlay" id="weatherOverlay" aria-hidden="true"></div>
 		<div class="season-effects" id="seasonEffects" aria-hidden="true"></div>
+		<div class="money-rain-overlay hidden" id="moneyRainOverlay" aria-hidden="true"></div>
+		<div class="money-rain-indicator hidden" id="moneyRainIndicator" aria-live="polite"></div>
 		<div class="season-indicator hidden" id="seasonIndicator" aria-live="polite"></div>
 		<div class="weather-indicator hidden" id="weatherIndicator" aria-live="polite"></div>
-		<nav class="welcome-navigation hidden" id="welcomeNavigation" aria-label="Main navigation">
-			<button class="welcome-nav-button active" id="playNavButton" type="button">[ PLAY ]</button>
-			<button class="welcome-nav-button" id="blogButton" type="button">[ BLOG ]</button>
-		</nav>
 		<section class="username-screen auth-screen" id="usernameScreen">
 			<p class="code-line"><span class="prompt">C:\LIFE&gt;</span> auth_service.exe</p>
 			<h1 id="usernameTitle">ACCESO DE USUARIO</h1>
@@ -126,11 +134,9 @@
 				<h2 id="blogTitle">blog.txt // LIFE.AI notes</h2>
 				<p class="history-subtitle" id="blogSubtitle">// ideas, changes and simulator records</p>
 				<article class="blog-entry creator-post" id="blogRelease001a">
-					<h3 id="blogReleaseTitle">[ ACTUALIZACIÓN ] NUEVA VERSION 0.0.1c</h3>
-					<small id="blogReleaseDate">2026-09-10</small>
-					<p id="blogReleaseText">This update adds governments that change every four years, the Presidential
-						Stick play-time reward, inventory sales, smarter LIFE.AI, children and interface improvements.
-					</p>
+					<h3 id="blogReleaseTitle">[ ACTUALIZACIÓN ] NUEVA VERSION 0.0.1d</h3>
+					<small id="blogReleaseDate">2026-09-11</small>
+					<p id="blogReleaseText">Esta versión 0.0.1d corrige las vidas triplicadas al crearlas, agrega sistema de adopción y cuidado de mascotas (con opción de dar en adopción y anti-doble click), evento de Lluvia de Dinero (+1000%), rediseño estético de paneles (Gobierno, Carreras, Familia, Inventario), envío con Enter, créditos de icerix y barrido de idioma completo (ES/EN).</p>
 				</article>
 			</div>
 		</section>
@@ -165,6 +171,7 @@
 						<button class="history-button" id="statsButton" type="button">[ VIEW STATS ]</button>
 						<button class="history-button" id="careersButton" type="button">[ VIEW CAREERS ]</button>
 						<button class="history-button" id="familyButton" type="button">[ VIEW FAMILY ]</button>
+						<button class="history-button" id="petsButton" type="button">[ VIEW PETS ]</button>
 						<button class="history-button" id="inventoryButton" type="button">[ VIEW INVENTORY ]</button>
 						<button class="history-button" id="governmentButton" type="button">[ GOBIERNOS ]</button>
 						<button class="history-button" id="worldButton" type="button">[ VIEW WORLD ]</button>
@@ -235,6 +242,36 @@
 				<h2 id="familyTitle">family.json // family tree</h2>
 				<p class="history-subtitle" id="familySubtitle">// partner, marriage, children and relatives</p>
 				<div class="family-dashboard" id="familyDashboard"></div>
+			</div>
+		</section>
+
+		<section class="stats-screen hidden" id="petsScreen" aria-modal="true" role="dialog"
+			aria-labelledby="petsTitle">
+			<div class="stats-window pets-window">
+				<button class="close-history" id="closePetsButton" data-close="petsScreen" type="button">[ X ]</button>
+				<h2 id="petsTitle">pets.json // companions</h2>
+				<p class="history-subtitle" id="petsSubtitle">// tus mascotas, cuidados y adopción</p>
+				<div class="pets-dashboard" id="petsDashboard"></div>
+				<div class="adopt-pet-box" id="adoptPetBox">
+					<h3 id="adoptPetTitle">[ ADOPTAR NUEVA MASCOTA ]</h3>
+					<form id="adoptPetForm" class="adopt-pet-form">
+						<div class="adopt-field">
+							<label id="adoptTypeLabel" for="adoptTypeSelect">Tipo:</label>
+							<select id="adoptTypeSelect">
+								<option value="dog">Perro (Canino)</option>
+								<option value="cat">Gato (Felino)</option>
+								<option value="bird">Ave / Loro</option>
+								<option value="hamster">Hámster</option>
+								<option value="rabbit">Conejo</option>
+							</select>
+						</div>
+						<div class="adopt-field">
+							<label id="adoptNameLabel" for="adoptNameInput">Nombre:</label>
+							<input id="adoptNameInput" type="text" maxlength="25" placeholder="Nombre de la mascota..." required autocomplete="off">
+						</div>
+						<button class="history-button adopt-submit-btn" id="adoptSubmitBtn" type="submit">[ ADOPTAR ]</button>
+					</form>
+				</div>
 			</div>
 		</section>
 
@@ -331,6 +368,7 @@
 		</section>
 	</main>
 	<div class="current-occupation hidden" id="currentOccupation" aria-live="polite"></div>
+	<footer class="game-footer" id="gameFooter">Juego hecho por icerix. Todos los derechos reservados 2026</footer>
 	<script src="script.js"></script>
 </body>
 
