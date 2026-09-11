@@ -16,7 +16,8 @@
 <body>
 	<main class="life-screen">
 		<div class="screen-status"><span id="appTitle">Unnamed life simulation</span> <span>v0.0.1c</span><span
-				class="username-status" id="usernameStatus" aria-live="polite">USER: —</span><label
+				class="username-status" id="usernameStatus" aria-live="polite">USER: —</span><button
+				class="status-logout-btn hidden" id="statusLogoutBtn" type="button" title="Cerrar sesión">[ LOGOUT ]</button><label
 				class="language-control" id="languageLabel" for="languageSelect">LANG:</label><select
 				id="languageSelect" name="lifeLanguage" aria-label="Language" autocomplete="off">
 				<option value="es">ES</option>
@@ -31,16 +32,47 @@
 			<button class="welcome-nav-button active" id="playNavButton" type="button">[ PLAY ]</button>
 			<button class="welcome-nav-button" id="blogButton" type="button">[ BLOG ]</button>
 		</nav>
-		<section class="username-screen" id="usernameScreen">
-			<p class="code-line"><span class="prompt">C:\LIFE&gt;</span> user_login.exe</p>
-			<h1 id="usernameTitle">IDENTIFY USER</h1>
-			<p class="intro-copy" id="usernameIntro">Choose a username before entering the life simulator.</p>
-			<form class="username-form" id="usernameForm">
-				<label id="usernameLabel" for="usernameInput">Username</label>
-				<input id="usernameInput" name="username" type="text" autocomplete="username" maxlength="24" required>
-				<button class="start-life-button username-submit" id="usernameSubmit" type="submit">[ ENTER ]</button>
+		<section class="username-screen auth-screen" id="usernameScreen">
+			<p class="code-line"><span class="prompt">C:\LIFE&gt;</span> auth_service.exe</p>
+			<h1 id="usernameTitle">ACCESO DE USUARIO</h1>
+			<p class="intro-copy" id="usernameIntro">Inicia sesión o regístrate para acceder a tus vidas y guardarlas en la nube.</p>
+			
+			<div class="auth-tabs" role="tablist">
+				<button class="auth-tab-btn active" id="tabLoginBtn" type="button" role="tab" aria-selected="true">[ INICIAR SESIÓN ]</button>
+				<button class="auth-tab-btn" id="tabRegisterBtn" type="button" role="tab" aria-selected="false">[ REGISTRARSE ]</button>
+			</div>
+
+			<!-- Login Form -->
+			<form class="username-form auth-form" id="loginForm">
+				<div class="auth-field">
+					<label id="loginUserLabel" for="loginUserInput">Usuario o Email</label>
+					<input id="loginUserInput" name="username" type="text" autocomplete="username" maxlength="40" required placeholder="Tu usuario o correo">
+				</div>
+				<div class="auth-field">
+					<label id="loginPassLabel" for="loginPassInput">Contraseña</label>
+					<input id="loginPassInput" name="password" type="password" autocomplete="current-password" required placeholder="Tu contraseña">
+				</div>
+				<button class="start-life-button username-submit" id="loginSubmit" type="submit">[ ENTRAR ]</button>
 			</form>
-			<p class="hint" id="usernameHint">Use 2 to 24 letters, numbers, spaces, hyphens or underscores.</p>
+
+			<!-- Register Form -->
+			<form class="username-form auth-form hidden" id="registerForm">
+				<div class="auth-field">
+					<label id="regUserLabel" for="regUserInput">Nombre de Usuario</label>
+					<input id="regUserInput" name="regUsername" type="text" autocomplete="username" maxlength="24" required placeholder="Ej: Viajero2026">
+				</div>
+				<div class="auth-field">
+					<label id="regPassLabel" for="regPassInput">Contraseña</label>
+					<input id="regPassInput" name="regPassword" type="password" autocomplete="new-password" minlength="6" required placeholder="Mínimo 6 caracteres">
+				</div>
+				<div class="auth-field">
+					<label id="regPassConfirmLabel" for="regPassConfirmInput">Confirmar Contraseña</label>
+					<input id="regPassConfirmInput" name="regPasswordConfirm" type="password" autocomplete="new-password" minlength="6" required placeholder="Repite tu contraseña">
+				</div>
+				<button class="start-life-button username-submit" id="registerSubmit" type="submit">[ CREAR CUENTA ]</button>
+			</form>
+
+			<p class="hint" id="usernameHint">Usa de 2 a 24 caracteres para tu usuario y mínimo 6 para tu contraseña.</p>
 		</section>
 
 		<section class="stats-screen hidden" id="governmentScreen" aria-modal="true" role="dialog"
@@ -66,7 +98,24 @@
 		</section>
 
 		<section class="welcome-screen hidden" id="welcomeScreen">
-			<button class="start-life-button" id="startButton" type="button">START LIFE</button>
+			<div class="welcome-banner">
+				<p class="code-line"><span class="prompt">C:\LIFE&gt;</span> selector_de_vidas.exe</p>
+				<h1 id="welcomeUserGreeting">CENTRAL DE VIDAS</h1>
+				<p class="intro-copy" id="welcomeIntro">Comienza una nueva simulación o reanuda tus vidas anteriores guardadas.</p>
+				<button class="start-life-button" id="startButton" type="button">+ COMENZAR NUEVA VIDA</button>
+			</div>
+
+			<div class="previous-lives-panel" id="previousLivesPanel">
+				<div class="previous-lives-header">
+					<h2 id="previousLivesTitle">VIDAS ANTERIORES</h2>
+					<span class="lives-counter" id="livesCounter">[ 0 VIDAS ]</span>
+				</div>
+				<p class="history-subtitle" id="previousLivesSubtitle">// Reanuda solo aquellas que sigan vivas. Las vidas fallecidas permanecerán como historial.</p>
+				<div class="previous-lives-grid" id="previousLivesGrid">
+					<p class="panel-empty" id="previousLivesEmpty">// Buscando partidas guardadas en el sistema...</p>
+				</div>
+			</div>
+
 			<a class="discord-link" id="discordLink" href="https://discord.gg/Tsw2htGAb" target="_blank"
 				rel="noopener noreferrer">[ DISCORD ]</a>
 		</section>
@@ -104,9 +153,12 @@
 					<p class="story-prompt"><span class="prompt">C:\LIFE&gt;</span> story.txt</p>
 					<label for="storyInput">How do you want to continue your life?</label>
 					<textarea id="storyInput" rows="8" placeholder="Write what happens next..."></textarea>
-					<button class="save-button" id="saveStoryButton" type="button">[ SAVE ]</button>
-					<button class="history-button menu-button" id="menuButton" type="button"
-						data-open-target="storyEditor" aria-controls="storyScreen">[ MENU ]</button>
+					<div class="story-action-row">
+						<button class="save-button" id="saveStoryButton" type="button">[ SAVE ]</button>
+						<button class="history-button exit-life-button" id="exitLifeButton" type="button" title="Guarda y sale de la vida actual sin morir">[ GUARDAR Y SALIR ]</button>
+						<button class="history-button menu-button" id="menuButton" type="button"
+							data-open-target="storyEditor" aria-controls="storyScreen">[ MENU ]</button>
+					</div>
 					<button class="history-button play-time-rewards-button" id="playTimeRewardsButton" type="button">[
 						RECOMPENSAS POR TIEMPO JUGADO ]</button>
 					<div class="file-buttons hidden" id="mainFileButtons">

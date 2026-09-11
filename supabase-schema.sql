@@ -1,5 +1,21 @@
 -- Ejecutar en Supabase > SQL Editor.
 -- La clave service_role nunca debe aparecer en el frontend.
+--
+-- IMPORTANTE PARA LOGIN CON USUARIO Y CONTRASEÑA DIRECTO:
+-- En Supabase Dashboard > Authentication > Providers > Email, desmarcar "Confirm email".
+-- O bien ejecutar el siguiente bloque para auto-confirmar usuarios al registrarse:
+create or replace function public.auto_confirm_new_user()
+returns trigger as $$
+begin
+  new.email_confirmed_at = coalesce(new.email_confirmed_at, now());
+  return new;
+end;
+$$ language plpgsql security definer set search_path = public;
+
+drop trigger if exists on_auth_user_created_confirm on auth.users;
+create trigger on_auth_user_created_confirm
+  before insert on auth.users
+  for each row execute function public.auto_confirm_new_user();
 
 create extension if not exists pgcrypto;
 

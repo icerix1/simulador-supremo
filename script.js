@@ -96,15 +96,29 @@ const gameOverStats = document.querySelector('#gameOverStats');
 const gameOverNewLifeButton = document.querySelector('#gameOverNewLifeButton');
 const closeGameOverButton = document.querySelector('#closeGameOverButton');
 const usernameStatus = document.querySelector('#usernameStatus');
+const statusLogoutBtn = document.querySelector('#statusLogoutBtn');
 const activePlayersIndicator = document.querySelector('#activePlayersIndicator');
 const usernameScreen = document.querySelector('#usernameScreen');
-const usernameForm = document.querySelector('#usernameForm');
 const usernameTitle = document.querySelector('#usernameTitle');
 const usernameIntro = document.querySelector('#usernameIntro');
-const usernameLabel = document.querySelector('#usernameLabel');
-const usernameInput = document.querySelector('#usernameInput');
-const usernameSubmit = document.querySelector('#usernameSubmit');
 const usernameHint = document.querySelector('#usernameHint');
+const tabLoginBtn = document.querySelector('#tabLoginBtn');
+const tabRegisterBtn = document.querySelector('#tabRegisterBtn');
+const loginForm = document.querySelector('#loginForm');
+const loginUserInput = document.querySelector('#loginUserInput');
+const loginPassInput = document.querySelector('#loginPassInput');
+const loginSubmit = document.querySelector('#loginSubmit');
+const registerForm = document.querySelector('#registerForm');
+const regUserInput = document.querySelector('#regUserInput');
+const regPassInput = document.querySelector('#regPassInput');
+const regPassConfirmInput = document.querySelector('#regPassConfirmInput');
+const registerSubmit = document.querySelector('#registerSubmit');
+const welcomeUserGreeting = document.querySelector('#welcomeUserGreeting');
+const previousLivesPanel = document.querySelector('#previousLivesPanel');
+const previousLivesGrid = document.querySelector('#previousLivesGrid');
+const previousLivesEmpty = document.querySelector('#previousLivesEmpty');
+const livesCounter = document.querySelector('#livesCounter');
+const exitLifeButton = document.querySelector('#exitLifeButton');
 
 const defaultBrowserLang = (typeof navigator !== 'undefined' && (navigator.language || navigator.userLanguage || '').toLowerCase().startsWith('es')) ? 'es' : 'en';
 let currentLanguage = defaultBrowserLang;
@@ -1010,22 +1024,36 @@ const weatherLabels = {
 const uiText = {
   es: {
 	appTitle: 'Simulador de vida sin nombre', languageLabel: 'IDIOMA:', languageAria: 'Idioma',
-	usernameTitle: 'IDENTIFICAR USUARIO', usernameIntro: 'Elige un nombre de usuario antes de entrar al simulador de vida.', usernameLabel: 'Nombre de usuario', usernameSubmit: '[ ENTRAR ]', usernameHint: 'Usa de 2 a 24 letras, números, espacios, guiones o guiones bajos.', usernameError: 'ERROR: introduce un nombre de usuario válido.', userStatus: 'USUARIO:',
-	start: 'COMENZAR VIDA', next: '[ ENTER ]', name: '¿Cuál es tu nombre?', surname: '¿Cuál es tu apellido?', age: '¿Cuántos años tienes?', money: '¿Cuánto dinero tienes?', location: '¿Dónde comienza tu historia?', hobby: '¿Cuál es tu hobby?',
+	usernameTitle: 'ACCESO DE USUARIO', usernameIntro: 'Inicia sesión o regístrate para acceder a tus vidas y guardarlas en la nube.', usernameLabel: 'Nombre de usuario', usernameSubmit: '[ ENTRAR ]', usernameHint: 'Usa de 2 a 24 caracteres para tu usuario y mínimo 6 para tu contraseña.', usernameError: 'ERROR: introduce un nombre de usuario válido.', userStatus: 'USUARIO:',
+	loginTab: '[ INICIAR SESIÓN ]', registerTab: '[ REGISTRARSE ]', loginSubmit: '[ ENTRAR ]', registerSubmit: '[ CREAR CUENTA ]',
+	authPassMismatch: 'ERROR: Las contraseñas no coinciden.', authPassShort: 'ERROR: La contraseña debe tener al menos 6 caracteres.',
+	authSuccessRegister: 'Cuenta creada con éxito. Entrando...', authSuccessLogin: 'Sesión iniciada. Cargando...',
+	welcomeGreeting: 'CENTRAL DE VIDAS', welcomeNewLife: '+ COMENZAR NUEVA VIDA', previousLivesTitle: 'VIDAS ANTERIORES', previousLivesSubtitle: '// Reanuda solo aquellas que sigan vivas. Las vidas fallecidas permanecerán como historial.',
+	statusAlive: 'EN VIDA', statusEnded: 'FALLECIDO', resumeLife: '[ REANUDAR VIDA ]', deceasedLife: '[ FALLECIDO ]',
+	exitLife: '[ GUARDAR Y SALIR ]', exitLifeConfirm: '¿Deseas pausar y salir al menú de vidas? Tu progreso quedará guardado sin morir.',
+	noPreviousLives: '// No tienes vidas guardadas todavía. ¡Comienza una nueva simulación!_',
+	start: '+ COMENZAR NUEVA VIDA', next: '[ ENTER ]', name: '¿Cuál es tu nombre?', surname: '¿Cuál es tu apellido?', age: '¿Cuántos años tienes?', money: '¿Cuánto dinero tienes?', location: '¿Dónde comienza tu historia?', hobby: '¿Cuál es tu hobby?',
 	nameHint: 'Escribe tu nombre.', surnameHint: 'Escribe tu apellido.', ageHint: 'Introduce tu edad.', moneyHint: 'Introduce una cantidad inicial.', locationHint: 'Escribe una ubicación.', hobbyHint: 'Ejemplo: música, fútbol, videojuegos, dibujo...',
-		storyLabel: '¿Cómo quieres continuar tu vida?', storyPlaceholder: 'Escribe lo que sucede a continuación...', save: '[ GUARDAR ]', menu: '[ MENU ]', play: '[ JUGAR ]', blog: '[ BLOG ]', logout: '[ CERRAR SESIÓN ]', logoutConfirm: '¿Quieres cerrar la sesión? La partida se conservará.', history: '[ VER TODAS LAS DECISIONES ]', stats: '[ VER ESTADÍSTICAS ]', careers: '[ VER CARRERA ]', family: '[ VER FAMILIA ]', inventory: '[ VER INVENTARIO ]', government: '[ GOBIERNOS ]', world: '[ VER MUNDO ]', skills: '[ VER HABILIDADES ]', relations: '[ VER RELACIONES ]', learnFile: '[ CARGAR CONOCIMIENTO ]', export: '[ EXPORTAR PARTIDA ]', import: '[ IMPORTAR PARTIDA ]', reset: '[ NUEVA PARTIDA ]', menuTitle: 'menu.json // panel de control', menuSubtitle: '// todos los módulos de LIFE.AI',
+		storyLabel: '¿Cómo quieres continuar tu vida?', storyPlaceholder: 'Escribe lo que sucede a continuación...', save: '[ GUARDAR ]', menu: '[ MENU ]', play: '[ JUGAR ]', blog: '[ BLOG ]', logout: '[ CERRAR SESIÓN ]', logoutConfirm: '¿Quieres cerrar la sesión? Tus partidas guardadas se conservarán en la nube y localmente.', history: '[ VER TODAS LAS DECISIONES ]', stats: '[ VER ESTADÍSTICAS ]', careers: '[ VER CARRERA ]', family: '[ VER FAMILIA ]', inventory: '[ VER INVENTARIO ]', government: '[ GOBIERNOS ]', world: '[ VER MUNDO ]', skills: '[ VER HABILIDADES ]', relations: '[ VER RELACIONES ]', learnFile: '[ CARGAR CONOCIMIENTO ]', export: '[ EXPORTAR PARTIDA ]', import: '[ IMPORTAR PARTIDA ]', reset: '[ NUEVA PARTIDA ]', menuTitle: 'menu.json // panel de control', menuSubtitle: '// todos los módulos de LIFE.AI',
 		 nameKey: '"nombre"', surnameKey: '"apellido"', ageKey: '"edad"', characterKey: '"personaje"', moneyKey: '"dinero"', locationKey: '"ubicación"', hobbyKey: '"hobby"', occupationKey: '"ocupación"', energyKey: '"energía"', moodKey: '"ánimo"', reputationKey: '"reputación"', none: 'ninguno', stable: 'estable', testGameOver: '[ PROBAR GAME OVER ]', governmentTitle: 'government.json // gobierno actual', governmentSubtitle: '// administración vigente y mandato de cuatro años',
 	  careersTitle: 'careers.json // catálogo de profesiones', careersSubtitle: '// profesiones disponibles, variantes e ingresos aproximados', familyTitle: 'family.json // árbol familiar', familySubtitle: '// pareja, matrimonio, hijos y familiares', inventoryTitle: 'inventory.json // inventario', inventorySubtitle: '// objetos encontrados durante la historia', worldTitle: 'world.json // mundo viviente', worldSubtitle: '// lugares, personajes, objetivos, eventos y reglas descubiertas', skillsTitle: 'skills.json // habilidades', skillsSubtitle: '// capacidades aprendidas, experiencia y crecimiento', relationsTitle: 'relations.json // relaciones', relationsSubtitle: '// vínculos, confianza y evolución social', statsTitle: 'stats.json // estadísticas', statsSubtitle: '// estado actual de tu vida', historyTitle: 'history.log // historial', historySubtitle: '// decisiones y capítulos guardados', blogTitle: 'blog.txt // notas de LIFE.AI', blogSubtitle: '// ideas, cambios y registros del simulador', blogReleaseTitle: '[ ACTUALIZACIÓN ] NUEVA VERSION 0.0.1c', blogReleaseText: 'Esta actualización añade gobiernos que cambian cada cuatro años, la recompensa por tiempo jugado del Palo Presidencial, venta de inventario, mejoras en LIFE.AI, hijos y optimizaciones en la interfaz.', playTimeRewardsTitle: 'rewards.json // tiempo jugado', playTimeRewardsSubtitle: '// recompensas por permanecer en tu sesión', playTimeRewardsButton: '[ RECOMPENSAS POR TIEMPO JUGADO ]', saved: '// capítulo guardado correctamente_', gameOverTitle: 'GAME OVER', gameOverText: 'Tu vida ha terminado.', gameOverNewLife: '[ COMENZAR OTRA VIDA ]', gameOverClose: '[ VOLVER AL INICIO ]',
   },
   en: {
 	appTitle: 'Unnamed life simulation', languageLabel: 'LANG:', languageAria: 'Language',
-	usernameTitle: 'IDENTIFY USER', usernameIntro: 'Choose a username before entering the life simulator.', usernameLabel: 'Username', usernameSubmit: '[ ENTER ]', usernameHint: 'Use 2 to 24 letters, numbers, spaces, hyphens or underscores.', usernameError: 'ERROR: enter a valid username.', userStatus: 'USER:',
-	start: 'START LIFE', next: '[ ENTER ]', name: 'What is your name?', surname: 'What is your surname?', age: 'How old are you?', money: 'How much money do you have?', location: 'Where does your story begin?', hobby: 'What is your hobby?',
+	usernameTitle: 'USER ACCESS', usernameIntro: 'Log in or register to access and save your lives in the cloud.', usernameLabel: 'Username', usernameSubmit: '[ ENTER ]', usernameHint: 'Use 2 to 24 characters for username and at least 6 for password.', usernameError: 'ERROR: enter a valid username.', userStatus: 'USER:',
+	loginTab: '[ LOG IN ]', registerTab: '[ REGISTER ]', loginSubmit: '[ LOG IN ]', registerSubmit: '[ CREATE ACCOUNT ]',
+	authPassMismatch: 'ERROR: Passwords do not match.', authPassShort: 'ERROR: Password must be at least 6 characters.',
+	authSuccessRegister: 'Account created successfully. Entering...', authSuccessLogin: 'Session started. Loading...',
+	welcomeGreeting: 'LIVES HEADQUARTERS', welcomeNewLife: '+ START NEW LIFE', previousLivesTitle: 'PREVIOUS LIVES', previousLivesSubtitle: '// Resume only those still alive. Deceased lives remain as history.',
+	statusAlive: 'ALIVE', statusEnded: 'DECEASED', resumeLife: '[ RESUME LIFE ]', deceasedLife: '[ DECEASED ]',
+	exitLife: '[ SAVE & EXIT ]', exitLifeConfirm: 'Do you want to pause and return to the lives menu? Your progress will be saved without dying.',
+	noPreviousLives: '// No saved lives yet. Start a new simulation!_',
+	start: '+ START NEW LIFE', next: '[ ENTER ]', name: 'What is your name?', surname: 'What is your surname?', age: 'How old are you?', money: 'How much money do you have?', location: 'Where does your story begin?', hobby: 'What is your hobby?',
 	nameHint: 'Write your name.', surnameHint: 'Write your surname.', ageHint: 'Enter your age.', moneyHint: 'Enter an initial amount.', locationHint: 'Write a location.', hobbyHint: 'Example: music, football, games, drawing...',
-		storyLabel: 'How do you want to continue your life?', storyPlaceholder: 'Write what happens next...', save: '[ SAVE ]', menu: '[ MENU ]', play: '[ PLAY ]', blog: '[ BLOG ]', logout: '[ LOG OUT ]', logoutConfirm: 'Do you want to log out? Your game will be preserved.', history: '[ VIEW ALL DECISIONS ]', stats: '[ VIEW STATS ]', careers: '[ VIEW CAREERS ]', family: '[ VIEW FAMILY ]', inventory: '[ VIEW INVENTORY ]', government: '[ GOVERNMENTS ]', world: '[ VIEW WORLD ]', skills: '[ VIEW SKILLS ]', relations: '[ VIEW RELATIONSHIPS ]', learnFile: '[ LOAD KNOWLEDGE ]', export: '[ EXPORT GAME ]', import: '[ IMPORT GAME ]', reset: '[ NEW GAME ]', menuTitle: 'menu.json // control panel', menuSubtitle: '// all LIFE.AI modules',
+		storyLabel: 'How do you want to continue your life?', storyPlaceholder: 'Write what happens next...', save: '[ SAVE ]', menu: '[ MENU ]', play: '[ PLAY ]', blog: '[ BLOG ]', logout: '[ LOG OUT ]', logoutConfirm: 'Do you want to log out? Your saved games will be preserved in cloud and locally.', history: '[ VIEW ALL DECISIONS ]', stats: '[ VIEW STATS ]', careers: '[ VIEW CAREERS ]', family: '[ VIEW FAMILY ]', inventory: '[ VIEW INVENTORY ]', government: '[ GOVERNMENTS ]', world: '[ VIEW WORLD ]', skills: '[ VIEW SKILLS ]', relations: '[ VIEW RELATIONSHIPS ]', learnFile: '[ LOAD KNOWLEDGE ]', export: '[ EXPORT GAME ]', import: '[ IMPORT GAME ]', reset: '[ NEW GAME ]', menuTitle: 'menu.json // control panel', menuSubtitle: '// all LIFE.AI modules',
 		nameKey: '"name"', surnameKey: '"surname"', ageKey: '"age"', characterKey: '"character"', moneyKey: '"money"', locationKey: '"location"', hobbyKey: '"hobby"', occupationKey: '"occupation"', energyKey: '"energy"', moodKey: '"mood"', reputationKey: '"reputation"', none: 'none', stable: 'stable', testGameOver: '[ TEST GAME OVER ]',
 		blogReleaseTitle: '[ UPDATE ] NEW VERSION 0.0.1c', blogReleaseText: 'This update adds four-year governments, the Presidential Stick play-time reward, inventory sales, smarter LIFE.AI, children and interface improvements.', careersTitle: 'careers.json // career catalog', careersSubtitle: '// available professions, variants and approximate income', familyTitle: 'family.json // family tree', familySubtitle: '// partner, marriage, children and relatives', inventoryTitle: 'inventory.json // inventory', inventorySubtitle: '// objects found during the story', government: '[ GOVERNMENTS ]', governmentTitle: 'government.json // current government', governmentSubtitle: '// current administration and four-year term', worldTitle: 'world.json // living world', worldSubtitle: '// places, characters, goals, events and discovered rules', skillsTitle: 'skills.json // skills', skillsSubtitle: '// learned abilities, experience and character growth', relationsTitle: 'relations.json // relationships', relationsSubtitle: '// bonds, trust and social evolution', statsTitle: 'stats.json // statistics', statsSubtitle: '// current life status', historyTitle: 'history.log // history', historySubtitle: '// saved decisions and chapters', blogTitle: 'blog.txt // LIFE.AI notes', blogSubtitle: '// ideas, changes and simulator records', playTimeRewardsTitle: 'rewards.json // play time', playTimeRewardsSubtitle: '// rewards for staying in your session', playTimeRewardsButton: '[ PLAY TIME REWARDS ]', saved: '// chapter saved successfully_', gameOverTitle: 'GAME OVER', gameOverText: 'Your life has ended.', gameOverNewLife: '[ START ANOTHER LIFE ]', gameOverClose: '[ RETURN TO START ]',
-	}
+  }
 };
 
 document.querySelectorAll('[data-close]').forEach((button) => {
@@ -1160,9 +1188,41 @@ function setPlaceholder(element, value) {
   if (element) element.placeholder = value;
 }
 
+function switchAuthTab(tab) {
+  if (tab === 'register') {
+    tabLoginBtn?.classList.remove('active');
+    tabLoginBtn?.setAttribute('aria-selected', 'false');
+    tabRegisterBtn?.classList.add('active');
+    tabRegisterBtn?.setAttribute('aria-selected', 'true');
+    loginForm?.classList.add('hidden');
+    registerForm?.classList.remove('hidden');
+    regUserInput?.focus();
+  } else {
+    tabRegisterBtn?.classList.remove('active');
+    tabRegisterBtn?.setAttribute('aria-selected', 'false');
+    tabLoginBtn?.classList.add('active');
+    tabLoginBtn?.setAttribute('aria-selected', 'true');
+    registerForm?.classList.add('hidden');
+    loginForm?.classList.remove('hidden');
+    loginUserInput?.focus();
+  }
+  if (usernameHint) {
+    usernameHint.classList.remove('error');
+    usernameHint.textContent = t('usernameHint');
+  }
+}
+
+listen(tabLoginBtn, 'click', () => switchAuthTab('login'));
+listen(tabRegisterBtn, 'click', () => switchAuthTab('register'));
+
 function renderUsernameStatus() {
   if (!usernameStatus) return;
   usernameStatus.textContent = `${t('userStatus')} ${currentUsername || '—'}`;
+  if (currentUsername) {
+    statusLogoutBtn?.classList.remove('hidden');
+  } else {
+    statusLogoutBtn?.classList.add('hidden');
+  }
 }
 
 function isValidUsername(value) {
@@ -1172,57 +1232,354 @@ function isValidUsername(value) {
 function showUsernameGate() {
   usernameScreen?.classList.remove('hidden');
   welcomeScreen?.classList.add('hidden');
+  storyScreen?.classList.add('hidden');
+  menuScreen?.classList.add('hidden');
+  questionScreen?.classList.add('hidden');
+  statsScreen?.classList.add('hidden');
+  gameOverScreen?.classList.add('hidden');
+  statusLogoutBtn?.classList.add('hidden');
   setWelcomeNavigationVisible(false);
-  usernameInput?.focus();
+  switchAuthTab('login');
 }
 
 function showApplicationEntry() {
   usernameScreen?.classList.add('hidden');
-	if (window.__lifeSave?.player?.name) restoreSavedGame();
-  else {
-	window.__lifeSave = null;
-	welcomeScreen?.classList.remove('hidden');
-	setWelcomeNavigationVisible(true);
+  statusLogoutBtn?.classList.remove('hidden');
+  welcomeScreen?.classList.remove('hidden');
+  setWelcomeNavigationVisible(true);
+  if (welcomeUserGreeting) {
+    welcomeUserGreeting.textContent = `${t('welcomeGreeting')} // ${currentUsername || 'USER'}`;
   }
-}
-
-async function acceptUsername(value) {
-  const normalized = String(value || '').trim();
-  if (!isValidUsername(normalized)) {
-	if (usernameHint) {
-	  usernameHint.textContent = t('usernameError');
-	  usernameHint.classList.add('error');
-	}
-	return false;
-  }
-  currentUsername = normalized;
-  window.currentUsername = currentUsername;
-  try { localStorage.setItem('lifeUsername', currentUsername); } catch { /* almacenamiento opcional */ }
   renderUsernameStatus();
-  usernameHint?.classList.remove('error');
-  usernameScreen?.classList.add('hidden');
-  showApplicationEntry();
-  if (window.lifeSupabase?.enabled) {
-	try {
-	  await window.lifeSupabase.saveUsername(currentUsername, currentLanguage);
-	  await window.lifeSupabase.updatePresence(null);
-	} catch (error) {
-	  console.warn('LIFE.AI Supabase username sync:', error);
-	}
-  }
-  return true;
+  renderPreviousLivesList();
 }
 
-listen(usernameForm, 'submit', async (event) => {
-  event.preventDefault();
-  if (!applicationReady) return;
-  usernameSubmit && (usernameSubmit.disabled = true);
-  try {
-	await acceptUsername(usernameInput?.value);
-  } finally {
-	if (usernameSubmit) usernameSubmit.disabled = false;
+async function handleLogin(identifier, password) {
+  const cleanId = String(identifier || '').trim();
+  const cleanPass = String(password || '');
+  if (!cleanId || !cleanPass) {
+    if (usernameHint) {
+      usernameHint.textContent = currentLanguage === 'en' ? 'ERROR: Enter both username and password.' : 'ERROR: Introduce usuario y contraseña.';
+      usernameHint.classList.add('error');
+    }
+    return false;
   }
+  if (loginSubmit) loginSubmit.disabled = true;
+  if (usernameHint) {
+    usernameHint.classList.remove('error');
+    usernameHint.textContent = currentLanguage === 'en' ? '// Verifying credentials...' : '// Verificando credenciales...';
+  }
+  try {
+    if (window.lifeSupabase?.enabled) {
+      try {
+        const result = await window.lifeSupabase.signIn(cleanId, cleanPass);
+        if (result?.error) throw result.error;
+        currentUsername = window.lifeSupabase.displayName || cleanId;
+      } catch (authError) {
+        const msg = authError?.message || String(authError);
+        console.warn('Supabase signIn error:', authError);
+        if (msg.includes('Email not confirmed')) {
+          if (usernameHint) {
+            usernameHint.textContent = currentLanguage === 'en'
+              ? 'ERROR: Email not confirmed. Check Supabase Dashboard or disable "Confirm email".'
+              : 'ERROR: Correo no confirmado en Supabase. Revisa el dashboard o desmarca "Confirm email".';
+            usernameHint.classList.add('error');
+          }
+          return false;
+        }
+        if (usernameHint) {
+          usernameHint.textContent = currentLanguage === 'en'
+            ? `ERROR: ${msg.includes('Invalid login credentials') ? 'Invalid username or password.' : msg}`
+            : `ERROR: ${msg.includes('Invalid login credentials') ? 'Usuario o contraseña incorrectos.' : msg}`;
+          usernameHint.classList.add('error');
+        }
+        return false;
+      }
+    } else {
+      currentUsername = cleanId;
+    }
+    window.currentUsername = currentUsername;
+    try { localStorage.setItem('lifeUsername', currentUsername); } catch { /* ignore */ }
+    renderUsernameStatus();
+    showApplicationEntry();
+    if (window.lifeSupabase?.enabled) {
+      window.lifeSupabase.updatePresence(null).catch(() => undefined);
+    }
+    return true;
+  } finally {
+    if (loginSubmit) loginSubmit.disabled = false;
+  }
+}
+
+async function handleRegister(username, password, passwordConfirm) {
+  const cleanUser = String(username || '').trim();
+  const cleanPass = String(password || '');
+  const cleanPassConfirm = String(passwordConfirm || '');
+
+  if (!isValidUsername(cleanUser)) {
+    if (usernameHint) {
+      usernameHint.textContent = t('authUsernameError');
+      usernameHint.classList.add('error');
+    }
+    return false;
+  }
+  if (cleanPass.length < 6) {
+    if (usernameHint) {
+      usernameHint.textContent = t('authPassShort');
+      usernameHint.classList.add('error');
+    }
+    return false;
+  }
+  if (cleanPass !== cleanPassConfirm) {
+    if (usernameHint) {
+      usernameHint.textContent = t('authPassMismatch');
+      usernameHint.classList.add('error');
+    }
+    return false;
+  }
+
+  if (registerSubmit) registerSubmit.disabled = true;
+  if (usernameHint) {
+    usernameHint.classList.remove('error');
+    usernameHint.textContent = currentLanguage === 'en' ? '// Registering account...' : '// Registrando cuenta...';
+  }
+  try {
+    if (window.lifeSupabase?.enabled) {
+      try {
+        const result = await window.lifeSupabase.signUp(cleanUser, cleanPass);
+        if (result?.error) throw result.error;
+        currentUsername = cleanUser;
+      } catch (authError) {
+        const msg = authError?.message || String(authError);
+        console.warn('Supabase signUp error:', authError);
+        if (usernameHint) {
+          usernameHint.textContent = currentLanguage === 'en'
+            ? `ERROR: ${msg.includes('User already registered') ? 'This username is already taken.' : msg}`
+            : `ERROR: ${msg.includes('User already registered') ? 'Este nombre de usuario ya está registrado.' : msg}`;
+          usernameHint.classList.add('error');
+        }
+        return false;
+      }
+    } else {
+      currentUsername = cleanUser;
+    }
+    window.currentUsername = currentUsername;
+    try { localStorage.setItem('lifeUsername', currentUsername); } catch { /* ignore */ }
+    renderUsernameStatus();
+    showApplicationEntry();
+    return true;
+  } finally {
+    if (registerSubmit) registerSubmit.disabled = false;
+  }
+}
+
+listen(loginForm, 'submit', async (e) => {
+  e.preventDefault();
+  if (!applicationReady) return;
+  await handleLogin(loginUserInput?.value, loginPassInput?.value);
 });
+
+listen(registerForm, 'submit', async (e) => {
+  e.preventDefault();
+  if (!applicationReady) return;
+  await handleRegister(regUserInput?.value, regPassInput?.value, regPassConfirmInput?.value);
+});
+
+listen(statusLogoutBtn, 'click', logoutSession);
+
+function getLocalSavedLives() {
+  try {
+    const raw = localStorage.getItem('life_saved_lives_v1');
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function setLocalSavedLives(lives) {
+  try {
+    localStorage.setItem('life_saved_lives_v1', JSON.stringify(lives));
+  } catch { /* storage fallback */ }
+}
+
+async function fetchAllLives() {
+  const livesMap = new Map();
+  const localLives = getLocalSavedLives();
+  localLives.forEach((l) => { if (l && l.id) livesMap.set(l.id, l); });
+
+  if (window.__lifeSave?.player?.name) {
+    if (!window.__lifeSave.id) window.__lifeSave.id = 'life-' + Date.now();
+    livesMap.set(window.__lifeSave.id, window.__lifeSave);
+  }
+  const fallback = readFallbackSave();
+  if (fallback?.player?.name) {
+    if (!fallback.id) fallback.id = 'life-fallback';
+    if (!livesMap.has(fallback.id)) livesMap.set(fallback.id, fallback);
+  }
+
+  if (window.lifeSupabase?.enabled) {
+    try {
+      const remoteLives = await window.lifeSupabase.listGames();
+      remoteLives.forEach((remote) => {
+        if (!remote?.id) return;
+        const existing = livesMap.get(remote.id);
+        if (!existing || new Date(remote.updatedAt || 0) >= new Date(existing.updatedAt || 0)) {
+          livesMap.set(remote.id, normalizeSave(remote));
+        }
+      });
+    } catch (err) {
+      console.warn('LIFE.AI fetchAllLives Supabase error:', err);
+    }
+  }
+
+  const list = Array.from(livesMap.values()).filter((item) => item?.player?.name);
+  list.sort((a, b) => new Date(b.updatedAt || b.startedAt || 0) - new Date(a.updatedAt || a.startedAt || 0));
+  setLocalSavedLives(list);
+  return list;
+}
+
+async function renderPreviousLivesList() {
+  if (!previousLivesGrid) return;
+  previousLivesGrid.innerHTML = `<p class="panel-empty">${currentLanguage === 'en' ? '// Loading previous lives...' : '// Cargando vidas anteriores...'}</p>`;
+
+  const lives = await fetchAllLives();
+  if (livesCounter) {
+    livesCounter.textContent = `[ ${lives.length} ${currentLanguage === 'en' ? (lives.length === 1 ? 'LIFE' : 'LIVES') : (lives.length === 1 ? 'VIDA' : 'VIDAS')} ]`;
+  }
+  if (!lives.length) {
+    previousLivesGrid.innerHTML = `<p class="panel-empty" id="previousLivesEmpty">${t('noPreviousLives')}</p>`;
+    return;
+  }
+
+  previousLivesGrid.replaceChildren();
+  lives.forEach((save) => {
+    const isAlive = save.lifeStatus !== 'ended' && Number(save.player?.health ?? 100) > 0;
+    const card = document.createElement('article');
+    card.className = `life-card ${isAlive ? 'card-alive' : 'card-ended'}`;
+
+    const topRow = document.createElement('div');
+    topRow.className = 'life-card-top';
+
+    const nameHeading = document.createElement('h3');
+    nameHeading.className = 'life-card-name';
+    nameHeading.textContent = `${save.player?.name || 'Sin nombre'} ${save.player?.surname || ''}`.trim();
+
+    const badge = document.createElement('span');
+    badge.className = `life-status-badge ${isAlive ? 'badge-alive' : 'badge-ended'}`;
+    badge.textContent = isAlive ? t('statusAlive') : t('statusEnded');
+
+    topRow.append(nameHeading, badge);
+
+    const infoP = document.createElement('div');
+    infoP.className = 'life-card-info';
+    const ageLabel = currentLanguage === 'en' ? 'Age' : 'Edad';
+    const moneyLabel = currentLanguage === 'en' ? 'Money' : 'Dinero';
+    const chaptersLabel = currentLanguage === 'en' ? 'Chapters' : 'Capítulos';
+    const occ = careerById(save.player?.occupation);
+    const occName = careerLabel(occ);
+    const chaptersCount = Array.isArray(save.chapters) ? save.chapters.length : 0;
+    infoP.innerHTML = `<strong>${ageLabel}:</strong> ${save.player?.age || 0} · <strong>${moneyLabel}:</strong> $${save.player?.money ?? 0}<br><strong>${occName}</strong> · ${chaptersLabel}: ${chaptersCount}`;
+
+    if (!isAlive && save.endedReason) {
+      const deathP = document.createElement('div');
+      deathP.className = 'life-card-death-reason';
+      deathP.textContent = `${currentLanguage === 'en' ? 'Cause: ' : 'Causa: '}${save.endedReason}`;
+      infoP.append(deathP);
+    }
+
+    const actions = document.createElement('div');
+    actions.className = 'life-card-actions';
+
+    if (isAlive) {
+      const resumeBtn = document.createElement('button');
+      resumeBtn.type = 'button';
+      resumeBtn.className = 'life-btn-resume';
+      resumeBtn.textContent = t('resumeLife');
+      resumeBtn.addEventListener('click', () => resumeSelectedLife(save));
+      actions.append(resumeBtn);
+    } else {
+      const deadBtn = document.createElement('button');
+      deadBtn.type = 'button';
+      deadBtn.className = 'life-btn-dead';
+      deadBtn.disabled = true;
+      deadBtn.textContent = t('deceasedLife');
+      actions.append(deadBtn);
+    }
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.type = 'button';
+    deleteBtn.className = 'life-btn-delete';
+    deleteBtn.textContent = '[ X ]';
+    deleteBtn.title = currentLanguage === 'en' ? 'Delete this record' : 'Eliminar este registro';
+    deleteBtn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const msg = currentLanguage === 'en' ? `Delete record of ${save.player?.name}?` : `¿Eliminar el registro de ${save.player?.name}?`;
+      if (!window.confirm(msg)) return;
+      await deleteSelectedLife(save.id);
+      renderPreviousLivesList();
+    });
+    actions.append(deleteBtn);
+
+    card.append(topRow, infoP, actions);
+    previousLivesGrid.append(card);
+  });
+}
+
+async function resumeSelectedLife(save) {
+  if (!save?.player?.name) return;
+  if (save.lifeStatus === 'ended') return;
+  const normalized = normalizeSave(save);
+  window.__lifeSave = normalized;
+  if (window.lifeSupabase?.enabled && save.id) {
+    window.lifeSupabase.setGameId(save.id);
+  }
+  await saveCurrentGame(normalized);
+  restoreSavedGame();
+}
+
+async function deleteSelectedLife(lifeId) {
+  if (!lifeId) return;
+  const currentLives = getLocalSavedLives().filter((l) => l.id !== lifeId);
+  setLocalSavedLives(currentLives);
+  if (window.__lifeSave?.id === lifeId) {
+    window.__lifeSave = null;
+  }
+  if (window.lifeSupabase?.enabled) {
+    try {
+      await window.lifeSupabase.deleteGame(lifeId);
+    } catch (err) {
+      console.warn('Error al borrar vida en Supabase:', err);
+    }
+  }
+}
+
+async function exitCurrentLifeWithoutDying() {
+  const save = readSave();
+  if (!save?.player?.name) {
+    showApplicationEntry();
+    return;
+  }
+  const confirmed = window.confirm(t('exitLifeConfirm'));
+  if (!confirmed) return;
+
+  save.lifeStatus = 'active';
+  await saveCurrentGame(save);
+
+  stopWeatherCycle();
+  stopWorldClock();
+  resetWeatherVisuals();
+
+  storyScreen?.classList.add('hidden');
+  menuScreen?.classList.add('hidden');
+  gameOverScreen?.classList.add('hidden');
+  questionScreen?.classList.add('hidden');
+  statsScreen?.classList.add('hidden');
+
+  showApplicationEntry();
+}
+
+listen(exitLifeButton, 'click', exitCurrentLifeWithoutDying);
 
 function setWelcomeNavigationVisible(visible) {
   if (welcomeNavigation) welcomeNavigation.classList.toggle('hidden', !visible);
@@ -1305,8 +1662,20 @@ function applyTranslations() {
 	if (languageSelect && languageSelect.value !== currentLanguage) languageSelect.value = currentLanguage;
 	document.title = t('appTitle');
 	setText(document.querySelector('#appTitle'), t('appTitle'));
-	setText(document.querySelector('#languageLabel'), t('languageLabel'));
-	setText(usernameTitle, t('usernameTitle')); setText(usernameIntro, t('usernameIntro')); setText(usernameLabel, t('usernameLabel')); setText(usernameSubmit, t('usernameSubmit')); setText(usernameHint, t('usernameHint'));
+	setText(usernameTitle, t('usernameTitle'));
+	setText(usernameIntro, t('usernameIntro'));
+	setText(usernameHint, t('usernameHint'));
+	setText(tabLoginBtn, t('loginTab'));
+	setText(tabRegisterBtn, t('registerTab'));
+	setText(loginSubmit, t('loginSubmit'));
+	setText(registerSubmit, t('registerSubmit'));
+	setText(exitLifeButton, t('exitLife'));
+	setText(statusLogoutBtn, t('logout'));
+	setText(document.querySelector('#previousLivesTitle'), t('previousLivesTitle'));
+	setText(document.querySelector('#previousLivesSubtitle'), t('previousLivesSubtitle'));
+	if (welcomeUserGreeting) {
+		welcomeUserGreeting.textContent = `${t('welcomeGreeting')} // ${currentUsername || 'USER'}`;
+	}
 	renderUsernameStatus();
 	if (languageSelect) languageSelect.setAttribute('aria-label', t('languageAria'));
 	setText(startButton, t('start'));
@@ -1437,6 +1806,7 @@ function renderCreatorBlog() {
 
 function renderMenu() {
 	const controls = [
+	['exitLife', () => exitCurrentLifeWithoutDying()],
 	['history', () => { renderHistory(readSave().chapters); historyScreen.classList.remove('hidden'); }],
 	['stats', () => { statsScreen.classList.remove('hidden'); renderStats(); renderFullStats(); }],
 	['careers', () => { renderCareersPanel(); careersScreen.classList.remove('hidden'); }],
@@ -1485,6 +1855,7 @@ async function logoutSession() {
 	localStorage.removeItem('lifeUsername');
 	localStorage.removeItem('lifeSaveFallback');
 	localStorage.removeItem('lifeAIMemoryFallback');
+	localStorage.removeItem('life_saved_lives_v1');
   } catch { /* almacenamiento opcional */ }
   try {
 	await window.lifeSupabase?.signOut?.();
@@ -2190,13 +2561,31 @@ function saveGlobalMemory(memory) {
 
 function saveCurrentGame(save) {
   const normalized = normalizeSave(save);
-	normalized.updatedAt = new Date().toISOString();
+  normalized.updatedAt = new Date().toISOString();
+  if (!normalized.id) {
+    normalized.id = 'life-' + Date.now() + '-' + Math.random().toString(36).substring(2, 7);
+  }
   window.__lifeSave = normalized;
   try { localStorage.setItem('lifeSaveFallback', JSON.stringify(normalized)); } catch { /* fallback opcional */ }
-	return storage.set('game', 'current', normalized).catch(() => undefined).then(async () => {
+
+  const all = getLocalSavedLives();
+  const idx = all.findIndex((l) => l.id === normalized.id);
+  if (idx >= 0) all[idx] = normalized;
+  else all.unshift(normalized);
+  setLocalSavedLives(all);
+
+  return storage.set('game', 'current', normalized).catch(() => undefined).then(async () => {
 	try {
 	  if (window.lifeSupabase?.enabled) {
-		await window.lifeSupabase.saveGame(normalized, currentLanguage);
+		const cloudId = await window.lifeSupabase.saveGame(normalized, currentLanguage);
+		if (cloudId && normalized.id !== cloudId) {
+		  normalized.id = cloudId;
+		  window.__lifeSave.id = cloudId;
+		  const updated = getLocalSavedLives();
+		  const targetIdx = updated.findIndex((l) => l.id === normalized.id || l.id === cloudId);
+		  if (targetIdx >= 0) updated[targetIdx] = normalized;
+		  setLocalSavedLives(updated);
+		}
 		await window.lifeSupabase.saveDiseases(normalized);
 		await window.lifeSupabase.saveMemory(normalized);
 		await window.lifeSupabase.updatePresence(normalized);
@@ -2990,8 +3379,10 @@ function updateQuestion() {
 function showStats() {
 	lifeEngine.preparePlayer(player);
 	renderStats();
-	const initialSave = { player, chapters: [], memory: createEmptyMemory(), world: createEmptyWorld(), weather: chooseInitialWeather(), lifeStatus: 'active' };
-	assignBirthDiseases(player);
+	window.lifeSupabase?.resetGameReference?.();
+	const newLifeId = 'life-' + Date.now() + '-' + Math.random().toString(36).substring(2, 7);
+	const initialSave = { id: newLifeId, player: { ...player }, chapters: [], memory: createEmptyMemory(), world: createEmptyWorld(), weather: chooseInitialWeather(), lifeStatus: 'active' };
+	assignBirthDiseases(initialSave.player);
 	window.__lifeSave = initialSave;
 	saveCurrentGame(initialSave);
   startWorldClock(initialSave);

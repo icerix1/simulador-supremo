@@ -26,6 +26,14 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 	presenceInFlight: null,
 	countInFlight: null,
 
+	toAuthEmail(identifier) {
+	  const raw = String(identifier || '').trim();
+	  if (!raw) return '';
+	  if (raw.includes('@')) return raw.toLowerCase();
+	  const clean = raw.toLowerCase().replace(/[^a-z0-9_.-]/g, '');
+	  return `${clean || 'player'}@simulador.life`;
+	},
+
 	async initialize() {
 	  if (!client) {
 		console.warn(`LIFE.AI: Supabase desactivado. ${this.lastError}`);
@@ -34,23 +42,80 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 	  try {
 		const sessionResult = await client.auth.getSession();
 		if (sessionResult.error) throw sessionResult.error;
-		if (!sessionResult.data.session) {
-		  const signInResult = await client.auth.signInAnonymously();
-		  if (signInResult.error) throw signInResult.error;
-		  userPromise = Promise.resolve(signInResult.data.user);
-		} else {
-		  userPromise = Promise.resolve(sessionResult.data.session.user);
+		if (sessionResult.data.session?.user) {
+		  const user = sessionResult.data.session.user;
+		  userPromise = Promise.resolve(user);
+		  this.userId = user.id;
+		  await this.loadConsent();
+		  if (!this.displayName) {
+			this.displayName = user.user_metadata?.display_name || user.user_metadata?.username || null;
+		  }
+		  return user;
 		}
-		const user = await userPromise;
-		this.userId = user?.id || null;
-		if (this.userId) await this.loadConsent();
-		return user;
+		userPromise = null;
+		this.userId = null;
+		return null;
 	  } catch (error) {
-		console.error('LIFE.AI: Supabase no disponible; se usará almacenamiento local.', error);
-		this.enabled = false;
+		console.error('LIFE.AI: Error al inicializar sesión Supabase; se usará almacenamiento local.', error);
 		this.lastError = error?.message || String(error);
 		return null;
 	  }
+	},
+
+	async signUp(identifier, password, email = null) {
+	  if (!client) throw new Error('Supabase no está configurado.');
+	  const cleanName = String(identifier || '').trim();
+	  if (!cleanName) throw new Error('El nombre de usuario es requerido.');
+	  const authEmail = email && email.includes('@') ? email.trim().toLowerCase() : this.toAuthEmail(cleanName);
+	  const { data, error } = await client.auth.signUp({
+		email: authEmail,
+		password: String(password),
+		options: {
+		  data: {
+			display_name: cleanName,
+			username: cleanName
+		  }
+		}
+	  });
+	  if (error) throw error;
+	  if (data?.user) {
+		this.userId = data.user.id;
+		this.displayName = cleanName;
+		userPromise = Promise.resolve(data.user);
+		try {
+		  await client.from('player_profiles').upsert({
+			id: data.user.id,
+			display_name: cleanName,
+			language: window.currentLanguage || 'es',
+			consent_global_learning: true,
+			updated_at: new Date().toISOString()
+		  });
+		} catch (profileErr) {
+		  console.warn('LIFE.AI perfil creación warning:', profileErr);
+		}
+	  }
+	  return data;
+	},
+
+	async signIn(identifier, password) {
+	  if (!client) throw new Error('Supabase no está configurado.');
+	  const cleanName = String(identifier || '').trim();
+	  if (!cleanName) throw new Error('El usuario o correo es requerido.');
+	  const authEmail = this.toAuthEmail(cleanName);
+	  const { data, error } = await client.auth.signInWithPassword({
+		email: authEmail,
+		password: String(password)
+	  });
+	  if (error) throw error;
+	  if (data?.user) {
+		this.userId = data.user.id;
+		userPromise = Promise.resolve(data.user);
+		await this.loadConsent();
+		if (!this.displayName) {
+		  this.displayName = data.user.user_metadata?.display_name || cleanName;
+		}
+	  }
+	  return data;
 	},
 
 	async saveDecisionValidation(save, analysis, accepted) {
@@ -242,44 +307,115 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 	  if (!this.enabled || !save?.player?.name) return null;
 	  const user = await this.user();
 	  if (!user) return null;
-		await this.saveProfile(save, language);
+	  await this.saveProfile(save, language);
+	  const targetId = save.id || gameId;
 	  const payload = {
 		player_id: user.id,
-		status: save.lifeStatus || 'active',
+		status: save.lifeStatus === 'ended' ? 'ended' : (save.lifeStatus === 'archived' ? 'archived' : 'active'),
 		player_data: save.player || {},
 		world_data: save.world || {},
 		memory_data: save.memory || {},
-		settings_data: { language: language || 'es', weather: save.weather || null },
+		settings_data: {
+		  language: language || 'es',
+		  weather: save.weather || null,
+		  chapters: save.chapters || [],
+		  endedReason: save.endedReason || ''
+		},
 		updated_at: new Date().toISOString(),
-		ended_at: save.lifeStatus === 'ended' ? new Date().toISOString() : null
+		ended_at: save.lifeStatus === 'ended' ? (save.endedAt || new Date().toISOString()) : null
 	  };
-	  if (gameId) {
-		const { error } = await client.from('games').update(payload).eq('id', gameId).eq('player_id', user.id);
-		if (!error) {
-		  this.gameId = gameId;
-		  return gameId;
+
+	  if (targetId) {
+		const { data, error } = await client
+		  .from('games')
+		  .update(payload)
+		  .eq('id', targetId)
+		  .eq('player_id', user.id)
+		  .select('id')
+		  .maybeSingle();
+		if (!error && data?.id) {
+		  gameId = data.id;
+		  this.gameId = data.id;
+		  save.id = data.id;
+		  return data.id;
 		}
 	  }
-	  const { data: existing, error: findError } = await client.from('games').select('id').eq('player_id', user.id).eq('status', 'active').order('updated_at', { ascending: false }).limit(1).maybeSingle();
-	  if (findError) throw findError;
-	  if (existing?.id && save.lifeStatus === 'active') {
-		gameId = existing.id;
-		const { error } = await client.from('games').update(payload).eq('id', gameId);
-		if (error) throw error;
-		this.gameId = gameId;
-		return gameId;
-	  }
+
 	  const { data, error } = await client.from('games').insert(payload).select('id').single();
 	  if (error) throw error;
 	  gameId = data.id;
-	  this.gameId = gameId;
-	  return gameId;
+	  this.gameId = data.id;
+	  save.id = data.id;
+	  return data.id;
 	},
 
 	async ensureGame(save, language) {
 	  if (!this.enabled || !save?.player?.name) return null;
+	  if (save.id) {
+		gameId = save.id;
+		this.gameId = save.id;
+		return save.id;
+	  }
 	  if (gameId) return gameId;
 	  return this.saveGame(save, language);
+	},
+
+	async listGames() {
+	  if (!this.enabled) return [];
+	  const user = await this.user();
+	  if (!user) return [];
+	  const { data, error } = await client
+		.from('games')
+		.select('id, status, player_data, world_data, memory_data, settings_data, started_at, updated_at, ended_at')
+		.eq('player_id', user.id)
+		.order('updated_at', { ascending: false });
+	  if (error) {
+		console.warn('LIFE.AI listGames error:', error);
+		return [];
+	  }
+	  return (data || []).map((row) => ({
+		id: row.id,
+		status: row.status,
+		player: row.player_data || {},
+		world: row.world_data || {},
+		memory: row.memory_data || {},
+		chapters: row.settings_data?.chapters || row.world_data?.chapters || [],
+		weather: row.settings_data?.weather || null,
+		lifeStatus: row.status === 'ended' ? 'ended' : 'active',
+		startedAt: row.started_at,
+		updatedAt: row.updated_at,
+		endedAt: row.ended_at,
+		endedReason: row.settings_data?.endedReason || ''
+	  }));
+	},
+
+	async loadGameById(targetId) {
+	  if (!this.enabled || !targetId) return null;
+	  const user = await this.user();
+	  if (!user) return null;
+	  const { data, error } = await client
+		.from('games')
+		.select('id, status, player_data, world_data, memory_data, settings_data, started_at, updated_at, ended_at')
+		.eq('id', targetId)
+		.eq('player_id', user.id)
+		.maybeSingle();
+	  if (error) throw error;
+	  if (!data) return null;
+	  gameId = data.id;
+	  this.gameId = data.id;
+	  return {
+		id: data.id,
+		player: data.player_data || {},
+		world: data.world_data || {},
+		memory: data.memory_data || {},
+		chapters: data.settings_data?.chapters || data.world_data?.chapters || [],
+		weather: data.settings_data?.weather || null,
+		lifeStatus: data.status === 'ended' ? 'ended' : 'active',
+		startedAt: data.started_at,
+		updatedAt: data.updated_at,
+		endedAt: data.ended_at,
+		endedReason: data.settings_data?.endedReason || ''
+	  };
 	},
 
 	async loadLatestGame() {
@@ -292,14 +428,21 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 	  gameId = data.id;
 	  this.gameId = data.id;
 	  return {
+		id: data.id,
 		player: data.player_data || {},
 		world: data.world_data || {},
 		memory: data.memory_data || {},
+		chapters: data.settings_data?.chapters || data.world_data?.chapters || [],
 		weather: data.settings_data?.weather || null,
 		lifeStatus: data.status === 'ended' ? 'ended' : 'active',
 		updatedAt: data.updated_at,
-		endedReason: ''
+		endedReason: data.settings_data?.endedReason || ''
 	  };
+	},
+
+	setGameId(id) {
+	  gameId = id || null;
+	  this.gameId = id || null;
 	},
 
 	resetGameReference() {
@@ -324,6 +467,18 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 	  if (error) throw error;
 	  await this.clearPresence();
 	  this.resetGameReference();
+	  return true;
+	},
+
+	async deleteGame(targetId) {
+	  if (!this.enabled || !targetId) return false;
+	  const user = await this.user();
+	  if (!user) return false;
+	  const { error } = await client.from('games').delete().eq('id', targetId).eq('player_id', user.id);
+	  if (error) throw error;
+	  if (gameId === targetId) {
+		this.resetGameReference();
+	  }
 	  return true;
 	},
 
