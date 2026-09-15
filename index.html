@@ -16,7 +16,7 @@
 <body>
 	<main class="life-screen">
 		<div class="screen-status">
-			<span id="appTitle">Unnamed life simulation</span> <span>v0.0.1d</span>
+			<span id="appTitle">Unnamed life simulation</span> <span>v0.0.1e</span>
 			<span class="username-status" id="usernameStatus" aria-live="polite">USER: —</span>
 			<button class="status-logout-btn hidden" id="statusLogoutBtn" type="button" title="Cerrar sesión">[ LOGOUT ]</button>
 			<button class="status-tool-btn" id="blogButton" type="button" title="Ver notas y novedades de LIFE.AI">[ BLOG.TXT ]</button>
@@ -80,6 +80,11 @@
 				<button class="start-life-button username-submit" id="registerSubmit" type="submit">[ CREAR CUENTA ]</button>
 			</form>
 
+			<div class="guest-login-section">
+				<div class="guest-separator"><span id="guestSeparatorText">// O ACCESO RÁPIDO //</span></div>
+				<button class="history-button guest-login-btn" id="guestLoginBtn" type="button">[ ENTRAR COMO INVITADO ]</button>
+			</div>
+
 			<p class="hint" id="usernameHint">Usa de 2 a 24 caracteres para tu usuario y mínimo 6 para tu contraseña.</p>
 		</section>
 
@@ -123,20 +128,21 @@
 					<p class="panel-empty" id="previousLivesEmpty">// Buscando partidas guardadas en el sistema...</p>
 				</div>
 			</div>
-
-			<a class="discord-link" id="discordLink" href="https://discord.gg/Tsw2htGAb" target="_blank"
-				rel="noopener noreferrer">[ DISCORD ]</a>
 		</section>
+
+		<!-- Enlaces de navegación previa a la partida (visibles en Login y Central de Vidas) -->
+		<a class="discord-link" id="discordLink" href="https://discord.gg/Tsw2htGAb" target="_blank" rel="noopener noreferrer" title="Únete a nuestro servidor de Discord">[ DISCORD ]</a>
+		<a class="donation-link" id="donationLink" href="https://link-de-donaciones-aqui.com" target="_blank" rel="noopener noreferrer" title="Apoya el desarrollo de LIFE.AI">[ DONACIONES ]</a>
 
 		<section class="blog-screen hidden" id="blogScreen" aria-modal="true" role="dialog" aria-labelledby="blogTitle">
 			<div class="blog-window">
 				<button class="close-history" id="closeBlogButton" data-close="blogScreen" type="button">[ X ]</button>
 				<h2 id="blogTitle">blog.txt // LIFE.AI notes</h2>
 				<p class="history-subtitle" id="blogSubtitle">// ideas, changes and simulator records</p>
-				<article class="blog-entry creator-post" id="blogRelease001a">
-					<h3 id="blogReleaseTitle">[ ACTUALIZACIÓN ] NUEVA VERSION 0.0.1d</h3>
-					<small id="blogReleaseDate">2026-09-11</small>
-					<p id="blogReleaseText">Esta versión 0.0.1d corrige las vidas triplicadas al crearlas, agrega sistema de adopción y cuidado de mascotas (con opción de dar en adopción y anti-doble click), evento de Lluvia de Dinero (+1000%), rediseño estético de paneles (Gobierno, Carreras, Familia, Inventario), envío con Enter, créditos de icerix y barrido de idioma completo (ES/EN).</p>
+				<article class="blog-entry creator-post" id="blogRelease001e">
+					<h3 id="blogReleaseTitle">[ ACTUALIZACIÓN ] NUEVA VERSION 0.0.1e</h3>
+					<small id="blogReleaseDate">2026-09-14</small>
+					<p id="blogReleaseText">Esta versión 0.0.1e incorpora: misiones e hitos de vida en barra lateral, búsqueda de objetos con rarezas en inventario, consumibles con botón de uso, pasivos y equipables, botón directo para avanzar +1 año de edad, modo invitado con aviso de pérdida de progreso y persistencia temporal, inspección detallada de ítems en hover y toque táctil, interfaz responsiva sin solapamientos, estética puramente retro sin emojis y comprensión ampliada de la IA.</p>
 				</article>
 			</div>
 		</section>
@@ -157,11 +163,13 @@
 			<div class="story-layout">
 				<div class="story-editor">
 					<p class="story-prompt"><span class="prompt">C:\LIFE&gt;</span> story.txt</p>
-					<label for="storyInput">How do you want to continue your life?</label>
+					<label id="storyInputLabel" for="storyInput">How do you want to continue your life?</label>
 					<textarea id="storyInput" rows="8" placeholder="Write what happens next..."></textarea>
 					<div class="story-action-row">
-						<button class="save-button" id="saveStoryButton" type="button">[ SAVE ]</button>
+						<button class="save-button" id="saveStoryButton" type="button" title="Tomar decisión y registrar capítulo">[ DECIDIR ]</button>
+						<button class="history-button age-up-button" id="ageUpButton" type="button" title="Avanzar 1 año de edad de forma directa">[ +1 AÑO ]</button>
 						<button class="history-button exit-life-button" id="exitLifeButton" type="button" title="Guarda y sale de la vida actual sin morir">[ GUARDAR Y SALIR ]</button>
+						<button class="history-button toggle-missions-btn" id="toggleMissionsBtn" type="button" title="Mostrar u ocultar misiones laterales">[ MISIONES ]</button>
 						<button class="history-button menu-button" id="menuButton" type="button"
 							data-open-target="storyEditor" aria-controls="storyScreen">[ MENU ]</button>
 					</div>
@@ -169,6 +177,7 @@
 						RECOMPENSAS POR TIEMPO JUGADO ]</button>
 					<div class="file-buttons hidden" id="mainFileButtons">
 						<button class="history-button" id="statsButton" type="button">[ VIEW STATS ]</button>
+						<button class="history-button" id="missionsButton" type="button">[ VIEW MISSIONS ]</button>
 						<button class="history-button" id="careersButton" type="button">[ VIEW CAREERS ]</button>
 						<button class="history-button" id="familyButton" type="button">[ VIEW FAMILY ]</button>
 						<button class="history-button" id="petsButton" type="button">[ VIEW PETS ]</button>
@@ -194,6 +203,22 @@
 						<p class="effects-line hidden" id="effectsText"></p>
 					</div>
 				</div>
+
+				<aside class="missions-sidebar" id="missionsSidebar" aria-label="Misiones e Hitos de Vida">
+					<div class="missions-sidebar-header">
+						<div class="missions-title-wrap">
+							<span class="prompt">C:\LIFE&gt;</span>
+							<h2 id="missionsSidebarTitle">MISIONES &amp; HITOS</h2>
+						</div>
+						<div class="missions-tab-buttons">
+							<button class="missions-tab-btn active" id="missionsTabBtn" type="button">[ MISIONES ]</button>
+							<button class="missions-tab-btn" id="milestonesTabBtn" type="button">[ HITOS ]</button>
+						</div>
+					</div>
+					<div class="missions-list" id="missionsList">
+						<!-- Se renderizan dinámicamente -->
+					</div>
+				</aside>
 			</div>
 		</section>
 
@@ -204,6 +229,16 @@
 					]</button>
 				<h2 id="inventoryTitle">inventory.json // inventory</h2>
 				<p class="history-subtitle" id="inventorySubtitle">// objects found during the story</p>
+				<div class="inventory-top-bar">
+					<button class="inventory-search-btn" id="searchItemButton" type="button">[ BUSCAR EN LA ZONA (-10 ENERGIA) ]</button>
+					<div class="inventory-filter-tabs" id="inventoryFilterTabs">
+						<button class="inv-filter-btn active" data-filter="all" type="button">[ TODOS ]</button>
+						<button class="inv-filter-btn" data-filter="consumable" type="button">[ CONSUMIBLES ]</button>
+						<button class="inv-filter-btn" data-filter="equipable" type="button">[ EQUIPABLES ]</button>
+						<button class="inv-filter-btn" data-filter="valuable" type="button">[ VALIOSOS ]</button>
+					</div>
+				</div>
+				<div class="inventory-search-feedback hidden" id="inventorySearchFeedback" aria-live="polite"></div>
 				<div class="inventory-dashboard" id="inventoryDashboard"></div>
 			</div>
 		</section>
@@ -366,6 +401,41 @@
 				<div class="history-list" id="historyList"></div>
 			</div>
 		</section>
+
+		<section class="stats-screen hidden" id="guestWarningModal" aria-modal="true" role="dialog" aria-labelledby="guestWarningTitle">
+			<div class="stats-window guest-warning-window">
+				<button class="close-history" id="closeGuestWarningBtn" data-close="guestWarningModal" type="button">[ X ]</button>
+				<h2 id="guestWarningTitle">// AVISO IMPORTANTE: MODO INVITADO</h2>
+				<p class="history-subtitle" id="guestWarningSubtitle">// sesion temporal sin registro</p>
+				<p class="guest-warning-text" id="guestWarningText">Al entrar como invitado, podras jugar y simular tu vida normalmente, pero tu progreso se PERDERA de forma irreversible al cerrar la sesion o cerrar la pestana del navegador. Para conservar todas tus vidas para siempre, te recomendamos crear una cuenta con usuario y contrasena.</p>
+				<div class="guest-warning-actions">
+					<button class="start-life-button guest-confirm-btn" id="guestConfirmBtn" type="button">[ CONTINUAR COMO INVITADO ]</button>
+					<button class="history-button guest-cancel-btn" id="guestCancelBtn" type="button">[ VOLVER Y REGISTRARME ]</button>
+				</div>
+			</div>
+		</section>
+
+		<div class="item-detail-modal hidden" id="itemDetailModal" role="dialog" aria-modal="true" aria-labelledby="itemDetailName">
+			<div class="item-detail-card">
+				<button class="close-history item-detail-close" id="closeItemDetailBtn" type="button" aria-label="Cerrar detalles">[ X ]</button>
+				<div class="item-detail-header">
+					<div class="item-detail-title-group">
+						<h3 id="itemDetailName">ITEM</h3>
+						<span class="rarity-badge" id="itemDetailRarity">[ RAREZA ]</span>
+					</div>
+				</div>
+				<p class="item-detail-type" id="itemDetailType">// TIPO: CONSUMIBLE</p>
+				<p class="item-detail-desc" id="itemDetailDesc">Descripcion detallada del objeto.</p>
+				<div class="item-detail-effect-box">
+					<strong class="item-effect-label" id="itemDetailEffectLabel">// EFECTO / BENEFICIO:</strong>
+					<p id="itemDetailEffect">Efecto...</p>
+				</div>
+				<div class="item-detail-footer">
+					<span class="item-detail-price" id="itemDetailPrice">VALOR: $0</span>
+					<button class="history-button item-detail-ok-btn" id="itemDetailOkBtn" type="button">[ ENTENDIDO ]</button>
+				</div>
+			</div>
+		</div>
 	</main>
 	<div class="current-occupation hidden" id="currentOccupation" aria-live="polite"></div>
 	<footer class="game-footer" id="gameFooter">Juego hecho por icerix. Todos los derechos reservados 2026</footer>

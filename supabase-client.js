@@ -44,8 +44,30 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 		if (sessionResult.error) throw sessionResult.error;
 		if (sessionResult.data.session?.user) {
 		  const user = sessionResult.data.session.user;
+		  const isGuestUser = user.user_metadata?.is_guest === true ||
+			user.email?.startsWith('guest_') ||
+			/^(invitado|guest)(_\d+)?$/i.test(user.user_metadata?.display_name || user.user_metadata?.username || '');
+
+		  if (isGuestUser) {
+			try {
+			  client.auth.signOut({ scope: 'local' }).catch(() => undefined);
+			} catch (e) {}
+			userPromise = null;
+			this.userId = null;
+			this.displayName = null;
+			this.isGuest = false;
+			try {
+			  const stored = localStorage.getItem('lifeUsername');
+			  if (stored && /^(invitado|guest)(_\d+)?$/i.test(stored)) {
+				localStorage.removeItem('lifeUsername');
+			  }
+			} catch (e) {}
+			return null;
+		  }
+
 		  userPromise = Promise.resolve(user);
 		  this.userId = user.id;
+		  this.isGuest = false;
 		  await this.loadConsent();
 		  if (!this.displayName) {
 			this.displayName = user.user_metadata?.display_name || user.user_metadata?.username || null;
@@ -54,6 +76,8 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 		}
 		userPromise = null;
 		this.userId = null;
+		this.displayName = null;
+		this.isGuest = false;
 		return null;
 	  } catch (error) {
 		console.error('LIFE.AI: Error al inicializar sesión Supabase; se usará almacenamiento local.', error);
@@ -118,6 +142,21 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 	  return data;
 	},
 
+	async signInAsGuest() {
+	  const guestSuffix = Math.floor(1000 + Math.random() * 9000);
+	  const guestName = (window.currentLanguage === 'en' ? 'Guest_' : 'Invitado_') + guestSuffix;
+	  this.isGuest = true;
+	  this.userId = 'guest-' + Date.now();
+	  this.displayName = guestName;
+	  userPromise = null;
+	  if (client) {
+		try {
+		  client.auth.signOut({ scope: 'local' }).catch(() => undefined);
+		} catch (e) {}
+	  }
+	  return { user: { id: this.userId, user_metadata: { display_name: guestName, is_guest: true } } };
+	},
+
 	async saveDecisionValidation(save, analysis, accepted) {
 	  if (!this.enabled || !this.globalLearningConsent || !save?.player?.name) return;
 	  const user = await this.user();
@@ -144,17 +183,34 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 	},
 
 	async recordPlayTime(save = null) {
+	  const now = Date.now();
+	  const elapsed = this.lastProfileTimerAt ? Math.min(Math.max(1, Math.floor((now - this.lastProfileTimerAt) / 1000)), 120) : 1;
+	  this.lastProfileTimerAt = now;
+
+	  window.__lifePlaySeconds = (Number(window.__lifePlaySeconds) || 0) + elapsed;
+	  try {
+		const isGuest = sessionStorage.getItem('lifeIsGuest') === 'true' || this.isGuest;
+		if (isGuest) {
+		  sessionStorage.setItem('guest_play_seconds', String(window.__lifePlaySeconds));
+		}
+	  } catch (e) {}
+
 	  if (!this.enabled || this.profileTimerInFlight) return this.profileTimerInFlight;
 	  const user = await this.user();
 	  if (!user) return;
-	  const now = Date.now();
-	  const elapsed = this.lastProfileTimerAt ? Math.min(Math.max(0, Math.floor((now - this.lastProfileTimerAt) / 1000)), 120) : 0;
-	  this.lastProfileTimerAt = now;
-	  if (!elapsed) return;
+
 	  this.profileTimerInFlight = (async () => {
-		window.__lifePlaySeconds = (Number(window.__lifePlaySeconds) || 0) + elapsed;
-		const { error } = await client.rpc('record_player_time', { seconds_to_add: elapsed });
-		if (error) throw error;
+		try {
+		  const { error } = await client.rpc('record_player_time', { seconds_to_add: elapsed });
+		  if (error) throw error;
+		} catch (rpcErr) {
+		  try {
+			await client.from('player_profiles').update({
+			  last_played_at: new Date().toISOString(),
+			  updated_at: new Date().toISOString()
+			}).eq('id', user.id);
+		  } catch (ignoreErr) {}
+		}
 	  })();
 	  try {
 		await this.profileTimerInFlight;
@@ -250,7 +306,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 	},
 
 	async user() {
-	  if (!this.enabled) return null;
+	  if (!this.enabled || this.isGuest) return null;
 	  if (!userPromise) await this.initialize();
 	  return userPromise ? userPromise : null;
 	},
@@ -265,6 +321,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 	  this.userId = null;
 	  this.gameId = null;
 	  this.displayName = null;
+	  this.isGuest = false;
 	  this.lastProfileTimerAt = 0;
 	},
 
@@ -308,7 +365,10 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 	  const user = await this.user();
 	  if (!user) return null;
 	  await this.saveProfile(save, language);
-	  const targetId = save.id || gameId;
+	  const isUUID = (str) => typeof str === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+	  const targetCandidate = save.id || gameId;
+	  let cloudGameId = isUUID(targetCandidate) ? targetCandidate : (isUUID(gameId) ? gameId : null);
+
 	  const payload = {
 		player_id: user.id,
 		status: save.lifeStatus === 'ended' ? 'ended' : (save.lifeStatus === 'archived' ? 'archived' : 'active'),
@@ -321,15 +381,35 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 		  chapters: save.chapters || [],
 		  endedReason: save.endedReason || ''
 		},
+		started_at: save.startedAt || new Date().toISOString(),
 		updated_at: new Date().toISOString(),
 		ended_at: save.lifeStatus === 'ended' ? (save.endedAt || new Date().toISOString()) : null
 	  };
 
-	  if (targetId) {
+	  if (!cloudGameId && user?.id && save.player?.name) {
+		try {
+		  const { data: existingGame } = await client
+			.from('games')
+			.select('id')
+			.eq('player_id', user.id)
+			.eq('status', payload.status)
+			.eq('player_data->>name', save.player.name)
+			.order('updated_at', { ascending: false })
+			.limit(1)
+			.maybeSingle();
+		  if (existingGame?.id) {
+			cloudGameId = existingGame.id;
+		  }
+		} catch (err) {
+		  console.warn('LIFE.AI Supabase existing game check error:', err);
+		}
+	  }
+
+	  if (cloudGameId) {
 		const { data, error } = await client
 		  .from('games')
 		  .update(payload)
-		  .eq('id', targetId)
+		  .eq('id', cloudGameId)
 		  .eq('player_id', user.id)
 		  .select('id')
 		  .maybeSingle();
@@ -470,16 +550,37 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 	  return true;
 	},
 
-	async deleteGame(targetId) {
-	  if (!this.enabled || !targetId) return false;
+	async deleteGame(targetId, targetSave = null) {
+	  if (!this.enabled) return false;
 	  const user = await this.user();
 	  if (!user) return false;
-	  const { error } = await client.from('games').delete().eq('id', targetId).eq('player_id', user.id);
-	  if (error) throw error;
-	  if (gameId === targetId) {
-		this.resetGameReference();
+	  const isUUID = (str) => typeof str === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+
+	  let wasDeleted = false;
+	  if (targetId && isUUID(targetId)) {
+		const { error } = await client.from('games').delete().eq('id', targetId).eq('player_id', user.id);
+		if (!error) wasDeleted = true;
 	  }
-	  return true;
+
+	  const charName = targetSave?.player?.name;
+	  if (charName) {
+		try {
+		  let query = client.from('games').delete().eq('player_id', user.id).eq('player_data->>name', charName);
+		  if (targetSave.player?.surname) {
+			query = query.eq('player_data->>surname', targetSave.player.surname);
+		  }
+		  const { error } = await query;
+		  if (!error) wasDeleted = true;
+		} catch (e) {
+		  console.warn('LIFE.AI deleteGame by name error:', e);
+		}
+	  }
+
+	  if (gameId === targetId || (charName && gameId)) {
+		this.resetGameReference();
+		await this.clearPresence();
+	  }
+	  return wasDeleted;
 	},
 
 	async archiveCurrentGame(save) {
@@ -623,6 +724,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 	},
 
 	async _updatePresence(save) {
+	  if (this.isGuest) return;
 	  const user = await this.user();
 	  if (!user) return;
 	  const currentGameId = save?.player?.name ? await this.ensureGame(save, window.currentLanguage || 'es') : gameId;
@@ -644,7 +746,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 	},
 
 	async clearPresence() {
-	  if (!this.enabled) return;
+	  if (!this.enabled || this.isGuest) return;
 	  const user = await this.user();
 	  if (!user) return;
 	  const { error } = await client.from('active_players').delete().eq('player_id', user.id);
