@@ -16,7 +16,7 @@
 <body>
 	<main class="life-screen">
 		<div class="screen-status">
-			<span id="appTitle">Unnamed life simulation</span> <span>v0.0.1e</span>
+			<span id="appTitle">Unnamed life simulation</span> <span>v0.0.2</span>
 			<span class="username-status" id="usernameStatus" aria-live="polite">USER: —</span>
 			<button class="status-logout-btn hidden" id="statusLogoutBtn" type="button" title="Cerrar sesión">[ LOGOUT ]</button>
 			<button class="status-tool-btn" id="blogButton" type="button" title="Ver notas y novedades de LIFE.AI">[ BLOG.TXT ]</button>
@@ -40,6 +40,7 @@
 		<div class="money-rain-indicator hidden" id="moneyRainIndicator" aria-live="polite"></div>
 		<div class="season-indicator hidden" id="seasonIndicator" aria-live="polite"></div>
 		<div class="weather-indicator hidden" id="weatherIndicator" aria-live="polite"></div>
+		<div class="mutator-indicator hidden" id="mutatorIndicator" aria-live="polite"></div>
 		<section class="username-screen auth-screen" id="usernameScreen">
 			<p class="code-line"><span class="prompt">C:\LIFE&gt;</span> auth_service.exe</p>
 			<h1 id="usernameTitle">ACCESO DE USUARIO</h1>
@@ -112,10 +113,20 @@
 
 		<section class="welcome-screen hidden" id="welcomeScreen">
 			<div class="welcome-banner">
-				<p class="code-line"><span class="prompt">C:\LIFE&gt;</span> selector_de_vidas.exe</p>
-				<h1 id="welcomeUserGreeting">CENTRAL DE VIDAS</h1>
-				<p class="intro-copy" id="welcomeIntro">Comienza una nueva simulación o reanuda tus vidas anteriores guardadas.</p>
-				<button class="start-life-button" id="startButton" type="button">+ COMENZAR NUEVA VIDA</button>
+				<div class="welcome-actions-row">
+					<button class="start-life-button" id="startButton" type="button">+ COMENZAR NUEVA VIDA</button>
+					<button class="start-life-button quick-start-button" id="quickStartWelcomeBtn" type="button" title="Comienza al instante con un personaje procedural">[ RULETA DEL DESTINO // INICIO RÁPIDO ]</button>
+				</div>
+				<div class="mutator-select-box">
+					<label id="mutatorLabel" for="gameMutatorSelect">// MODO DE JUEGO / MUTADOR:</label>
+					<select id="gameMutatorSelect" class="retro-select">
+						<option value="standard">ESTÁNDAR (NORMAL)</option>
+						<option value="anarchy">MODO ANARQUÍA (SIN LEYES / DOBLE CAOS)</option>
+						<option value="inflation">INFLACIÓN CÓSMICA (+25% ANUAL)</option>
+						<option value="chaos">DADO LOCO (CONSECUENCIAS EXTREMAS)</option>
+						<option value="god">MODO DIOS / SANDBOX (TODO INFINITO)</option>
+					</select>
+				</div>
 			</div>
 
 			<div class="previous-lives-panel" id="previousLivesPanel">
@@ -123,7 +134,7 @@
 					<h2 id="previousLivesTitle">VIDAS ANTERIORES</h2>
 					<span class="lives-counter" id="livesCounter">[ 0 VIDAS ]</span>
 				</div>
-				<p class="history-subtitle" id="previousLivesSubtitle">// Reanuda solo aquellas que sigan vivas. Las vidas fallecidas permanecerán como historial.</p>
+				<p class="history-subtitle" id="previousLivesSubtitle">// Reanuda solo aquellas que sigan vivas. Las vidas fallecidas permanecerán como historial e injugables.</p>
 				<div class="previous-lives-grid" id="previousLivesGrid">
 					<p class="panel-empty" id="previousLivesEmpty">// Buscando partidas guardadas en el sistema...</p>
 				</div>
@@ -139,10 +150,15 @@
 				<button class="close-history" id="closeBlogButton" data-close="blogScreen" type="button">[ X ]</button>
 				<h2 id="blogTitle">blog.txt // LIFE.AI notes</h2>
 				<p class="history-subtitle" id="blogSubtitle">// ideas, changes and simulator records</p>
+				<article class="blog-entry creator-post" id="blogRelease002">
+					<h3 id="blogRelease002Title">[ ACTUALIZACIÓN ] NUEVA VERSION 0.0.2 — EXPANSIÓN TOTAL</h3>
+					<small id="blogRelease002Date">2026-09-15</small>
+					<p id="blogRelease002Text">La versión 0.0.2 simplifica la interfaz para principiantes organizando todos los módulos por categorías temáticas en el panel de control (menu.json). Incorpora 6 nuevos sistemas interactivos: Cyber Coliseo (combate callejero por turnos en ASCII), CyberStock Exchange (bolsa de valores y criptomonedas con cotizaciones en tiempo real), Mascota Cibernética Evolutiva (Tamagotchi CRT), Expediente Detective (casos policiales procedurales), Refugio Clandestino & Bienes Raíces (propiedades con minadores pasivos) y Batallas de Rap en Terminal. Además, incluye la marcación estricta de vidas fallecidas como injugables y el Dado del Caos D20 totalmente seguro.</p>
+				</article>
 				<article class="blog-entry creator-post" id="blogRelease001e">
 					<h3 id="blogReleaseTitle">[ ACTUALIZACIÓN ] NUEVA VERSION 0.0.1e</h3>
 					<small id="blogReleaseDate">2026-09-14</small>
-					<p id="blogReleaseText">Esta versión 0.0.1e incorpora: misiones e hitos de vida en barra lateral, búsqueda de objetos con rarezas en inventario, consumibles con botón de uso, pasivos y equipables, botón directo para avanzar +1 año de edad, modo invitado con aviso de pérdida de progreso y persistencia temporal, inspección detallada de ítems en hover y toque táctil, interfaz responsiva sin solapamientos, estética puramente retro sin emojis y comprensión ampliada de la IA.</p>
+					<p id="blogReleaseText">Esta versión 0.0.1e incorpora: misiones e hitos de vida en barra lateral, búsqueda de objetos con rarezas en inventario, consumibles con botón de uso, pasivos y equipables, botón directo para avanzar +1 año de edad, modo invitado con aviso de pérdida de progreso y persistencia temporal, inspección detallada de ítems en hover y toque táctil, interfaz responsiva sin solapamientos, estética puramente retro de terminal CRT y comprensión ampliada de la IA.</p>
 				</article>
 			</div>
 		</section>
@@ -154,7 +170,10 @@
 			<form id="lifeForm">
 				<label id="questionLabel" for="answerInput">What is your name?</label>
 				<textarea id="answerInput" autocomplete="off" required rows="4"></textarea>
-				<button class="next-button" type="submit">[ ENTER ]</button>
+				<div class="question-action-row">
+					<button class="next-button" type="submit">[ ENTER ]</button>
+					<button class="history-button quick-start-button" id="quickStartQuestionBtn" type="button" title="Saltar preguntas y generar personaje aleatorio">[ SALTAR // RULETA DEL DESTINO ]</button>
+				</div>
 			</form>
 			<p class="hint" id="questionHint">Write your answer and press ENTER.</p>
 		</section>
@@ -162,6 +181,13 @@
 		<section class="story-screen hidden" id="storyScreen">
 			<div class="story-layout">
 				<div class="story-editor">
+					<div class="newbie-guide-banner hidden" id="newbieGuideBanner">
+						<div class="guide-header">
+							<span id="newbieGuideTitle">// GUÍA RÁPIDA PARA NUEVOS JUGADORES:</span>
+							<button class="close-guide-btn" id="dismissGuideBtn" type="button">[ ENTENDIDO X ]</button>
+						</div>
+						<p class="guide-text" id="newbieGuideText">Escribe lo que deseas hacer o toca una de las ACCIONES RÁPIDAS abajo para avanzar tu historia. Todos los módulos (inventario, trabajos, casinos, bolsa, mascotas) están reunidos en el botón [ MENU ].</p>
+					</div>
 					<p class="story-prompt"><span class="prompt">C:\LIFE&gt;</span> story.txt</p>
 					<label id="storyInputLabel" for="storyInput">How do you want to continue your life?</label>
 					<textarea id="storyInput" rows="8" placeholder="Write what happens next..."></textarea>
@@ -173,7 +199,16 @@
 						<button class="history-button menu-button" id="menuButton" type="button"
 							data-open-target="storyEditor" aria-controls="storyScreen">[ MENU ]</button>
 					</div>
-					<button class="history-button play-time-rewards-button" id="playTimeRewardsButton" type="button">[
+
+					<!-- Decisiones Rápidas Contextuales & Dado del Caos -->
+					<div class="quick-actions-panel" id="quickActionsContainer">
+						<div class="quick-actions-header">
+							<span id="quickActionsTitle">// ACCIONES RÁPIDAS SUGERIDAS:</span>
+						</div>
+						<div class="quick-actions-grid" id="quickActionsGrid"></div>
+					</div>
+
+					<button class="history-button play-time-rewards-button hidden" id="playTimeRewardsButton" type="button">[
 						RECOMPENSAS POR TIEMPO JUGADO ]</button>
 					<div class="file-buttons hidden" id="mainFileButtons">
 						<button class="history-button" id="statsButton" type="button">[ VIEW STATS ]</button>
@@ -182,6 +217,10 @@
 						<button class="history-button" id="familyButton" type="button">[ VIEW FAMILY ]</button>
 						<button class="history-button" id="petsButton" type="button">[ VIEW PETS ]</button>
 						<button class="history-button" id="inventoryButton" type="button">[ VIEW INVENTORY ]</button>
+						<button class="history-button" id="casinoButton" type="button">[ CASINO RETRO ]</button>
+						<button class="history-button" id="hackButton" type="button">[ HACKEO CYBER ]</button>
+						<button class="history-button" id="blackMarketButton" type="button">[ MERCADO NEGRO ]</button>
+						<button class="history-button" id="newspaperButton" type="button">[ EL VOCERO CRT ]</button>
 						<button class="history-button" id="governmentButton" type="button">[ GOBIERNOS ]</button>
 						<button class="history-button" id="worldButton" type="button">[ VIEW WORLD ]</button>
 						<button class="history-button" id="skillsButton" type="button">[ VIEW SKILLS ]</button>
@@ -315,6 +354,9 @@
 				<button class="close-history" id="closeMenuButton" data-close="menuScreen" type="button">[ X ]</button>
 				<h2 id="menuTitle">menu.json // control panel</h2>
 				<p class="history-subtitle" id="menuSubtitle">// all LIFE.AI modules</p>
+				<div class="menu-filter-wrap">
+					<input type="text" id="menuFilterInput" class="menu-filter-input" placeholder="Buscar módulo o función..." autocomplete="off">
+				</div>
 				<div class="menu-grid" id="menuGrid"></div>
 			</div>
 		</section>
@@ -436,6 +478,377 @@
 				</div>
 			</div>
 		</div>
+
+		<!-- CASINO RETRO CLANDESTINO -->
+		<section class="stats-screen hidden" id="casinoScreen" aria-modal="true" role="dialog" aria-labelledby="casinoTitle">
+			<div class="stats-window casino-window">
+				<button class="close-history" id="closeCasinoButton" data-close="casinoScreen" type="button">[ X ]</button>
+				<h2 id="casinoTitle">casino.exe // CLUB CLANDESTINO</h2>
+				<p class="history-subtitle" id="casinoSubtitle">// tragamonedas, blackjack 21 y rasca y gana</p>
+				<div class="casino-tabs">
+					<button class="history-button casino-tab active" id="casinoTabSlots" type="button" data-casinotab="slots">[ TRAGAMONEDAS ]</button>
+					<button class="history-button casino-tab" id="casinoTabBlackjack" type="button" data-casinotab="blackjack">[ BLACKJACK 21 ]</button>
+					<button class="history-button casino-tab" id="casinoTabScratch" type="button" data-casinotab="scratch">[ RASCA Y GANA ]</button>
+				</div>
+				<!-- Tragamonedas -->
+				<div class="casino-section" id="casinoSlotsSection">
+					<div class="slot-machine-cabinet">
+						<div class="slot-reels" id="slotReels">
+							<div class="slot-reel" id="slotReel1"><span class="reel-symbol">7</span></div>
+							<div class="slot-reel" id="slotReel2"><span class="reel-symbol">7</span></div>
+							<div class="slot-reel" id="slotReel3"><span class="reel-symbol">7</span></div>
+						</div>
+						<div class="slot-bet-controls">
+							<span class="slot-label" id="slotBetLabel">APUESTA:</span>
+							<button class="history-button slot-bet-btn active" type="button" data-bet="10">$10</button>
+							<button class="history-button slot-bet-btn" type="button" data-bet="50">$50</button>
+							<button class="history-button slot-bet-btn" type="button" data-bet="250">$250</button>
+							<button class="history-button slot-bet-btn" type="button" data-bet="1000">$1,000</button>
+						</div>
+						<button class="start-life-button slot-spin-btn" id="slotSpinBtn" type="button">[ GIRAR TRAGAMONEDAS ]</button>
+						<p class="casino-result-banner" id="slotResultBanner">// ¡Bienvenido al Tragamonedas Retro! Prueba tu suerte._</p>
+					</div>
+				</div>
+				<!-- Blackjack -->
+				<div class="casino-section hidden" id="casinoBlackjackSection">
+					<div class="blackjack-table">
+						<div class="blackjack-hand-box">
+							<span class="hand-title" id="dealerHandTitle">MANO DEL CRUPIER: <strong id="dealerScore">?</strong></span>
+							<div class="cards-row" id="dealerCardsRow"><span class="retro-card">[ ? ]</span><span class="retro-card">[ ? ]</span></div>
+						</div>
+						<div class="blackjack-hand-box">
+							<span class="hand-title" id="playerHandTitle">TU MANO: <strong id="playerScore">0</strong></span>
+							<div class="cards-row" id="playerCardsRow"><span class="retro-card">[ - ]</span></div>
+						</div>
+						<div class="blackjack-bet-controls">
+							<span class="slot-label" id="bjBetLabel">APUESTA:</span>
+							<button class="history-button bj-bet-btn active" type="button" data-bjbet="25">$25</button>
+							<button class="history-button bj-bet-btn" type="button" data-bjbet="100">$100</button>
+							<button class="history-button bj-bet-btn" type="button" data-bjbet="500">$500</button>
+						</div>
+						<div class="blackjack-actions-row">
+							<button class="start-life-button" id="bjDealBtn" type="button">[ REPARTIR MANO ]</button>
+							<button class="history-button hidden" id="bjHitBtn" type="button">[ PEDIR CARTA ]</button>
+							<button class="history-button hidden" id="bjStandBtn" type="button">[ PLANTARSE ]</button>
+							<button class="history-button hidden" id="bjDoubleBtn" type="button">[ DOBLAR ]</button>
+						</div>
+						<p class="casino-result-banner" id="bjResultBanner">// Apuesta y pide repartir cartas para jugar al 21._</p>
+					</div>
+				</div>
+				<!-- Rasca y Gana -->
+				<div class="casino-section hidden" id="casinoScratchSection">
+					<div class="scratch-card-box">
+						<div class="scratch-card-header">
+							<h3 id="scratchCardTitle">LOTERÍA CLANDESTINA // BOLETO RÁPIDO</h3>
+							<p id="scratchCardSubtitle">// Rasca las 3 casillas. ¡Si coinciden ganas hasta x50 o un objeto raro!_</p>
+						</div>
+						<div class="scratch-slots-row" id="scratchSlotsRow">
+							<button class="scratch-slot" id="scratchSlot1" type="button" data-slot="0">[ ??? ]</button>
+							<button class="scratch-slot" id="scratchSlot2" type="button" data-slot="1">[ ??? ]</button>
+							<button class="scratch-slot" id="scratchSlot3" type="button" data-slot="2">[ ??? ]</button>
+						</div>
+						<div class="scratch-actions-row">
+							<button class="start-life-button" id="scratchBuyBtn" type="button">[ COMPRAR BOLETO ($25) ]</button>
+							<button class="history-button hidden" id="scratchRevealBtn" type="button">[ RASCAR TODO ]</button>
+						</div>
+						<p class="casino-result-banner" id="scratchResultBanner">// Compra un boleto para rascar._</p>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- HACKEO DE TERMINAL // CYBER BYPASS -->
+		<section class="stats-screen hidden" id="hackScreen" aria-modal="true" role="dialog" aria-labelledby="hackTitle">
+			<div class="stats-window hack-window">
+				<button class="close-history" id="closeHackButton" data-close="hackScreen" type="button">[ X ]</button>
+				<h2 id="hackTitle">hack.exe // CYBER BYPASS TERMINAL</h2>
+				<p class="history-subtitle" id="hackSubtitle">// descifra la secuencia hexadecimal antes de que suene la alarma policial</p>
+				<div class="hack-target-selector">
+					<button class="history-button hack-target-btn active" id="hackTargetAtmBtn" type="button" data-target="atm">[ CAJERO ATM (FÁCIL) ]</button>
+					<button class="history-button hack-target-btn" id="hackTargetCorpBtn" type="button" data-target="corp">[ MEGACORP (MEDIO) ]</button>
+					<button class="history-button hack-target-btn" id="hackTargetGovBtn" type="button" data-target="gov">[ BASE GOBIERNO (DIFÍCIL) ]</button>
+				</div>
+				<div class="hack-terminal-display">
+					<div class="hack-target-info" id="hackTargetInfo">
+						<span id="hackTargetName">OBJETIVO: Cajero ATM</span> |
+						<span id="hackTargetReward">BOTÍN: $500 - $1,500</span> |
+						<span id="hackAttemptsLeft">INTENTOS: [ 4 / 4 ]</span>
+					</div>
+					<div class="hack-matrix-log" id="hackMatrixLog">
+						<p class="hack-log-entry">// Terminal lista. Ingresa una combinación de dígitos hexadecimales._</p>
+					</div>
+					<div class="hack-input-row">
+						<input class="hack-code-input" id="hackCodeInput" type="text" maxlength="5" placeholder="CÓDIGO HEX..." autocomplete="off">
+						<button class="start-life-button" id="hackSubmitBtn" type="button">[ ENVIAR EXPLOIT ]</button>
+						<button class="history-button" id="hackResetBtn" type="button">[ REINICIAR ]</button>
+					</div>
+					<p class="hack-status-banner" id="hackStatusBanner">// Escribe el código hexadecimal para hackear._</p>
+				</div>
+			</div>
+		</section>
+
+		<!-- MERCADO NEGRO CLANDESTINO -->
+		<section class="stats-screen hidden" id="blackMarketScreen" aria-modal="true" role="dialog" aria-labelledby="blackMarketTitle">
+			<div class="stats-window blackmarket-window">
+				<button class="close-history" id="closeBlackMarketButton" data-close="blackMarketScreen" type="button">[ X ]</button>
+				<h2 id="blackMarketTitle">darknet.onion // MERCADO NEGRO CLANDESTINO</h2>
+				<p class="history-subtitle" id="blackMarketSubtitle">// contrabando, herramientas ilegales y subastas relámpago</p>
+				<div class="casino-tabs">
+					<button class="history-button bm-tab active" id="bmTabShop" type="button" data-bmtab="shop">[ TIENDA CLANDESTINA ]</button>
+					<button class="history-button bm-tab" id="bmTabAuction" type="button" data-bmtab="auction">[ SUBASTA RELÁMPAGO ]</button>
+				</div>
+				<!-- Tienda -->
+				<div class="bm-section" id="bmShopSection">
+					<div class="bm-items-grid" id="bmItemsGrid"></div>
+				</div>
+				<!-- Subasta en vivo -->
+				<div class="bm-section hidden" id="bmAuctionSection">
+					<div class="auction-box">
+						<div class="auction-header">
+							<h3 id="auctionItemName">LOTE DE SUBASTA: Prototipo Militar Experimental</h3>
+							<span class="auction-timer" id="auctionTimer">[ TIEMPO: 00:20 ]</span>
+						</div>
+						<p class="auction-desc" id="auctionItemDesc">Dispositivo confiscado de origen desconocido. Muy codiciado.</p>
+						<div class="auction-bid-display">
+							<span id="auctionCurrentBidLabel">PUJA MÁS ALTA ACTUAL:</span>
+							<strong class="auction-high-bid" id="auctionHighBid">$1,200</strong>
+							<span class="auction-high-bidder" id="auctionHighBidder">(Líder: Fantasma_404)</span>
+						</div>
+						<div class="auction-feed" id="auctionFeed">
+							<p class="feed-line">// Esperando que empiece la subasta..._</p>
+						</div>
+						<div class="auction-controls">
+							<button class="history-button" id="auctionStartBtn" type="button">[ INICIAR SUBASTA ]</button>
+							<button class="start-life-button hidden" id="auctionBid100Btn" type="button">[ PUJAR +$100 ]</button>
+							<button class="start-life-button hidden" id="auctionBid500Btn" type="button">[ PUJAR +$500 ]</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- PERIÓDICO SENSACIONALISTA ANUAL // THE DAILY TERMINAL -->
+		<div class="newspaper-modal hidden" id="newspaperModal" role="dialog" aria-modal="true" aria-labelledby="newspaperTitle">
+			<div class="newspaper-paper">
+				<button class="close-history newspaper-close" id="closeNewspaperBtn" type="button" aria-label="Cerrar periódico">[ X ]</button>
+				<div class="newspaper-masthead">
+					<div class="newspaper-banner-title" id="newspaperTitle">EL VOCERO CRT // THE DAILY TERMINAL</div>
+					<div class="newspaper-meta-row">
+						<span id="newspaperEdition">EDICIÓN ESPECIAL // AÑO 0</span>
+						<span id="newspaperPrice">PRECIO: $0.50</span>
+						<span id="newspaperCity">EDICIÓN MUNDIAL</span>
+					</div>
+				</div>
+				<div class="newspaper-headline-box">
+					<h2 class="newspaper-headline" id="newspaperHeadline">¡ESCÁNDALO EN LA CIUDAD!</h2>
+					<p class="newspaper-subheadline" id="newspaperSubheadline">// Los ciudadanos no dan crédito a los recientes acontecimientos del año.</p>
+				</div>
+				<div class="newspaper-columns">
+					<div class="newspaper-col main-col">
+						<h4 id="newspaperLeadStoryTitle">CRÓNICA DE LOS HECHOS</h4>
+						<p id="newspaperLeadStory">Detalles de la noticia sobre las acciones de tu personaje...</p>
+					</div>
+					<div class="newspaper-col side-col">
+						<h4 id="newspaperGovTitle">AVISO DEL GOBIERNO</h4>
+						<p id="newspaperGovNews">El ministerio aprueba una nueva ordenanza disparatada...</p>
+						<h4 id="newspaperGossipTitle">RUMORES Y SOCIEDAD</h4>
+						<p id="newspaperGossipNews">Científicos afirman que mirar terminales CRT prolonga la vida._</p>
+					</div>
+				</div>
+				<div class="newspaper-footer">
+					<button class="start-life-button newspaper-ok-btn" id="newspaperOkBtn" type="button">[ LEER Y SEGUIR VIVIENDO ]</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- 1. CYBER COLISEO // LUCHA CALLEJERA POR TURNOS -->
+		<section class="stats-screen hidden" id="coliseoScreen" aria-modal="true" role="dialog" aria-labelledby="coliseoTitle">
+			<div class="stats-window coliseo-window">
+				<button class="close-history" id="closeColiseoButton" data-close="coliseoScreen" type="button">[ X ]</button>
+				<h2 id="coliseoTitle">coliseo.exe // CYBER COLISEO CLANDESTINO</h2>
+				<p class="history-subtitle" id="coliseoSubtitle">// combates callejeros clandestinos por turnos y apuestas de honor</p>
+				<div class="coliseo-arena">
+					<div class="fighter-card player-fighter">
+						<div class="fighter-header">
+							<span id="coliseoPlayerName">TÚ (LUCHADOR)</span>
+							<span class="fighter-hp-text" id="coliseoPlayerHpText">HP: 100/100</span>
+						</div>
+						<div class="hp-bar-outer"><div class="hp-bar-inner" id="coliseoPlayerHpBar" style="width: 100%;"></div></div>
+						<div class="fighter-avatar" id="coliseoPlayerAvatar">[ (o_o) ]</div>
+					</div>
+					<div class="vs-badge">[ VS ]</div>
+					<div class="fighter-card enemy-fighter">
+						<div class="fighter-header">
+							<span id="coliseoEnemyName">BRAWLER CALLEJERO</span>
+							<span class="fighter-hp-text" id="coliseoEnemyHpText">HP: 80/80</span>
+						</div>
+						<div class="hp-bar-outer"><div class="hp-bar-inner enemy-hp" id="coliseoEnemyHpBar" style="width: 100%;"></div></div>
+						<div class="fighter-avatar" id="coliseoEnemyAvatar">[ (ò_ó) ]</div>
+					</div>
+				</div>
+				<div class="coliseo-combat-log" id="coliseoCombatLog">
+					<p class="combat-line">// El público ruge en la arena subterránea. Elige tu acción táctica._</p>
+				</div>
+				<div class="coliseo-controls">
+					<div class="coliseo-bet-row" id="coliseoBetRow">
+						<span id="coliseoBetLabel">APUESTA DEL COMBATE:</span>
+						<button class="history-button coliseo-bet-btn active" type="button" data-coliseobet="50">$50</button>
+						<button class="history-button coliseo-bet-btn" type="button" data-coliseobet="150">$150</button>
+						<button class="history-button coliseo-bet-btn" type="button" data-coliseobet="500">$500</button>
+						<button class="start-life-button" id="coliseoStartBtn" type="button">[ INICIAR PELEA ]</button>
+					</div>
+					<div class="coliseo-actions-row hidden" id="coliseoActionsRow">
+						<button class="history-button combat-btn" id="coliseoFastAtkBtn" type="button" title="Daño moderado, 95% precisión">[ GOLPE RÁPIDO ]</button>
+						<button class="history-button combat-btn" id="coliseoHeavyAtkBtn" type="button" title="Alto daño, 65% precisión">[ GOLPE PESADO ]</button>
+						<button class="history-button combat-btn" id="coliseoBlockBtn" type="button" title="Reduce 75% daño y recupera energía">[ BLOQUEO TÁCTICO ]</button>
+						<button class="history-button combat-btn" id="coliseoTauntBtn" type="button" title="Aumenta hype y daño próximo turno">[ PROVOCAR ]</button>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- 2. BOLSA DE VALORES CYBERSTOCK -->
+		<section class="stats-screen hidden" id="stocksScreen" aria-modal="true" role="dialog" aria-labelledby="stocksTitle">
+			<div class="stats-window stocks-window">
+				<button class="close-history" id="closeStocksButton" data-close="stocksScreen" type="button">[ X ]</button>
+				<h2 id="stocksTitle">stocks.exe // CYBERSTOCK EXCHANGE</h2>
+				<p class="history-subtitle" id="stocksSubtitle">// cotizaciones en tiempo real del mercado corporativo y criptoactivos</p>
+				<div class="stocks-summary-row">
+					<span id="stocksPlayerCash">LIQUIDEZ DISPONIBLE: $0</span> |
+					<span id="stocksPortfolioValue">VALOR EN CARTERA: $0</span> |
+					<button class="history-button" id="stocksRefreshBtn" type="button">[ ACTUALIZAR MERCADO ]</button>
+				</div>
+				<div class="stocks-table-wrap">
+					<table class="retro-table stocks-table">
+						<thead>
+							<tr>
+								<th>ACTIVO</th>
+								<th>SÍMBOLO</th>
+								<th>PRECIO</th>
+								<th>VARIACIÓN</th>
+								<th>TENDENCIA</th>
+								<th>EN PROPIEDAD</th>
+								<th>OPERACIÓN</th>
+							</tr>
+						</thead>
+						<tbody id="stocksTableBody"></tbody>
+					</table>
+				</div>
+				<p class="casino-result-banner" id="stocksResultBanner">// Compra barato y vende caro antes de las fluctuaciones corporativas._</p>
+			</div>
+		</section>
+
+		<!-- 3. MASCOTA CIBERNÉTICA // TAMAGOTCHI CRT -->
+		<section class="stats-screen hidden" id="tamagotchiScreen" aria-modal="true" role="dialog" aria-labelledby="tamagotchiTitle">
+			<div class="stats-window tamagotchi-window">
+				<button class="close-history" id="closeTamagotchiButton" data-close="tamagotchiScreen" type="button">[ X ]</button>
+				<h2 id="tamagotchiTitle">pet_os.bin // MASCOTA CIBERNÉTICA VIRTUAL</h2>
+				<p class="history-subtitle" id="tamagotchiSubtitle">// compañero biomecánico evolutivo: mantén sus sistemas calibrados</p>
+				<div class="tamagotchi-display">
+					<div class="tamagotchi-header-row">
+						<span id="tamagotchiPetName">NOMBRE: CIBER-DRON V1</span>
+						<span class="tamagotchi-phase-badge" id="tamagotchiPhaseBadge">[ FASE 1: PROTOTIPO ]</span>
+					</div>
+					<div class="tamagotchi-pet-canvas" id="tamagotchiPetCanvas">
+						<pre class="ascii-pet" id="tamagotchiAscii">
+   [o_o]
+  /|___|\
+   d   b
+						</pre>
+					</div>
+					<div class="tamagotchi-meters">
+						<div class="t-meter-box">
+							<span id="tMeterBatteryLabel">BATERÍA: 100%</span>
+							<div class="hp-bar-outer"><div class="hp-bar-inner" id="tMeterBatteryBar" style="width: 100%;"></div></div>
+						</div>
+						<div class="t-meter-box">
+							<span id="tMeterMoodLabel">ÁNIMO / AFECTO: 80%</span>
+							<div class="hp-bar-outer"><div class="hp-bar-inner" id="tMeterMoodBar" style="width: 80%;"></div></div>
+						</div>
+						<div class="t-meter-box">
+							<span id="tMeterFirmwareLabel">FIRMWARE / EVOLUCIÓN: 20%</span>
+							<div class="hp-bar-outer"><div class="hp-bar-inner" id="tMeterFirmwareBar" style="width: 20%;"></div></div>
+						</div>
+					</div>
+					<div class="tamagotchi-actions-row">
+						<button class="history-button" id="tChargeBtn" type="button">[ RECARGAR BATERÍA ($15) ]</button>
+						<button class="history-button" id="tPlayBtn" type="button">[ JUGAR / MIMAR (-5 ENERGÍA) ]</button>
+						<button class="history-button" id="tUpgradeBtn" type="button">[ ACTUALIZAR FIRMWARE ($100) ]</button>
+						<button class="history-button" id="tCleanBtn" type="button">[ LIMPIAR CIRCUITOS ]</button>
+					</div>
+					<p class="casino-result-banner" id="tamagotchiStatusBanner">// Tu mascota cibernética emite un zumbido amigable._</p>
+				</div>
+			</div>
+		</section>
+
+		<!-- 4. EXPEDIENTE POLICIAL // MODO DETECTIVE PROCEDURAL -->
+		<section class="stats-screen hidden" id="detectiveScreen" aria-modal="true" role="dialog" aria-labelledby="detectiveTitle">
+			<div class="stats-window detective-window">
+				<button class="close-history" id="closeDetectiveButton" data-close="detectiveScreen" type="button">[ X ]</button>
+				<h2 id="detectiveTitle">casefile.pdf // EXPEDIENTE POLICIAL CLANDESTINO</h2>
+				<p class="history-subtitle" id="detectiveSubtitle">// investiga casos criminales de la ciudad, analiza pistas y acusa al culpable</p>
+				<div class="detective-case-box">
+					<div class="case-header">
+						<h3 id="detectiveCaseTitle">CASO #409: EL ROBO DE DATOS DE MEGACORP</h3>
+						<span class="case-bounty" id="detectiveCaseBounty">RECOMPENSA: $1,800</span>
+					</div>
+					<p class="case-brief" id="detectiveCaseBrief">Un paquete de memorias cuánticas fue extraído de los servidores centrales. 3 sospechosos fueron retenidos en la escena.</p>
+					<div class="detective-clues-box">
+						<h4 id="detectiveCluesHeader">// PISTAS RECOLECTADAS:</h4>
+						<ul class="clues-list" id="detectiveCluesList"></ul>
+					</div>
+					<div class="detective-suspects-grid" id="detectiveSuspectsGrid"></div>
+					<p class="casino-result-banner" id="detectiveStatusBanner">// Analiza las declaraciones y señala al culpable cuando estés seguro._</p>
+				</div>
+			</div>
+		</section>
+
+		<!-- 5. REFUGIO CLANDESTINO & BIENES RAÍCES -->
+		<section class="stats-screen hidden" id="safehouseScreen" aria-modal="true" role="dialog" aria-labelledby="safehouseTitle">
+			<div class="stats-window safehouse-window">
+				<button class="close-history" id="closeSafehouseButton" data-close="safehouseScreen" type="button">[ X ]</button>
+				<h2 id="safehouseTitle">safehouse.sys // REFUGIO Y BIENES RAÍCES</h2>
+				<p class="history-subtitle" id="safehouseSubtitle">// adquiere propiedades seguras e instala módulos de ingresos pasivos y bioprotección</p>
+				<div class="safehouse-current-box">
+					<h3 id="safehouseCurrentTitle">REFUGIO ACTUAL: Ninguno (Sin techo propio)</h3>
+					<p id="safehouseCurrentBonus">Beneficios activos: Ninguno</p>
+				</div>
+				<div class="safehouse-catalog-grid" id="safehouseCatalogGrid"></div>
+				<div class="safehouse-upgrades-section" id="safehouseUpgradesSection">
+					<h3 id="safehouseUpgradesTitle">// INSTALACIONES Y MEJORAS ACTIVAS:</h3>
+					<div class="safehouse-upgrades-grid" id="safehouseUpgradesGrid"></div>
+				</div>
+				<p class="casino-result-banner" id="safehouseStatusBanner">// Comprar un refugio te protege de eventos caóticos y genera recursos._</p>
+			</div>
+		</section>
+
+		<!-- 6. DUELO DE RETÓRICA // BATALLA DE RAP EN TERMINAL -->
+		<section class="stats-screen hidden" id="rapBattleScreen" aria-modal="true" role="dialog" aria-labelledby="rapBattleTitle">
+			<div class="stats-window rap-window">
+				<button class="close-history" id="closeRapBattleButton" data-close="rapBattleScreen" type="button">[ X ]</button>
+				<h2 id="rapBattleTitle">rap_battle.exe // DUELO DE RETÓRICA Y VERSOS</h2>
+				<p class="history-subtitle" id="rapBattleSubtitle">// demuestra tu elocuencia en 3 asaltos de rimas callejeras frente a la multitud</p>
+				<div class="rap-stage">
+					<div class="rap-opponent-card">
+						<span class="rap-opponent-name" id="rapOpponentName">OPONENTE: MC BYTE (CAMPEÓN DEL CALLEJÓN)</span>
+						<span class="rap-round-badge" id="rapRoundBadge">[ ASALTO 1 / 3 ]</span>
+					</div>
+					<div class="rap-dialog-box opponent-verse">
+						<p class="speaker-tag" id="rapOpponentTag">&gt; MC BYTE DICE:</p>
+						<p class="verse-content" id="rapOpponentVerse">"Tus algoritmos son lentos, tu procesador da pena, te gano en esta terminal y te dejo en cuarentena."</p>
+					</div>
+					<div class="rap-hype-meter">
+						<span id="rapHypeLabel">RESPETO DEL PÚBLICO:</span>
+						<div class="hp-bar-outer"><div class="hp-bar-inner hype-bar" id="rapHypeBar" style="width: 50%;"></div></div>
+					</div>
+					<div class="rap-player-options">
+						<span id="rapOptionsTitle">// ELIGE TU RESPUESTA EN RIMA:</span>
+						<div class="rap-options-list" id="rapOptionsList"></div>
+					</div>
+					<p class="casino-result-banner" id="rapStatusBanner">// Elige la rima más contundente para ganarte a la multitud._</p>
+				</div>
+			</div>
+		</section>
 	</main>
 	<div class="current-occupation hidden" id="currentOccupation" aria-live="polite"></div>
 	<footer class="game-footer" id="gameFooter">Juego hecho por icerix. Todos los derechos reservados 2026</footer>

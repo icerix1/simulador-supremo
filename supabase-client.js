@@ -392,7 +392,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 			.from('games')
 			.select('id')
 			.eq('player_id', user.id)
-			.eq('status', payload.status)
+			.in('status', ['active', 'ended'])
 			.eq('player_data->>name', save.player.name)
 			.order('updated_at', { ascending: false })
 			.limit(1)

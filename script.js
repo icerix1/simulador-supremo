@@ -149,6 +149,59 @@ const itemDetailModal = document.querySelector('#itemDetailModal');
 const closeItemDetailBtn = document.querySelector('#closeItemDetailBtn');
 const itemDetailOkBtn = document.querySelector('#itemDetailOkBtn');
 
+const quickStartWelcomeBtn = document.querySelector('#quickStartWelcomeBtn');
+const quickStartQuestionBtn = document.querySelector('#quickStartQuestionBtn');
+const gameMutatorSelect = document.querySelector('#gameMutatorSelect');
+const mutatorIndicator = document.querySelector('#mutatorIndicator');
+
+const quickActionsContainer = document.querySelector('#quickActionsContainer');
+const quickActionsGrid = document.querySelector('#quickActionsGrid');
+const openCasinoDirectBtn = document.querySelector('#openCasinoDirectBtn');
+const openHackDirectBtn = document.querySelector('#openHackDirectBtn');
+const openBlackMarketDirectBtn = document.querySelector('#openBlackMarketDirectBtn');
+const openNewspaperDirectBtn = document.querySelector('#openNewspaperDirectBtn');
+
+const casinoButton = document.querySelector('#casinoButton');
+const casinoScreen = document.querySelector('#casinoScreen');
+const closeCasinoButton = document.querySelector('#closeCasinoButton');
+
+const hackButton = document.querySelector('#hackButton');
+const hackScreen = document.querySelector('#hackScreen');
+const closeHackButton = document.querySelector('#closeHackButton');
+
+const blackMarketButton = document.querySelector('#blackMarketButton');
+const blackMarketScreen = document.querySelector('#blackMarketScreen');
+const closeBlackMarketButton = document.querySelector('#closeBlackMarketButton');
+
+const newspaperButton = document.querySelector('#newspaperButton');
+const newspaperModal = document.querySelector('#newspaperModal');
+const closeNewspaperBtn = document.querySelector('#closeNewspaperBtn');
+const newspaperOkBtn = document.querySelector('#newspaperOkBtn');
+
+const coliseoButton = document.querySelector('#coliseoButton');
+const coliseoScreen = document.querySelector('#coliseoScreen');
+const closeColiseoButton = document.querySelector('#closeColiseoButton');
+
+const stocksButton = document.querySelector('#stocksButton');
+const stocksScreen = document.querySelector('#stocksScreen');
+const closeStocksButton = document.querySelector('#closeStocksButton');
+
+const tamagotchiButton = document.querySelector('#tamagotchiButton');
+const tamagotchiScreen = document.querySelector('#tamagotchiScreen');
+const closeTamagotchiButton = document.querySelector('#closeTamagotchiButton');
+
+const detectiveButton = document.querySelector('#detectiveButton');
+const detectiveScreen = document.querySelector('#detectiveScreen');
+const closeDetectiveButton = document.querySelector('#closeDetectiveButton');
+
+const safehouseButton = document.querySelector('#safehouseButton');
+const safehouseScreen = document.querySelector('#safehouseScreen');
+const closeSafehouseButton = document.querySelector('#closeSafehouseButton');
+
+const rapBattleButton = document.querySelector('#rapBattleButton');
+const rapBattleScreen = document.querySelector('#rapBattleScreen');
+const closeRapBattleButton = document.querySelector('#closeRapBattleButton');
+
 const defaultBrowserLang = (typeof navigator !== 'undefined' && (navigator.language || navigator.userLanguage || '').toLowerCase().startsWith('es')) ? 'es' : 'en';
 let currentLanguage = defaultBrowserLang;
 try { currentLanguage = localStorage.getItem('lifeLanguage') || defaultBrowserLang; } catch { /* default language */ }
@@ -1659,7 +1712,16 @@ const creatorPosts = [
     date: '2026-09-14',
     category: { es: 'ACTUALIZACIÓN', en: 'UPDATE' },
     title: { es: 'NUEVA VERSION 0.0.1e — Terminal CRT Pura, Inspección de Objetos y Modo Invitado', en: 'NEW VERSION 0.0.1e — Pure CRT Terminal, Item Inspection & Guest Mode' },
-    text: { es: 'La versión 0.0.1e trae un salto enorme en usabilidad y estética: 1) Eliminación total de emojis en toda la aplicación para una estética CRT retro inmersiva. 2) Panel interactivo de inspección de objetos al pasar el cursor o tocar en móviles, tanto para recompensas de misiones como para objetos del inventario (mostrando descripción, rareza y efectos detallados). 3) Rediseño con total separación responsiva entre PC y móvil para garantizar cero botones o paneles encimados. 4) Botón rápido de envejecimiento (+1 año) para avanzar en la vida sin tener que escribir. 5) Acceso seguro como Invitado conectado a Supabase con aviso de progreso efímero y limpieza al salir. 6) Expansión masiva de la comprensión de la IA de LIFE.AI para entender más textos y acciones de la vida diaria.', en: 'Version 0.0.1e brings a massive leap in usability and aesthetics: 1) Complete elimination of all emojis across the entire app for a pure immersive retro CRT aesthetic. 2) Interactive item inspection panel on hover or mobile tap for both mission rewards and inventory items (displaying description, rarity and detailed effects). 3) Redesigned responsive separation between PC and mobile ensuring zero overlapping buttons or panels. 4) Fast Age Up (+1 year) button to advance through life without typing. 5) Guest access synced with Supabase with an ephemeral progress warning and wipe upon exit. 6) Massive expansion of LIFE.AI comprehension for daily actions, professions, and natural phrasing.' }
+    text: { es: 'La versión 0.0.1e trae un salto enorme en usabilidad y estética: 1) Estética de terminal CRT retro inmersiva y minimalista sin distracciones. 2) Panel interactivo de inspección de objetos al pasar el cursor o tocar en móviles, tanto para recompensas de misiones como para objetos del inventario (mostrando descripción, rareza y efectos detallados). 3) Rediseño con total separación responsiva entre PC y móvil para garantizar cero botones o paneles encimados. 4) Botón rápido de envejecimiento (+1 año) para avanzar en la vida sin tener que escribir. 5) Acceso seguro como Invitado conectado a Supabase con aviso de progreso efímero y limpieza al salir. 6) Expansión masiva de la comprensión de la IA de LIFE.AI para entender más textos y acciones de la vida diaria.', en: 'Version 0.0.1e brings a massive leap in usability and aesthetics: 1) Pure immersive retro CRT terminal aesthetic without visual distractions. 2) Interactive item inspection panel on hover or mobile tap for both mission rewards and inventory items (displaying description, rarity and detailed effects). 3) Redesigned responsive separation between PC and mobile ensuring zero overlapping buttons or panels. 4) Fast Age Up (+1 year) button to advance through life without typing. 5) Guest access synced with Supabase with an ephemeral progress warning and wipe upon exit. 6) Massive expansion of LIFE.AI comprehension for daily actions, professions, and natural phrasing.' }
+  },
+  {
+    date: '2026-09-15',
+    category: { es: 'ACTUALIZACIÓN', en: 'UPDATE' },
+    title: { es: 'NUEVA VERSION 0.0.2 — Expansión Total & Menú Simplificado', en: 'NEW VERSION 0.0.2 — Total Expansion & Simplified Menu' },
+    text: {
+      es: 'La versión 0.0.2 revoluciona la experiencia: 1) Menú simplificado por categorías temáticas en el panel de control (menu.json) para que los principiantes no se pierdan. 2) Cyber Coliseo: combates callejeros por turnos en ASCII con apuestas barriales. 3) CyberStock Exchange: simulación bursátil y criptomonedas con cotizaciones y gráficos en tiempo real. 4) Mascota Tamagotchi CRT: compañero robótico virtual evolutivo. 5) Expediente Detective: casos policiales noir procedurales con deducción de pistas y acusaciones. 6) Refugio Clandestino & Bienes Raíces: propiedades seguras con minadores pasivos de cripto. 7) Batalla de Rap en Terminal: duelos líricos en rima de 3 asaltos. 8) Marcación estricta de vidas fallecidas como injugables y balanceo seguro del Dado del Caos D20.',
+      en: 'Version 0.0.2 brings a complete expansion: 1) Simplified categorized control panel (menu.json) so newcomers never get overwhelmed. 2) Cyber Coliseum: turn-based ASCII street fights with bets. 3) CyberStock Exchange: live stock and crypto simulation with real-time ASCII charts. 4) CRT Tamagotchi: evolutionary virtual cyber pet with battery and firmware care. 5) Detective Casefiles: procedural noir crime investigations with clues and accusations. 6) Safehouse & Real Estate: underground properties with passive crypto mining. 7) Terminal Rap Battles: 3-round verbal rhyme showdowns. 8) Strict marking of deceased lives as unplayable and fully balanced D20 Chaos Die.'
+    }
   }
 ];
 
@@ -2229,6 +2291,7 @@ let currentQuestion = 0;
 let lastAnalysis = null;
 window.__lifeGlobalPatterns = [];
 let applicationReady = false;
+window.applicationReady = false;
 let weatherTimer = null;
 let worldClockTimer = null;
 const sessionStartedAt = Date.now();
@@ -2252,8 +2315,8 @@ const uiText = {
     authUsernameError: 'ERROR: introduce un nombre de usuario válido de 2 a 24 caracteres.',
     authPassMismatch: 'ERROR: Las contraseñas no coinciden.', authPassShort: 'ERROR: La contraseña debe tener al menos 6 caracteres.',
     authSuccessRegister: 'Cuenta creada con éxito. Entrando...', authSuccessLogin: 'Sesión iniciada. Cargando...',
-    welcomeGreeting: 'CENTRAL DE VIDAS', welcomeIntro: 'Comienza una nueva simulación o reanuda tus vidas anteriores guardadas.', welcomeNewLife: '+ COMENZAR NUEVA VIDA', previousLivesTitle: 'VIDAS ANTERIORES', previousLivesSubtitle: '// Reanuda solo aquellas que sigan vivas. Las vidas fallecidas permanecerán como historial.',
-    statusAlive: 'EN VIDA', statusEnded: 'FALLECIDO', resumeLife: '[ REANUDAR VIDA ]', deceasedLife: '[ FALLECIDO ]',
+    welcomeGreeting: 'CENTRAL DE VIDAS', welcomeIntro: 'Comienza una nueva simulación o reanuda tus vidas anteriores guardadas.', welcomeNewLife: '+ COMENZAR NUEVA VIDA', previousLivesTitle: 'VIDAS ANTERIORES', previousLivesSubtitle: '// Reanuda solo aquellas que sigan vivas. Las vidas fallecidas permanecerán como historial e injugables.',
+    statusAlive: 'EN VIDA', statusEnded: 'INJUGABLE // FALLECIDO', resumeLife: '[ REANUDAR VIDA ]', deceasedLife: '[ INJUGABLE // FALLECIDO ]',
     exitLife: '[ GUARDAR Y SALIR ]', exitLifeTitle: 'Guarda y sale de la vida actual sin morir', exitLifeConfirm: '¿Deseas pausar y salir al menú de vidas? Tu progreso quedará guardado sin morir.',
     logoutTitle: 'Cerrar sesión', blogTitleBtn: 'Ver notas y novedades de LIFE.AI', themeAria: 'Tema de color retro', discordTitle: 'Únete a nuestro servidor de Discord', perUnit: 'c/u',
     noPreviousLives: '// No tienes vidas guardadas todavía. ¡Comienza una nueva simulación!_',
@@ -2261,7 +2324,7 @@ const uiText = {
     nameHint: 'Escribe tu nombre.', surnameHint: 'Escribe tu apellido.', ageHint: 'Introduce tu edad.', moneyHint: 'Introduce una cantidad inicial.', locationHint: 'Escribe una ubicación.', hobbyHint: 'Ejemplo: música, fútbol, videojuegos, dibujo...',
     storyLabel: '¿Cómo quieres continuar tu vida?', storyPlaceholder: 'Escribe lo que sucede a continuación...', save: '[ DECIDIR ]', menu: '[ MENU ]', play: '[ JUGAR ]', blog: '[ BLOG ]', logout: '[ CERRAR SESIÓN ]', logoutConfirm: '¿Quieres cerrar la sesión? Tus partidas guardadas se conservarán en la nube y localmente.', history: '[ VER TODAS LAS DECISIONES ]', stats: '[ VER ESTADÍSTICAS ]', careers: '[ VER CARRERA ]', family: '[ VER FAMILIA ]', pets: '[ VER MASCOTAS ]', inventory: '[ VER INVENTARIO ]', government: '[ GOBIERNOS ]', world: '[ VER MUNDO ]', skills: '[ VER HABILIDADES ]', relations: '[ VER RELACIONES ]', learnFile: '[ CARGAR CONOCIMIENTO ]', export: '[ EXPORTAR PARTIDA ]', import: '[ IMPORTAR PARTIDA ]', reset: '[ NUEVA PARTIDA ]', menuTitle: 'menu.json // panel de control', menuSubtitle: '// todos los módulos de LIFE.AI',
     nameKey: '"nombre"', surnameKey: '"apellido"', ageKey: '"edad"', characterKey: '"personaje"', moneyKey: '"dinero"', locationKey: '"ubicación"', hobbyKey: '"hobby"', occupationKey: '"ocupación"', energyKey: '"energía"', moodKey: '"ánimo"', reputationKey: '"reputation"', none: 'ninguno', stable: 'estable', testGameOver: '[ PROBAR GAME OVER ]', governmentTitle: 'government.json // gobierno actual', governmentSubtitle: '// administración vigente y mandato de cuatro años',
-    careersTitle: 'careers.json // catálogo de profesiones', careersSubtitle: '// profesiones disponibles, variantes e ingresos aproximados', familyTitle: 'family.json // árbol familiar', familySubtitle: '// pareja, matrimonio, hijos y familiares', petsTitle: 'pets.json // compañeros', petsSubtitle: '// tus mascotas, cuidados y adopción', adoptPetTitle: '[ ADOPTAR NUEVA MASCOTA ]', adoptSubmit: '[ ADOPTAR ]', adoptTypeLabel: 'Tipo:', adoptNameLabel: 'Nombre:', adoptNamePlaceholder: 'Nombre de la mascota...', petTypeDog: 'Perro (Canino)', petTypeCat: 'Gato (Felino)', petTypeBird: 'Ave / Loro', petTypeHamster: 'Hámster', petTypeRabbit: 'Conejo', petPlay: '[ JUGAR ]', petFeed: '[ ALIMENTAR ]', petVet: '[ VETERINARIO ]', petWalk: '[ PASEAR ]', petGiveUp: '[ DAR EN ADOPCIÓN ]', petGiveUpConfirm: '¿Estás seguro de que deseas dar en adopción a {name}?', petGiveUpSuccess: '// Diste en adopción a {name}. Ha encontrado un nuevo y cariñoso hogar._', moneyRainEvent: '¡LLUVIA DE DINERO!', moneyRainIn: 'LLUVIA DE DINERO EN', moneyRainBonus: 'x10 (+1000%)', petNoPets: '// No tienes mascotas aún. ¡Adopta una para alegrar tu vida!_', themeLabel: 'TEMA:', themeGreen: 'VERDE MATRIX', themeOrange: 'ÁMBAR RETRO', themeRed: 'ROJO ALERTA', themeBlue: 'AZUL CYBER', inventoryTitle: 'inventory.json // inventario', inventorySubtitle: '// objetos encontrados durante la historia', worldTitle: 'world.json // mundo viviente', worldSubtitle: '// lugares, personajes, objetivos, eventos y reglas descubiertas', skillsTitle: 'skills.json // habilidades', skillsSubtitle: '// capacidades aprendidas, experiencia y crecimiento', relationsTitle: 'relations.json // relaciones', relationsSubtitle: '// vínculos, confianza y evolución social', statsTitle: 'stats.json // estadísticas', statsSubtitle: '// estado actual de tu vida', historyTitle: 'history.log // historial', historySubtitle: '// decisiones y capítulos guardados', blogTitle: 'blog.txt // notas de LIFE.AI', blogSubtitle: '// ideas, cambios y registros del simulador', blogReleaseTitle: '[ ACTUALIZACIÓN ] NUEVA VERSION 0.0.1e', blogReleaseText: 'Esta versión 0.0.1e elimina todos los emojis del sistema para una estética pura de terminal CRT, incorpora inspección táctil y hover de objetos tanto en misiones como en inventario, reestructura la interfaz para evitar superposiciones en PC y celular de forma independiente, añade botón de envejecimiento rápido (+1 año), acceso seguro como invitado con aviso de pérdida de progreso y expande el entendimiento lingüístico de la IA.', playTimeRewardsTitle: 'rewards.json // tiempo jugado', playTimeRewardsSubtitle: '// recompensas por permanecer en tu sesión', playTimeRewardsButton: '[ RECOMPENSAS POR TIEMPO JUGADO ]', saved: '// capítulo guardado correctamente_', gameOverTitle: 'GAME OVER', gameOverText: 'Tu vida ha terminado.', gameOverNewLife: '[ COMENZAR OTRA VIDA ]', gameOverClose: '[ VOLVER AL INICIO ]',
+    careersTitle: 'careers.json // catálogo de profesiones', careersSubtitle: '// profesiones disponibles, variantes e ingresos aproximados', familyTitle: 'family.json // árbol familiar', familySubtitle: '// pareja, matrimonio, hijos y familiares', petsTitle: 'pets.json // compañeros', petsSubtitle: '// tus mascotas, cuidados y adopción', adoptPetTitle: '[ ADOPTAR NUEVA MASCOTA ]', adoptSubmit: '[ ADOPTAR ]', adoptTypeLabel: 'Tipo:', adoptNameLabel: 'Nombre:', adoptNamePlaceholder: 'Nombre de la mascota...', petTypeDog: 'Perro (Canino)', petTypeCat: 'Gato (Felino)', petTypeBird: 'Ave / Loro', petTypeHamster: 'Hámster', petTypeRabbit: 'Conejo', petPlay: '[ JUGAR ]', petFeed: '[ ALIMENTAR ]', petVet: '[ VETERINARIO ]', petWalk: '[ PASEAR ]', petGiveUp: '[ DAR EN ADOPCIÓN ]', petGiveUpConfirm: '¿Estás seguro de que deseas dar en adopción a {name}?', petGiveUpSuccess: '// Diste en adopción a {name}. Ha encontrado un nuevo y cariñoso hogar._', moneyRainEvent: '¡LLUVIA DE DINERO!', moneyRainIn: 'LLUVIA DE DINERO EN', moneyRainBonus: 'x10 (+1000%)', petNoPets: '// No tienes mascotas aún. ¡Adopta una para alegrar tu vida!_', themeLabel: 'TEMA:', themeGreen: 'VERDE MATRIX', themeOrange: 'ÁMBAR RETRO', themeRed: 'ROJO ALERTA', themeBlue: 'AZUL CYBER', inventoryTitle: 'inventory.json // inventario', inventorySubtitle: '// objetos encontrados durante la historia', worldTitle: 'world.json // mundo viviente', worldSubtitle: '// lugares, personajes, objetivos, eventos y reglas descubiertas', skillsTitle: 'skills.json // habilidades', skillsSubtitle: '// capacidades aprendidas, experiencia y crecimiento', relationsTitle: 'relations.json // relaciones', relationsSubtitle: '// vínculos, confianza y evolución social', statsTitle: 'stats.json // estadísticas', statsSubtitle: '// estado actual de tu vida', historyTitle: 'history.log // historial', historySubtitle: '// decisiones y capítulos guardados', blogTitle: 'blog.txt // notas de LIFE.AI', blogSubtitle: '// ideas, cambios y registros del simulador', blogRelease002Title: '[ ACTUALIZACIÓN ] NUEVA VERSION 0.0.2 — EXPANSIÓN TOTAL', blogRelease002Text: 'La versión 0.0.2 simplifica la interfaz para principiantes organizando todos los módulos por categorías temáticas en el panel de control (menu.json). Incorpora 6 nuevos sistemas interactivos: Cyber Coliseo (combate callejero por turnos en ASCII), CyberStock Exchange (bolsa de valores y criptomonedas con cotizaciones en tiempo real), Mascota Cibernética Evolutiva (Tamagotchi CRT), Expediente Detective (casos policiales procedurales), Refugio Clandestino & Bienes Raíces (propiedades con minadores pasivos) y Batallas de Rap en Terminal. Además, incluye la marcación estricta de vidas fallecidas como injugables y el Dado del Caos D20 totalmente seguro.', blogReleaseTitle: '[ ACTUALIZACIÓN ] NUEVA VERSION 0.0.1e', blogReleaseText: 'Esta versión 0.0.1e optimiza los elementos visuales para una estética pura de terminal CRT, incorpora inspección táctil y hover de objetos tanto en misiones como en inventario, reestructura la interfaz para evitar superposiciones en PC y celular de forma independiente, añade botón de envejecimiento rápido (+1 año), acceso seguro como invitado con aviso de pérdida de progreso y expande el entendimiento lingüístico de la IA.', playTimeRewardsTitle: 'rewards.json // tiempo jugado', playTimeRewardsSubtitle: '// recompensas por permanecer en tu sesión', playTimeRewardsButton: '[ RECOMPENSAS POR TIEMPO JUGADO ]', saved: '// capítulo guardado correctamente_', gameOverTitle: 'GAME OVER', gameOverText: 'Tu vida ha terminado.', gameOverNewLife: '[ COMENZAR OTRA VIDA ]', gameOverClose: '[ VOLVER AL INICIO ]',
     emptyHistory: '// No hay decisiones registradas todavía en esta vida._', you: 'TÚ', ai: 'IA',
     missionsSidebarTitle: 'MISIONES & HITOS', missionsTab: '[ MISIONES ]', milestonesTab: '[ HITOS ]', toggleMissions: '[ MISIONES ]', missions: '[ VER MISIONES ]', searchItemButton: '[ BUSCAR EN LA ZONA (-10 ENERGÍA) ]', invFilterAll: '[ TODOS ]', invFilterConsumable: '[ CONSUMIBLES ]', invFilterEquipable: '[ EQUIPABLES ]', invFilterValuable: '[ VALIOSOS ]',
     ageUpButton: '[ +1 AÑO ]', ageUpTitle: 'Avanza un año en la vida de tu personaje', ageUpNotice: '// Cumpliste un año más. Ahora tienes {age} años._',
@@ -2270,7 +2333,46 @@ const uiText = {
     toggleMissionsTitle: 'Mostrar u ocultar panel de misiones laterales', searchingSavedLives: '// Buscando partidas guardadas en el sistema...',
     livesUnitSingle: 'VIDA', livesUnitPlural: 'VIDAS', playersOnline: 'JUGADORES ONLINE',
     itemDetailOkBtn: '[ ENTENDIDO ]', itemDetailInspect: '[ INFO ]',
-    donationLink: '[ DONACIONES ]', donationTitle: 'Apoya el desarrollo de LIFE.AI con una donación'
+    donationLink: '[ DONACIONES ]', donationTitle: 'Apoya el desarrollo de LIFE.AI con una donación',
+    quickStartButton: '[ RULETA DEL DESTINO // INICIO RÁPIDO ]', quickStartHint: 'Comienza al instante con un personaje procedural', skipToDestiny: '[ SALTAR // RULETA DEL DESTINO ]',
+    chaosDie: '[ D20: DADO DEL CAOS ]', quickActionsTitle: '// ACCIONES RÁPIDAS SUGERIDAS:',
+    casino: '[ CASINO RETRO ]', casinoTitle: 'casino.exe // CLUB CLANDESTINO', casinoSubtitle: '// tragamonedas, blackjack 21 y rasca y gana',
+    hack: '[ HACKEO CYBER ]', hackTitle: 'hack.exe // CYBER BYPASS TERMINAL', hackSubtitle: '// descifra la secuencia hexadecimal antes de que suene la alarma policial',
+    blackMarket: '[ MERCADO NEGRO ]', blackMarketTitle: 'darknet.onion // MERCADO NEGRO CLANDESTINO', blackMarketSubtitle: '// contrabando, herramientas ilegales y subastas relámpago',
+    newspaper: '[ EL VOCERO CRT ]', newspaperTitle: 'EL VOCERO CRT // THE DAILY TERMINAL',
+    coliseo: '[ CYBER COLISEO ]', stocks: '[ BOLSA DE VALORES ]', tamagotchi: '[ MASCOTA CRT ]', detective: '[ EXPEDIENTE POLICIAL ]', safehouse: '[ REFUGIO Y PROPIEDADES ]', rapBattle: '[ BATALLA DE RAP ]', playTimeRewards: '[ RECOMPENSAS POR TIEMPO ]',
+    menuCategoryStatus: '// ESTADO Y PROGRESO PERSONAL', menuCategorySocial: '// MUNDO SOCIAL Y VÍNCULOS', menuCategoryMinigames: '// MINIJUEGOS Y ENTRETENIMIENTO CLANDESTINO', menuCategoryEconomy: '// ECONOMÍA, MERCADO Y PROPIEDADES', menuCategorySystem: '// SISTEMA Y ARCHIVO',
+    menuDescStatus: 'Revisa tus estadísticas completas, catálogo de profesiones y árbol genealógico.',
+    menuDescSocial: 'Explora el mapa del mundo, tus habilidades y la red de relaciones sociales.',
+    menuDescMinigames: 'Apuesta en el casino, combate en el Cyber Coliseo, hackea terminales o improvisa rimas.',
+    menuDescEconomy: 'Gestiona tu inventario, opera en la bolsa de valores y adquiere refugios seguros.',
+    menuDescSystem: 'Ajustes del juego, exportar/importar partida, leer el periódico y notas de versión.',
+    menuNoResults: '// No se encontraron módulos que coincidan con la búsqueda._',
+    menuFilterPlaceholder: 'Buscar módulo o función...',
+    newbieGuideTitle: '// GUÍA RÁPIDA PARA NUEVOS JUGADORES:',
+    newbieGuideText: 'Escribe lo que deseas hacer o toca una de las ACCIONES RÁPIDAS abajo para avanzar tu historia. Todos los módulos (inventario, trabajos, casinos, bolsa, mascotas) están reunidos en el botón [ MENU ].',
+    dismissGuideBtn: '[ ENTENDIDO X ]',
+    coliseoTitle: 'coliseo.exe // CYBER COLISEO CLANDESTINO',
+    coliseoSubtitle: '// combates callejeros clandestinos por turnos y apuestas de honor',
+    coliseoPlayerName: 'TÚ (LUCHADOR)',
+    coliseoBetLabel: 'APUESTA DEL COMBATE:',
+    coliseoStartBtn: '[ INICIAR PELEA ]',
+    stocksTitle: 'stocks.exe // CYBERSTOCK EXCHANGE',
+    stocksSubtitle: '// cotizaciones en tiempo real del mercado corporativo y criptoactivos',
+    stocksRefreshBtn: '[ ACTUALIZAR MERCADO ]',
+    tamagotchiTitle: 'pet_os.bin // MASCOTA CIBERNÉTICA VIRTUAL',
+    tamagotchiSubtitle: '// compañero biomecánico evolutivo: mantén sus sistemas calibrados',
+    detectiveTitle: 'casefile.pdf // EXPEDIENTE POLICIAL CLANDESTINO',
+    detectiveSubtitle: '// investiga casos criminales de la ciudad, analiza pistas y acusa al culpable',
+    detectiveCluesHeader: '// PISTAS RECOLECTADAS:',
+    safehouseTitle: 'safehouse.sys // REFUGIO Y BIENES RAÍCES',
+    safehouseSubtitle: '// adquiere propiedades seguras e instala módulos de ingresos pasivos y bioprotección',
+    safehouseUpgradesTitle: '// INSTALACIONES Y MEJORAS ACTIVAS:',
+    rapBattleTitle: 'rap_battle.exe // DUELO DE RETÓRICA Y VERSOS',
+    rapBattleSubtitle: '// demuestra tu elocuencia en 3 asaltos de rimas callejeras frente a la multitud',
+    rapHypeLabel: 'RESPETO DEL PÚBLICO:',
+    rapOptionsTitle: '// ELIGE TU RESPUESTA EN RIMA:',
+    mutatorStandard: 'ESTÁNDAR (NORMAL)', mutatorAnarchy: 'MODO ANARQUÍA (SIN LEYES / DOBLE CAOS)', mutatorInflation: 'INFLACIÓN CÓSMICA (+25% ANUAL)', mutatorChaos: 'DADO LOCO (CONSECUENCIAS EXTREMAS)', mutatorGod: 'MODO DIOS / SANDBOX (TODO INFINITO)', mutatorLabel: '// MODO DE JUEGO / MUTADOR:'
   },
   en: {
     appTitle: 'Unnamed life simulation', languageLabel: 'LANG:', languageAria: 'Language',
@@ -2282,8 +2384,8 @@ const uiText = {
     authUsernameError: 'ERROR: enter a valid username between 2 and 24 characters.',
     authPassMismatch: 'ERROR: Passwords do not match.', authPassShort: 'ERROR: Password must be at least 6 characters.',
     authSuccessRegister: 'Account created successfully. Entering...', authSuccessLogin: 'Session started. Loading...',
-    welcomeGreeting: 'LIVES HEADQUARTERS', welcomeIntro: 'Start a new simulation or resume your saved previous lives.', welcomeNewLife: '+ START NEW LIFE', previousLivesTitle: 'PREVIOUS LIVES', previousLivesSubtitle: '// Resume only those still alive. Deceased lives remain as history.',
-    statusAlive: 'ALIVE', statusEnded: 'DECEASED', resumeLife: '[ RESUME LIFE ]', deceasedLife: '[ DECEASED ]',
+    welcomeGreeting: 'LIVES HEADQUARTERS', welcomeIntro: 'Start a new simulation or resume your saved previous lives.', welcomeNewLife: '+ START NEW LIFE', previousLivesTitle: 'PREVIOUS LIVES', previousLivesSubtitle: '// Resume only those still alive. Deceased lives remain as unplayable history.',
+    statusAlive: 'ALIVE', statusEnded: 'UNPLAYABLE // DECEASED', resumeLife: '[ RESUME LIFE ]', deceasedLife: '[ UNPLAYABLE // DECEASED ]',
     exitLife: '[ SAVE & EXIT ]', exitLifeTitle: 'Save and leave current life without dying', exitLifeConfirm: 'Do you want to pause and return to the lives menu? Your progress will be saved without dying.',
     logoutTitle: 'Log out', blogTitleBtn: 'View LIFE.AI notes and changelog', themeAria: 'Retro color theme', discordTitle: 'Join our Discord server', perUnit: 'ea',
     noPreviousLives: '// No saved lives yet. Start a new simulation!_',
@@ -2291,7 +2393,7 @@ const uiText = {
     nameHint: 'Write your name.', surnameHint: 'Write your surname.', ageHint: 'Enter your age.', moneyHint: 'Enter an initial amount.', locationHint: 'Write a location.', hobbyHint: 'Example: music, football, games, drawing...',
     storyLabel: 'How do you want to continue your life?', storyPlaceholder: 'Write what happens next...', save: '[ DECIDE ]', menu: '[ MENU ]', play: '[ PLAY ]', blog: '[ BLOG ]', logout: '[ LOG OUT ]', logoutConfirm: 'Do you want to log out? Your saved games will be preserved in cloud and locally.', history: '[ VIEW ALL DECISIONS ]', stats: '[ VIEW STATS ]', careers: '[ VIEW CAREERS ]', family: '[ VIEW FAMILY ]', pets: '[ VIEW PETS ]', inventory: '[ VIEW INVENTORY ]', government: '[ GOVERNMENTS ]', world: '[ VIEW WORLD ]', skills: '[ VIEW SKILLS ]', relations: '[ VIEW RELATIONSHIPS ]', learnFile: '[ LOAD KNOWLEDGE ]', export: '[ EXPORT GAME ]', import: '[ IMPORT GAME ]', reset: '[ NEW GAME ]', menuTitle: 'menu.json // control panel', menuSubtitle: '// all LIFE.AI modules',
     nameKey: '"name"', surnameKey: '"surname"', ageKey: '"age"', characterKey: '"character"', moneyKey: '"money"', locationKey: '"location"', hobbyKey: '"hobby"', occupationKey: '"occupation"', energyKey: '"energy"', moodKey: '"mood"', reputationKey: '"reputation"', none: 'none', stable: 'stable', testGameOver: '[ TEST GAME OVER ]',
-    blogReleaseTitle: '[ UPDATE ] NEW VERSION 0.0.1e', blogReleaseText: 'Version 0.0.1e removes all emojis for a pure retro CRT terminal aesthetic, introduces hover and tap inspection for items in both missions and inventory, separates PC and mobile layouts to guarantee zero button or panel overlaps, adds a quick Age Up (+1 year) button, adds guest entry with an ephemeral progress warning, and expands AI natural language comprehension.', careersTitle: 'careers.json // career catalog', careersSubtitle: '// available professions, variants and approximate income', familyTitle: 'family.json // family tree', familySubtitle: '// partner, marriage, children and relatives', petsTitle: 'pets.json // companions', petsSubtitle: '// your pets, care and adoption', adoptPetTitle: '[ ADOPT A NEW PET ]', adoptSubmit: '[ ADOPT ]', adoptTypeLabel: 'Type:', adoptNameLabel: 'Name:', adoptNamePlaceholder: 'Pet name...', petTypeDog: 'Dog (Canine)', petTypeCat: 'Cat (Feline)', petTypeBird: 'Bird / Parrot', petTypeHamster: 'Hamster', petTypeRabbit: 'Rabbit', petPlay: '[ PLAY ]', petFeed: '[ FEED ]', petVet: '[ VET ]', petWalk: '[ WALK ]', petGiveUp: '[ GIVE UP FOR ADOPTION ]', petGiveUpConfirm: 'Are you sure you want to put {name} up for adoption?', petGiveUpSuccess: '// You put {name} up for adoption. It found a new loving home._', moneyRainEvent: 'MONEY RAIN!', moneyRainIn: 'MONEY RAIN IN', moneyRainBonus: 'x10 (+1000%)', petNoPets: '// You do not have any pets yet. Adopt one to brighten your life!_', themeLabel: 'THEME:', themeGreen: 'MATRIX GREEN', themeOrange: 'RETRO AMBER', themeRed: 'ALERT RED', themeBlue: 'CYBER BLUE', inventoryTitle: 'inventory.json // inventory', inventorySubtitle: '// objects found during the story', government: '[ GOVERNMENTS ]', governmentTitle: 'government.json // current government', governmentSubtitle: '// current administration and four-year term', worldTitle: 'world.json // living world', worldSubtitle: '// places, characters, goals, events and discovered rules', skillsTitle: 'skills.json // skills', skillsSubtitle: '// learned abilities, experience and character growth', relationsTitle: 'relations.json // relationships', relationsSubtitle: '// bonds, trust and social evolution', statsTitle: 'stats.json // statistics', statsSubtitle: '// current life status', historyTitle: 'history.log // history', historySubtitle: '// saved decisions and chapters', blogTitle: 'blog.txt // LIFE.AI notes', blogSubtitle: '// ideas, changes and simulator records', playTimeRewardsTitle: 'rewards.json // play time', playTimeRewardsSubtitle: '// rewards for staying in your session', playTimeRewardsButton: '[ PLAY TIME REWARDS ]', saved: '// chapter saved successfully_', gameOverTitle: 'GAME OVER', gameOverText: 'Your life has ended.', gameOverNewLife: '[ START ANOTHER LIFE ]', gameOverClose: '[ RETURN TO START ]',
+    blogRelease002Title: '[ UPDATE ] NEW VERSION 0.0.2 — TOTAL EXPANSION', blogRelease002Text: 'Version 0.0.2 simplifies the user interface for beginners by organizing all modules into thematic categories inside the control panel (menu.json). It introduces 6 new interactive systems: Cyber Coliseum (ASCII turn-based street combat), CyberStock Exchange (simulated stock & crypto market with live charts), Evolutionary Cyber Pet (CRT Tamagotchi), Detective Casefiles (procedural noir investigations), Underground Safehouse & Real Estate (properties with passive crypto miners), and Terminal Rap Battles. Additionally, deceased lives are strictly marked unplayable and the D20 Chaos Die is completely balanced.', blogReleaseTitle: '[ UPDATE ] NEW VERSION 0.0.1e', blogReleaseText: 'Version 0.0.1e streamlines all visual elements for a pure retro CRT terminal aesthetic, introduces hover and tap inspection for items in both missions and inventory, separates PC and mobile layouts to guarantee zero button or panel overlaps, adds a quick Age Up (+1 year) button, adds guest entry with an ephemeral progress warning, and expands AI natural language comprehension.', careersTitle: 'careers.json // career catalog', careersSubtitle: '// available professions, variants and approximate income', familyTitle: 'family.json // family tree', familySubtitle: '// partner, marriage, children and relatives', petsTitle: 'pets.json // companions', petsSubtitle: '// your pets, care and adoption', adoptPetTitle: '[ ADOPT A NEW PET ]', adoptSubmit: '[ ADOPT ]', adoptTypeLabel: 'Type:', adoptNameLabel: 'Name:', adoptNamePlaceholder: 'Pet name...', petTypeDog: 'Dog (Canine)', petTypeCat: 'Cat (Feline)', petTypeBird: 'Bird / Parrot', petTypeHamster: 'Hamster', petTypeRabbit: 'Rabbit', petPlay: '[ PLAY ]', petFeed: '[ FEED ]', petVet: '[ VET ]', petWalk: '[ WALK ]', petGiveUp: '[ GIVE UP FOR ADOPTION ]', petGiveUpConfirm: 'Are you sure you want to put {name} up for adoption?', petGiveUpSuccess: '// You put {name} up for adoption. It found a new loving home._', moneyRainEvent: 'MONEY RAIN!', moneyRainIn: 'MONEY RAIN IN', moneyRainBonus: 'x10 (+1000%)', petNoPets: '// You do not have any pets yet. Adopt one to brighten your life!_', themeLabel: 'THEME:', themeGreen: 'MATRIX GREEN', themeOrange: 'RETRO AMBER', themeRed: 'ALERT RED', themeBlue: 'CYBER BLUE', inventoryTitle: 'inventory.json // inventory', inventorySubtitle: '// objects found during the story', government: '[ GOVERNMENTS ]', governmentTitle: 'government.json // current government', governmentSubtitle: '// current administration and four-year term', worldTitle: 'world.json // living world', worldSubtitle: '// places, characters, goals, events and discovered rules', skillsTitle: 'skills.json // skills', skillsSubtitle: '// learned abilities, experience and character growth', relationsTitle: 'relations.json // relationships', relationsSubtitle: '// bonds, trust and social evolution', statsTitle: 'stats.json // statistics', statsSubtitle: '// current life status', historyTitle: 'history.log // history', historySubtitle: '// saved decisions and chapters', blogTitle: 'blog.txt // LIFE.AI notes', blogSubtitle: '// ideas, changes and simulator records', playTimeRewardsTitle: 'rewards.json // play time', playTimeRewardsSubtitle: '// rewards for staying in your session', playTimeRewardsButton: '[ PLAY TIME REWARDS ]', saved: '// chapter saved successfully_', gameOverTitle: 'GAME OVER', gameOverText: 'Your life has ended.', gameOverNewLife: '[ START ANOTHER LIFE ]', gameOverClose: '[ RETURN TO START ]',
     emptyHistory: '// No decisions recorded yet in this life._', you: 'YOU', ai: 'AI',
     missionsSidebarTitle: 'MISSIONS & MILESTONES', missionsTab: '[ MISSIONS ]', milestonesTab: '[ MILESTONES ]', toggleMissions: '[ MISSIONS ]', missions: '[ VIEW MISSIONS ]', searchItemButton: '[ SEARCH THE AREA (-10 ENERGY) ]', invFilterAll: '[ ALL ]', invFilterConsumable: '[ CONSUMABLES ]', invFilterEquipable: '[ EQUIPABLES ]', invFilterValuable: '[ VALUABLES ]',
     ageUpButton: '[ +1 YEAR ]', ageUpTitle: 'Advance one year in your character\'s life', ageUpNotice: '// You grew a year older. You are now {age} years old._',
@@ -2300,7 +2402,46 @@ const uiText = {
     toggleMissionsTitle: 'Show or hide sidebar missions panel', searchingSavedLives: '// Searching for saved lives in the system...',
     livesUnitSingle: 'LIFE', livesUnitPlural: 'LIVES', playersOnline: 'PLAYERS ONLINE',
     itemDetailOkBtn: '[ UNDERSTOOD ]', itemDetailInspect: '[ INFO ]',
-    donationLink: '[ DONATIONS ]', donationTitle: 'Support LIFE.AI development with a donation'
+    donationLink: '[ DONATIONS ]', donationTitle: 'Support LIFE.AI development with a donation',
+    quickStartButton: '[ WHEEL OF DESTINY // QUICK START ]', quickStartHint: 'Start instantly with a procedural character', skipToDestiny: '[ SKIP // WHEEL OF DESTINY ]',
+    chaosDie: '[ D20: CHAOS DIE ]', quickActionsTitle: '// SUGGESTED QUICK ACTIONS:',
+    casino: '[ RETRO CASINO ]', casinoTitle: 'casino.exe // UNDERGROUND CLUB', casinoSubtitle: '// slot machine, blackjack 21 and scratch & win',
+    hack: '[ CYBER HACK ]', hackTitle: 'hack.exe // CYBER BYPASS TERMINAL', hackSubtitle: '// crack the hex sequence before the police alarm sounds',
+    blackMarket: '[ BLACK MARKET ]', blackMarketTitle: 'darknet.onion // UNDERGROUND BLACK MARKET', blackMarketSubtitle: '// contraband, illegal tools and flash auctions',
+    newspaper: '[ THE DAILY TERMINAL ]', newspaperTitle: 'THE DAILY TERMINAL // CRT GAZETTE',
+    coliseo: '[ CYBER COLISEUM ]', stocks: '[ CYBERSTOCK EXCHANGE ]', tamagotchi: '[ CRT TAMAGOTCHI ]', detective: '[ DETECTIVE CASEFILE ]', safehouse: '[ SAFEHOUSE & PROPERTIES ]', rapBattle: '[ TERMINAL RAP BATTLE ]', playTimeRewards: '[ PLAY TIME REWARDS ]',
+    menuCategoryStatus: '// STATUS & PERSONAL PROGRESS', menuCategorySocial: '// SOCIAL WORLD & BONDS', menuCategoryMinigames: '// MINIGAMES & UNDERGROUND ENTERTAINMENT', menuCategoryEconomy: '// ECONOMY, MARKET & PROPERTIES', menuCategorySystem: '// SYSTEM & ARCHIVE',
+    menuDescStatus: 'Inspect your full statistics, career progression, and family tree.',
+    menuDescSocial: 'Explore the world map, learned skills, and social relationship network.',
+    menuDescMinigames: 'Gamble at retro casino, brawl in Cyber Coliseum, hack terminals or battle rap.',
+    menuDescEconomy: 'Manage inventory, trade corporate stocks, and acquire safehouse properties.',
+    menuDescSystem: 'Game settings, export/import savefiles, read the newspaper and patch notes.',
+    menuNoResults: '// No modules found matching your search._',
+    menuFilterPlaceholder: 'Search module or feature...',
+    newbieGuideTitle: '// QUICK START GUIDE FOR NEW PLAYERS:',
+    newbieGuideText: 'Write what you want to do or tap any of the SUGGESTED QUICK ACTIONS below to advance your story. All modules (inventory, jobs, casinos, stock market, pets) are organized inside the [ MENU ] button.',
+    dismissGuideBtn: '[ UNDERSTOOD X ]',
+    coliseoTitle: 'coliseo.exe // UNDERGROUND CYBER COLISEUM',
+    coliseoSubtitle: '// turn-based street brawls and high-stakes honor bets',
+    coliseoPlayerName: 'YOU (FIGHTER)',
+    coliseoBetLabel: 'MATCH BET:',
+    coliseoStartBtn: '[ START FIGHT ]',
+    stocksTitle: 'stocks.exe // CYBERSTOCK EXCHANGE',
+    stocksSubtitle: '// real-time corporate market quotes and crypto assets',
+    stocksRefreshBtn: '[ REFRESH MARKET ]',
+    tamagotchiTitle: 'pet_os.bin // VIRTUAL CYBER PET',
+    tamagotchiSubtitle: '// evolutionary biomechanical companion: keep its systems calibrated',
+    detectiveTitle: 'casefile.pdf // NOIR DETECTIVE CASEFILE',
+    detectiveSubtitle: '// investigate city criminal cases, analyze clues and convict the culprit',
+    detectiveCluesHeader: '// COLLECTED CLUES:',
+    safehouseTitle: 'safehouse.sys // SAFEHOUSE & REAL ESTATE',
+    safehouseSubtitle: '// acquire secure properties and install passive income and bio-defense modules',
+    safehouseUpgradesTitle: '// ACTIVE INSTALLATIONS & UPGRADES:',
+    rapBattleTitle: 'rap_battle.exe // RHETORIC & LYRICS DUEL',
+    rapBattleSubtitle: '// prove your flow across 3 rounds of street rhyme battles before the crowd',
+    rapHypeLabel: 'CROWD RESPECT:',
+    rapOptionsTitle: '// CHOOSE YOUR RHYME RESPONSE:',
+    mutatorStandard: 'STANDARD (NORMAL)', mutatorAnarchy: 'ANARCHY MODE (NO LAWS / DOUBLE CHAOS)', mutatorInflation: 'COSMIC INFLATION (+25% PER YEAR)', mutatorChaos: 'CRAZY DIE (EXTREME OUTCOMES)', mutatorGod: 'GOD MODE / SANDBOX (UNLIMITED EVERYTHING)', mutatorLabel: '// GAME MODE / MUTATOR:'
   }
 };
 window.uiText = uiText;
@@ -2359,6 +2500,7 @@ async function startNewLife() {
   playTimeRewardsScreen?.classList.add('hidden');
   welcomeScreen?.classList.remove('hidden');
   setWelcomeNavigationVisible(true);
+  renderPreviousLivesList();
 }
 
 function renderGameOver(reason, savedGame, globalMemory) {
@@ -2740,20 +2882,9 @@ function isSameLife(a, b) {
   const surnameB = String(b.player?.surname || '').trim().toLowerCase();
   if (surnameA !== surnameB) return false;
 
-  const isAliveA = a.lifeStatus !== 'ended' && Number(a.player?.health ?? 100) > 0;
-  const isAliveB = b.lifeStatus !== 'ended' && Number(b.player?.health ?? 100) > 0;
-  if (isAliveA && isAliveB) return true;
-
-  if (isAliveA === isAliveB) {
-    const locA = String(a.player?.location || a.player?.birthPlace || '').trim().toLowerCase();
-    const locB = String(b.player?.location || b.player?.birthPlace || '').trim().toLowerCase();
-    if (!locA || !locB || locA === locB) return true;
-  }
-
-  if (!isAliveA && !isAliveB) {
-    if (a.endedReason && b.endedReason && a.endedReason === b.endedReason) return true;
-    if (Number(a.player?.age || 0) === Number(b.player?.age || 0)) return true;
-  }
+  const locA = String(a.player?.location || a.player?.birthPlace || '').trim().toLowerCase();
+  const locB = String(b.player?.location || b.player?.birthPlace || '').trim().toLowerCase();
+  if (!locA || !locB || locA === locB) return true;
 
   return false;
 }
@@ -2762,8 +2893,7 @@ function getLifeDedupeKey(save) {
   if (!save || !save.player?.name) return null;
   const name = String(save.player?.name || '').trim().toLowerCase();
   const surname = String(save.player?.surname || '').trim().toLowerCase();
-  const status = save.lifeStatus === 'ended' ? 'ended' : 'active';
-  return `${name}__${surname}__${status}`;
+  return `${name}__${surname}`;
 }
 
 function getDeletedLivesKeys() {
@@ -2825,6 +2955,14 @@ function deduplicateLivesList(lives) {
       const isNewer = newChapters > existingChapters || (newChapters === existingChapters && newTime >= existingTime);
       const chosen = isNewer ? { ...life } : { ...existing };
       const fallback = isNewer ? existing : life;
+
+      // Ensure ended status permanently prevails: a deceased life cannot be brought back as alive
+      const hasEnded = existing.lifeStatus === 'ended' || life.lifeStatus === 'ended' || Number(existing.player?.health ?? 100) <= 0 || Number(life.player?.health ?? 100) <= 0;
+      if (hasEnded) {
+        chosen.lifeStatus = 'ended';
+        chosen.endedReason = chosen.endedReason || existing.endedReason || life.endedReason || '';
+        if (chosen.player) chosen.player.health = 0;
+      }
 
       const isUUID = (str) => typeof str === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
       if (!isUUID(chosen.id) && isUUID(fallback.id)) {
@@ -3460,6 +3598,71 @@ function applyTranslations() {
   setText(document.querySelector('#blogReleaseTitle'), t('blogReleaseTitle')); setText(document.querySelector('#blogReleaseText'), t('blogReleaseText'));
   const footerElem = document.querySelector('#gameFooter');
   if (footerElem) footerElem.textContent = t('footerCredits');
+  setText(quickStartWelcomeBtn, t('quickStartButton'));
+  if (quickStartWelcomeBtn) quickStartWelcomeBtn.title = t('quickStartHint');
+  setText(quickStartQuestionBtn, t('skipToDestiny'));
+  if (quickStartQuestionBtn) quickStartQuestionBtn.title = t('quickStartHint');
+  setText(document.querySelector('#quickActionsTitle'), t('quickActionsTitle'));
+  setText(casinoButton, t('casino'));
+  setText(hackButton, t('hack'));
+  setText(blackMarketButton, t('blackMarket'));
+  setText(newspaperButton, t('newspaper'));
+  setText(coliseoButton, t('coliseo'));
+  setText(stocksButton, t('stocks'));
+  setText(tamagotchiButton, t('tamagotchi'));
+  setText(detectiveButton, t('detective'));
+  setText(safehouseButton, t('safehouse'));
+  setText(rapBattleButton, t('rapBattle'));
+
+  setText(document.querySelector('#newbieGuideTitle'), t('newbieGuideTitle'));
+  setText(document.querySelector('#newbieGuideText'), t('newbieGuideText'));
+  setText(document.querySelector('#dismissGuideBtn'), t('dismissGuideBtn'));
+  setPlaceholder(document.querySelector('#menuFilterInput'), t('menuFilterPlaceholder'));
+
+  setText(document.querySelector('#mutatorLabel'), t('mutatorLabel'));
+  if (gameMutatorSelect) {
+    const mutMap = { standard: 'mutatorStandard', anarchy: 'mutatorAnarchy', inflation: 'mutatorInflation', chaos: 'mutatorChaos', god: 'mutatorGod' };
+    Array.from(gameMutatorSelect.options).forEach((opt) => {
+      if (mutMap[opt.value]) opt.textContent = t(mutMap[opt.value]);
+    });
+  }
+  setText(document.querySelector('#casinoTitle'), t('casinoTitle'));
+  setText(document.querySelector('#casinoSubtitle'), t('casinoSubtitle'));
+  setText(document.querySelector('#hackTitle'), t('hackTitle'));
+  setText(document.querySelector('#hackSubtitle'), t('hackSubtitle'));
+  setText(document.querySelector('#blackMarketTitle'), t('blackMarketTitle'));
+  setText(document.querySelector('#blackMarketSubtitle'), t('blackMarketSubtitle'));
+  setText(document.querySelector('#newspaperTitle'), t('newspaperTitle'));
+
+  // Static headers for 6 new systems
+  setText(document.querySelector('#coliseoTitle'), t('coliseoTitle'));
+  setText(document.querySelector('#coliseoSubtitle'), t('coliseoSubtitle'));
+  setText(document.querySelector('#coliseoPlayerName'), t('coliseoPlayerName'));
+  setText(document.querySelector('#coliseoBetLabel'), t('coliseoBetLabel'));
+  setText(document.querySelector('#coliseoStartBtn'), t('coliseoStartBtn'));
+
+  setText(document.querySelector('#stocksTitle'), t('stocksTitle'));
+  setText(document.querySelector('#stocksSubtitle'), t('stocksSubtitle'));
+  setText(document.querySelector('#stocksRefreshBtn'), t('stocksRefreshBtn'));
+
+  setText(document.querySelector('#tamagotchiTitle'), t('tamagotchiTitle'));
+  setText(document.querySelector('#tamagotchiSubtitle'), t('tamagotchiSubtitle'));
+
+  setText(document.querySelector('#detectiveTitle'), t('detectiveTitle'));
+  setText(document.querySelector('#detectiveSubtitle'), t('detectiveSubtitle'));
+  setText(document.querySelector('#detectiveCluesHeader'), t('detectiveCluesHeader'));
+
+  setText(document.querySelector('#safehouseTitle'), t('safehouseTitle'));
+  setText(document.querySelector('#safehouseSubtitle'), t('safehouseSubtitle'));
+  setText(document.querySelector('#safehouseUpgradesTitle'), t('safehouseUpgradesTitle'));
+
+  setText(document.querySelector('#rapBattleTitle'), t('rapBattleTitle'));
+  setText(document.querySelector('#rapBattleSubtitle'), t('rapBattleSubtitle'));
+  setText(document.querySelector('#rapHypeLabel'), t('rapHypeLabel'));
+  setText(document.querySelector('#rapOptionsTitle'), t('rapOptionsTitle'));
+
+  if (typeof renderQuickActions === 'function') renderQuickActions();
+  if (typeof updateMutatorIndicator === 'function') updateMutatorIndicator();
   renderCreatorBlog();
   updateMoneyRainDisplay();
 }
@@ -3474,7 +3677,10 @@ function changeLanguage(value) {
   if (!worldScreen.classList.contains('hidden')) renderWorldPanel();
   if (!skillsScreen.classList.contains('hidden')) renderSkillsPanel();
   if (typeof relationsScreen !== 'undefined' && !relationsScreen.classList.contains('hidden')) renderRelationsPanel();
-  if (!menuScreen.classList.contains('hidden')) renderMenu();
+  if (!menuScreen.classList.contains('hidden')) {
+    const filterInput = document.querySelector('#menuFilterInput');
+    renderMenu(filterInput?.value || '');
+  }
   if (!careersScreen.classList.contains('hidden')) renderCareersPanel();
   if (!familyScreen.classList.contains('hidden')) renderFamilyPanel();
   if (typeof petsScreen !== 'undefined' && !petsScreen.classList.contains('hidden')) renderPetsPanel();
@@ -3483,6 +3689,11 @@ function changeLanguage(value) {
   if (typeof playTimeRewardsScreen !== 'undefined' && !playTimeRewardsScreen.classList.contains('hidden')) renderPlayTimeRewards();
   if (typeof statsScreen !== 'undefined' && !statsScreen.classList.contains('hidden')) { renderStats(); renderFullStats(); }
   if (typeof welcomeScreen !== 'undefined' && !welcomeScreen.classList.contains('hidden')) renderPreviousLivesList();
+  if (typeof stocksScreen !== 'undefined' && !stocksScreen.classList.contains('hidden')) renderStocksTable();
+  if (typeof tamagotchiScreen !== 'undefined' && !tamagotchiScreen.classList.contains('hidden')) renderTamagotchiDisplay();
+  if (typeof detectiveScreen !== 'undefined' && !detectiveScreen.classList.contains('hidden')) renderDetectiveCase();
+  if (typeof safehouseScreen !== 'undefined' && !safehouseScreen.classList.contains('hidden')) renderSafehouseUI();
+  if (typeof rapBattleScreen !== 'undefined' && !rapBattleScreen.classList.contains('hidden')) renderRapRound();
   renderMissionsSidebar();
   const storyIsVisible = !storyScreen?.classList.contains('hidden');
   if (window.__lifeSave?.lifeStatus === 'active' && storyIsVisible) {
@@ -3497,8 +3708,11 @@ listen(languageSelect, 'change', (event) => changeLanguage(event.target.value));
 listen(languageSelect, 'input', (event) => changeLanguage(event.target.value));
 
 listen(menuButton, 'click', () => {
+  const filterInput = document.querySelector('#menuFilterInput');
+  if (filterInput) filterInput.value = '';
   renderMenu();
   menuScreen.classList.remove('hidden');
+  setTimeout(() => filterInput?.focus(), 50);
 });
 
 function returnToMenuFromPanel(screen) {
@@ -3831,38 +4045,126 @@ listen(adoptPetForm, 'submit', async (e) => {
   await adoptNewPet(adoptNameInput?.value, adoptTypeSelect?.value);
 });
 
-function renderMenu() {
-  const controls = [
-    ['exitLife', () => exitCurrentLifeWithoutDying()],
-    ['history', () => { renderHistory(readSave().chapters); historyScreen.classList.remove('hidden'); }],
-    ['stats', () => { statsScreen.classList.remove('hidden'); renderStats(); renderFullStats(); }],
-    ['careers', () => { renderCareersPanel(); careersScreen.classList.remove('hidden'); }],
-    ['family', () => { renderFamilyPanel(); familyScreen.classList.remove('hidden'); }],
-    ['pets', () => { renderPetsPanel(); petsScreen.classList.remove('hidden'); }],
-    ['inventory', () => { renderInventoryPanel(); inventoryScreen.classList.remove('hidden'); }],
-    ['government', () => { renderGovernmentPanel(); governmentScreen.classList.remove('hidden'); }],
-    ['world', () => { renderWorldPanel(); worldScreen.classList.remove('hidden'); }],
-    ['skills', () => { renderSkillsPanel(); skillsScreen.classList.remove('hidden'); }],
-    ['relations', () => { renderRelationsPanel(); relationsScreen.classList.remove('hidden'); }],
-    ['learnFile', () => learnFileInput.click()],
-    ['export', () => exportButton.click()],
-    ['import', () => importInput.click()],
-    ['reset', () => resetButton.click()],
-    ['testGameOver', () => testGameOverButton.click()],
-    ['logout', logoutSession]
+function renderMenu(filterText = '') {
+  const normFilter = (filterText || '').trim().toLowerCase();
+  const categories = [
+    {
+      titleKey: 'menuCategoryStatus',
+      descKey: 'menuDescStatus',
+      items: [
+        ['stats', () => { statsScreen.classList.remove('hidden'); renderStats(); renderFullStats(); }],
+        ['history', () => { renderHistory(readSave().chapters); historyScreen.classList.remove('hidden'); }],
+        ['inventory', () => { renderInventoryPanel(); inventoryScreen.classList.remove('hidden'); }],
+        ['skills', () => { renderSkillsPanel(); skillsScreen.classList.remove('hidden'); }]
+      ]
+    },
+    {
+      titleKey: 'menuCategorySocial',
+      descKey: 'menuDescSocial',
+      items: [
+        ['family', () => { renderFamilyPanel(); familyScreen.classList.remove('hidden'); }],
+        ['relations', () => { renderRelationsPanel(); relationsScreen.classList.remove('hidden'); }],
+        ['pets', () => { renderPetsPanel(); petsScreen.classList.remove('hidden'); }],
+        ['careers', () => { renderCareersPanel(); careersScreen.classList.remove('hidden'); }],
+        ['government', () => { renderGovernmentPanel(); governmentScreen.classList.remove('hidden'); }],
+        ['world', () => { renderWorldPanel(); worldScreen.classList.remove('hidden'); }]
+      ]
+    },
+    {
+      titleKey: 'menuCategoryMinigames',
+      descKey: 'menuDescMinigames',
+      items: [
+        ['casino', () => openCasinoModal()],
+        ['coliseo', () => openColiseoModal()],
+        ['hack', () => openHackModal()],
+        ['rapBattle', () => openRapBattleModal()]
+      ]
+    },
+    {
+      titleKey: 'menuCategoryEconomy',
+      descKey: 'menuDescEconomy',
+      items: [
+        ['stocks', () => openStocksModal()],
+        ['safehouse', () => openSafehouseModal()],
+        ['tamagotchi', () => openTamagotchiModal()],
+        ['detective', () => openDetectiveModal()],
+        ['blackMarket', () => openBlackMarketModal()],
+        ['newspaper', () => openNewspaperModal()]
+      ]
+    },
+    {
+      titleKey: 'menuCategorySystem',
+      descKey: 'menuDescSystem',
+      items: [
+        ['playTimeRewards', () => { playTimeRewardsScreen.classList.remove('hidden'); renderPlayTimeRewards(); }],
+        ['export', () => exportButton.click()],
+        ['import', () => importInput.click()],
+        ['learnFile', () => learnFileInput.click()],
+        ['exitLife', () => exitCurrentLifeWithoutDying()],
+        ['reset', () => resetButton.click()],
+        ['testGameOver', () => testGameOverButton.click()],
+        ['logout', logoutSession]
+      ]
+    }
   ];
+
   menuGrid.replaceChildren();
-  controls.forEach(([key, action]) => {
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'history-button';
-    button.textContent = t(key);
-    button.addEventListener('click', () => {
-      menuScreen.classList.add('hidden');
-      action();
+  let hasMatches = false;
+
+  categories.forEach((cat) => {
+    const filteredItems = cat.items.filter(([key]) => {
+      if (!normFilter) return true;
+      const label = (t(key) || '').toLowerCase();
+      const title = (t(cat.titleKey) || '').toLowerCase();
+      const desc = (t(cat.descKey) || '').toLowerCase();
+      return label.includes(normFilter) || title.includes(normFilter) || desc.includes(normFilter);
     });
-    menuGrid.append(button);
+
+    if (filteredItems.length === 0) return;
+    hasMatches = true;
+
+    const section = document.createElement('div');
+    section.className = 'menu-category-section';
+
+    const title = document.createElement('div');
+    title.className = 'menu-category-title';
+    title.textContent = t(cat.titleKey);
+    section.appendChild(title);
+
+    if (cat.descKey && !normFilter) {
+      const desc = document.createElement('p');
+      desc.className = 'menu-category-desc';
+      desc.textContent = t(cat.descKey);
+      section.appendChild(desc);
+    }
+
+    const grid = document.createElement('div');
+    grid.className = 'menu-category-grid';
+
+    filteredItems.forEach(([key, action]) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'history-button';
+      button.textContent = t(key);
+      button.addEventListener('click', () => {
+        menuScreen.classList.add('hidden');
+        action();
+      });
+      grid.appendChild(button);
+    });
+
+    section.appendChild(grid);
+    menuGrid.appendChild(section);
   });
+
+  if (!hasMatches && normFilter) {
+    const noResults = document.createElement('p');
+    noResults.className = 'empty-category-notice';
+    noResults.style.color = 'var(--text-muted, #888)';
+    noResults.style.padding = '1.5rem 1rem';
+    noResults.textContent = t('menuNoResults');
+    menuGrid.appendChild(noResults);
+  }
 }
 
 async function logoutSession() {
@@ -5482,6 +5784,20 @@ function updateQuestion() {
   answerInput.focus();
 }
 
+function checkNewbieGuideBanner() {
+  const newbieGuideBanner = document.querySelector('#newbieGuideBanner');
+  if (!newbieGuideBanner) return;
+  let dismissed = false;
+  try {
+    dismissed = localStorage.getItem('lifeDismissedNewbieGuide') === 'true';
+  } catch { /* ignore */ }
+  if (dismissed) {
+    newbieGuideBanner.classList.add('hidden');
+  } else {
+    newbieGuideBanner.classList.remove('hidden');
+  }
+}
+
 function showStats() {
   lifeEngine.preparePlayer(player);
   renderStats();
@@ -5497,9 +5813,12 @@ function showStats() {
   questionScreen.classList.add('hidden');
   statsScreen.classList.add('hidden');
   storyScreen.classList.remove('hidden');
+  checkNewbieGuideBanner();
   startWeatherCycle(initialSave);
   renderWorldEnvironment(initialSave);
   renderCurrentOccupation();
+  renderQuickActions(initialSave);
+  updateMutatorIndicator(initialSave);
   storyInput.focus();
 }
 
@@ -5539,6 +5858,9 @@ async function finishLife(decision, savedGame, globalMemory) {
   await saveGlobalMemory(globalMemory);
   savedGame.lifeStatus = 'ended';
   savedGame.endedReason = decision || randomDeathCause();
+  if (savedGame.player) {
+    savedGame.player.health = 0;
+  }
   window.__lifeSave = savedGame;
   await saveCurrentGame(savedGame);
   renderGameOver(savedGame.endedReason, savedGame, globalMemory);
@@ -5694,6 +6016,19 @@ listen(saveStoryButton, 'click', async () => {
     result.effects.push(currentLanguage === 'en' ? 'supreme scepter: +2 rep, +$100' : 'cetro supremo: +2 rep, +$100');
   }
 
+  // Safehouse & Tamagotchi passives
+  if (savedGame.safehouse?.upgrades?.includes('crypto_rack')) {
+    const cryptoYield = Math.floor(45 + Math.random() * 40);
+    savedGame.player.money = (Number(savedGame.player.money) || 0) + cryptoYield;
+    result.effects.push(currentLanguage === 'en' ? `crypto rack: +$${cryptoYield}` : `minería cripto: +$${cryptoYield}`);
+  }
+  if (savedGame.safehouse?.upgrades?.includes('med_pod')) {
+    savedGame.player.energy = Math.min(100, (Number(savedGame.player.energy) || 0) + 10);
+  }
+  if (savedGame.tamagotchi?.phase >= 2) {
+    savedGame.player.mood = Math.min(100, (Number(savedGame.player.mood) || 0) + 5);
+  }
+
   window.__lifeSave = savedGame;
   await saveCurrentGame(savedGame);
   await saveGlobalMemory(globalMemory);
@@ -5712,6 +6047,7 @@ listen(saveStoryButton, 'click', async () => {
   renderStats();
   evaluateMissions();
   renderMissionsSidebar();
+  renderQuickActions(savedGame);
   storyInput.value = '';
 });
 
@@ -5782,6 +6118,8 @@ async function handleAgeUp() {
   renderStats();
   evaluateMissions();
   renderMissionsSidebar();
+  renderQuickActions(savedGame);
+  showYearlyNewspaper(savedGame);
 }
 
 listen(ageUpButton, 'click', handleAgeUp);
@@ -5994,7 +6332,7 @@ async function initializeApplication() {
     window.__lifeMemory = readFallbackMemory() || createEmptyMemory();
     try { applyTranslations(); } catch (error) { console.error('LIFE.AI fallback translation error:', error); }
   } finally {
-    applicationReady = true;
+    window.applicationReady = applicationReady = true;
     if (startButton) startButton.disabled = false;
     const isGuestSession = sessionStorage.getItem('lifeIsGuest') === 'true';
     const isGuestUser = /^(invitado|guest)(_\d+)?$/i.test(currentUsername || '');
@@ -6038,10 +6376,13 @@ function restoreSavedGame() {
     questionScreen.classList.add('hidden');
     statsScreen.classList.add('hidden');
     storyScreen.classList.remove('hidden');
+    checkNewbieGuideBanner();
     updatePreGameLinks();
     renderWorldEnvironment(savedGame);
     renderCurrentOccupation();
     renderMissionsSidebar();
+    renderQuickActions(savedGame);
+    updateMutatorIndicator(savedGame);
   } catch {
     window.__lifeSave = null;
   }
@@ -6152,11 +6493,12 @@ function applyDecisionEffects(decision, savedPlayer, analysis = analyzeText(deci
   const effects = [];
   let money = Number(savedPlayer.money) || 0;
   let age = Number(savedPlayer.age) || 0;
-  // Detect explicit age like "tengo 30 años" to avoid confusing it with money amounts.
-  const exactAge = decision.match(/(?:edad(?: es| de)?|tengo|ahora tengo|pongo|mi edad es|age is|i am|i'm)\D{0,12}(\d{1,3})\s*(?:años|anos|año|years?\s*old)?/i);
+  // Detect explicit age like "tengo 30 años" or "mi edad es 30" (never match generic numbers, money or percentages)
+  const exactAge = decision.match(/(?:(?:mi\s+)?edad(?:\s+es|\s+de)?|my\s+age(?:\s+is)?)\s*[:=]?\s*(\d{1,3})\b/i) ||
+    decision.match(/(?:tengo|cumplo|cumplí|cumpli|alcanzo|ahora\s+tengo|i\s+am|i'm)\s+(\d{1,3})\s*(?:años|anos|año|ano|years(?:\s*old)?)\b/i);
   if (exactAge) {
     const requestedAge = Number(exactAge[1]);
-    if (requestedAge >= age) {
+    if (requestedAge >= age && requestedAge <= 120) {
       age = requestedAge;
       effects.push(`${currentLanguage === 'en' ? 'age' : 'edad'}: ${age}`);
     }
@@ -6619,3 +6961,2388 @@ function renderHistory(chapters = readSave()?.chapters || []) {
     historyList.append(item);
   });
 }
+
+/* ==========================================================================
+   7 NUEVOS SISTEMAS INTERACTIVOS: RULETA, CASINO, DADO DEL CAOS, HACKEO,
+   MERCADO NEGRO, EL VOCERO CRT Y MUTADORES DE PARTIDA
+   ========================================================================== */
+
+/* 1. RULETA DEL DESTINO // INICIO RÁPIDO EN 1 CLIC */
+const DESTINY_ARCHETYPES = [
+  {
+    name_es: 'Kenji', surname_es: 'Sato', name_en: 'Kenji', surname_en: 'Sato',
+    age: 19, money: 50, location_es: 'Tokio', location_en: 'Tokyo',
+    hobby_es: 'computadoras', hobby_en: 'computers',
+    title_es: 'Hacker Novato con Laptop Rota y Loro Insolente',
+    title_en: 'Rookie Hacker with Broken Laptop and Sassy Parrot',
+    intro_es: 'Vives en un diminuto apartamento en Akihabara. Tienes $50 en la cartera, una laptop con cinta adhesiva y un loro rescatado que aprendió a insultar en tres idiomas.',
+    intro_en: 'You live in a micro-apartment in Akihabara. You have $50, a laptop held together with duct tape, and a rescued parrot that curses in three languages.',
+    item: { id: 'sassy_parrot', name_es: 'Loro Insolente', name_en: 'Sassy Parrot', type: 'valuable', price: 150, description_es: 'Un loro que repite comentarios mordaces. Sube el ánimo +10 pero a veces te delata.', description_en: 'A parrot that mimics sarcastic remarks. Boosts mood +10.' }
+  },
+  {
+    name_es: 'Horacio', surname_es: 'Von Sterling', name_en: 'Horace', surname_en: 'Von Sterling',
+    age: 68, money: 250000, location_es: 'Zúrich', location_en: 'Zurich',
+    hobby_es: 'ópera', hobby_en: 'opera',
+    title_es: 'Millonario Excéntrico con Problemas de Espalda',
+    title_en: 'Eccentric Millionaire with Chronic Back Pain',
+    intro_es: 'Heredaste una fortuna relojera. Tienes 68 años, $250,000 en el banco, un mono capuchino de mayordomo y un dolor lumbar crónico que desafía a la medicina moderna.',
+    intro_en: 'You inherited a watchmaking fortune. You are 68, have $250,000, a capuchin monkey butler, and lower back pain that defies modern science.',
+    item: { id: 'capuchin_butler', name_es: 'Mono Capuchino Mayordomo', name_en: 'Capuchin Monkey Butler', type: 'equipable', price: 2000, description_es: 'Lleva un pequeño frac. Te ayuda a administrar dinero pero roba uvas.', description_en: 'Wears a tiny tuxedo. Helps manage funds but steals grapes.' }
+  },
+  {
+    name_es: 'Lila', surname_es: 'Kovacs', name_en: 'Lila', surname_en: 'Kovacs',
+    age: 22, money: 5, location_es: 'Berlín', location_en: 'Berlin',
+    hobby_es: 'pintura', hobby_en: 'painting',
+    title_es: 'Estudiante de Arte Bohemio en Bancarrota',
+    title_en: 'Bankrupt Bohemian Art Student',
+    intro_es: 'Vives en un sótano húmedo en Kreuzberg con solo $5. Tu carisma es legendario, tomas café recalentado y tienes lienzos abstractos que nadie comprende.',
+    intro_en: 'You live in a damp Kreuzberg basement with exactly $5. Your charisma is legendary, you drink reheated coffee and paint abstract canvases no one understands.',
+    item: { id: 'charcoal_easel', name_es: 'Caballete de Carbón', name_en: 'Charcoal Easel', type: 'equipable', price: 60, description_es: 'Aumenta el carisma y creatividad en decisiones artísticas.', description_en: 'Increases charisma and creativity in artistic choices.' }
+  },
+  {
+    name_es: 'Vicente', surname_es: 'Cross', name_en: 'Vincent', surname_en: 'Cross',
+    age: 34, money: 1200, location_es: 'Londres', location_en: 'London',
+    hobby_es: 'ajedrez', hobby_en: 'chess',
+    title_es: 'Agente Encubierto Paranoico',
+    title_en: 'Paranoid Undercover Agent',
+    intro_es: 'Operas bajo el nombre clave \'Gavilán\'. Tienes $1,200 en efectivo sin registrar, tres pasaportes falsos y la firme sospecha de que tu vecino es un espía extranjero.',
+    intro_en: 'Operating under codename \'Hawk\'. You have $1,200 in unmarked bills, three fake passports, and a deep suspicion that your neighbor is a foreign agent.',
+    item: { id: 'cipher_radio', name_es: 'Radio Cifrada Vintage', name_en: 'Vintage Cipher Radio', type: 'equipable', price: 450, description_es: 'Intercepta transmisiones urbanas. Otorga +15 de inteligencia.', description_en: 'Intercepts urban radio traffic. Grants +15 intelligence.' }
+  },
+  {
+    name_es: 'Mateo', surname_es: 'Rossi', name_en: 'Mateo', surname_en: 'Rossi',
+    age: 28, money: 320, location_es: 'Nápoles', location_en: 'Naples',
+    hobby_es: 'cocina', hobby_en: 'cooking',
+    title_es: 'Chef Rebelde con Cuchillo de Titanio',
+    title_en: 'Rebel Chef with Titanium Santoku Knife',
+    intro_es: 'Te expulsaron de una escuela gastronómica por reinventar la pizza con salsa picante extraterrestre. Tienes $320, tu cuchillo favorito y una pasión desmedida por la buena comida.',
+    intro_en: 'Kicked out of culinary academy for putting habanero honey on traditional pizza. You have $320, your favorite titanium knife, and boundless ambition.',
+    item: { id: 'titanium_knife', name_es: 'Cuchillo Santoku de Titanio', name_en: 'Titanium Santoku Knife', type: 'equipable', price: 300, description_es: 'Corta lo que sea con precisión milimétrica. +10 reputación en cocina.', description_en: 'Cuts anything with razor precision. +10 cooking reputation.' }
+  }
+];
+
+function quickStartLife() {
+  if (!applicationReady) return;
+  resetWeatherVisuals();
+  setWelcomeNavigationVisible(false);
+  blogScreen?.classList.add('hidden');
+  welcomeScreen.classList.add('hidden');
+  questionScreen.classList.add('hidden');
+  window.lifeSupabase?.resetGameReference?.();
+  window.__lifeSave = null;
+  try { localStorage.removeItem('lifeSaveFallback'); } catch {}
+  Object.keys(player).forEach((key) => delete player[key]);
+  Object.assign(player, createFreshPlayer());
+
+  const en = currentLanguage === 'en';
+  const archetype = DESTINY_ARCHETYPES[Math.floor(Math.random() * DESTINY_ARCHETYPES.length)];
+  player.name = en ? archetype.name_en : archetype.name_es;
+  player.surname = en ? archetype.surname_en : archetype.surname_es;
+  player.age = archetype.age;
+  player.money = archetype.money;
+  player.location = en ? archetype.location_en : archetype.location_es;
+  player.hobby = en ? archetype.hobby_en : archetype.hobby_es;
+  player.familyTree = typeof generateFamilyTree === 'function' ? generateFamilyTree(player.surname) : {};
+  if (archetype.item) {
+    player.inventory = [{
+      id: archetype.item.id,
+      name: en ? archetype.item.name_en : archetype.item.name_es,
+      type: archetype.item.type,
+      price: archetype.item.price,
+      quantity: 1,
+      description: en ? archetype.item.description_en : archetype.item.description_es
+    }];
+  }
+  const chosenMutator = gameMutatorSelect ? gameMutatorSelect.value : 'standard';
+  if (chosenMutator === 'god') {
+    player.money = 999999999;
+    player.health = 100;
+    player.energy = 100;
+  }
+  showStats();
+  if (window.__lifeSave) {
+    window.__lifeSave.mutator = chosenMutator;
+    saveCurrentGame(window.__lifeSave);
+  }
+  updateMutatorIndicator(window.__lifeSave);
+  renderQuickActions(window.__lifeSave);
+  if (aiText) aiText.textContent = en ? archetype.intro_en : archetype.intro_es;
+  aiOutput?.classList.remove('hidden');
+  if (savedMessage) {
+    savedMessage.textContent = en ? `// DESTINY WHEEL: ${archetype.title_en} generated!_` : `// RULETA DEL DESTINO: ¡${archetype.title_es} generado!_`;
+    savedMessage.classList.remove('hidden', 'error');
+  }
+  updatePreGameLinks();
+}
+
+/* 2. CASINO RETRO CLANDESTINO (TRAGAMONEDAS, BLACKJACK 21, RASCA Y GANA) */
+let currentSlotBet = 10;
+let isSpinningSlots = false;
+let bjDeck = [];
+let bjPlayerHand = [];
+let bjDealerHand = [];
+let bjCurrentBet = 25;
+let bjGameOver = true;
+let scratchCardPrizes = [];
+let scratchCardRevealed = [false, false, false];
+let scratchTicketActive = false;
+
+function openCasinoModal() {
+  if (casinoScreen) {
+    casinoScreen.classList.remove('hidden');
+    initCasinoTabs();
+  }
+}
+
+function closeCasinoModal() {
+  if (casinoScreen) casinoScreen.classList.add('hidden');
+}
+
+function initCasinoTabs() {
+  const tabs = [
+    { btn: document.querySelector('#casinoTabSlots'), sec: document.querySelector('#casinoSlotsSection') },
+    { btn: document.querySelector('#casinoTabBlackjack'), sec: document.querySelector('#casinoBlackjackSection') },
+    { btn: document.querySelector('#casinoTabScratch'), sec: document.querySelector('#casinoScratchSection') }
+  ];
+  tabs.forEach(({ btn, sec }) => {
+    if (!btn || !sec) return;
+    btn.onclick = () => {
+      tabs.forEach((t) => {
+        t.btn?.classList.remove('active');
+        t.sec?.classList.add('hidden');
+      });
+      btn.classList.add('active');
+      sec.classList.remove('hidden');
+    };
+  });
+}
+
+// Tragamonedas
+const slotSymbols = ['7', '💎', '$', '⭐', '🔔', '🍒', '💀'];
+function spinSlots() {
+  if (isSpinningSlots) return;
+  const save = readSave();
+  if (!save?.player) return;
+  const en = currentLanguage === 'en';
+  const currentMoney = Number(save.player.money) || 0;
+  const resultBanner = document.querySelector('#slotResultBanner');
+
+  if (currentMoney < currentSlotBet) {
+    if (resultBanner) resultBanner.textContent = en ? '// ERROR: Not enough cash for this bet._' : '// ERROR: No tienes suficiente dinero para esta apuesta._';
+    return;
+  }
+
+  isSpinningSlots = true;
+  save.player.money = currentMoney - currentSlotBet;
+  renderStats();
+
+  const r1 = document.querySelector('#slotReel1');
+  const r2 = document.querySelector('#slotReel2');
+  const r3 = document.querySelector('#slotReel3');
+  r1?.classList.add('spinning');
+  r2?.classList.add('spinning');
+  r3?.classList.add('spinning');
+
+  if (resultBanner) resultBanner.textContent = en ? '// Spinning the reels..._' : '// Los rodillos están girando..._';
+
+  const pickSymbol = () => {
+    const weights = [0.08, 0.10, 0.12, 0.15, 0.18, 0.22, 0.15];
+    const rand = Math.random();
+    let sum = 0;
+    for (let i = 0; i < slotSymbols.length; i++) {
+      sum += weights[i];
+      if (rand <= sum) return slotSymbols[i];
+    }
+    return slotSymbols[slotSymbols.length - 1];
+  };
+
+  setTimeout(() => {
+    const s1 = pickSymbol();
+    if (r1) { r1.classList.remove('spinning'); r1.innerHTML = `<span class="reel-symbol">${s1}</span>`; }
+
+    setTimeout(() => {
+      const s2 = pickSymbol();
+      if (r2) { r2.classList.remove('spinning'); r2.innerHTML = `<span class="reel-symbol">${s2}</span>`; }
+
+      setTimeout(() => {
+        const s3 = pickSymbol();
+        if (r3) { r3.classList.remove('spinning'); r3.innerHTML = `<span class="reel-symbol">${s3}</span>`; }
+        isSpinningSlots = false;
+
+        let multiplier = 0;
+        let bonusItem = false;
+        let skullPenalty = false;
+
+        if (s1 === '7' && s2 === '7' && s3 === '7') {
+          multiplier = 25;
+          bonusItem = true;
+        } else if (s1 === '💎' && s2 === '💎' && s3 === '💎') {
+          multiplier = 15;
+        } else if (s1 === '$' && s2 === '$' && s3 === '$') {
+          multiplier = 10;
+        } else if (s1 === '⭐' && s2 === '⭐' && s3 === '⭐') {
+          multiplier = 8;
+        } else if (s1 === '🔔' && s2 === '🔔' && s3 === '🔔') {
+          multiplier = 5;
+        } else if (s1 === '🍒' && s2 === '🍒' && s3 === '🍒') {
+          multiplier = 3;
+        } else if (s1 === '💀' && s2 === '💀' && s3 === '💀') {
+          skullPenalty = true;
+        } else if (s1 === s2 || s2 === s3 || s1 === s3) {
+          multiplier = 1.5;
+        }
+
+        if (skullPenalty) {
+          save.player.health = Math.max(1, (Number(save.player.health) || 100) - 10);
+          if (resultBanner) resultBanner.textContent = en ? `// TRIPLE SKULL! Lost bet and took -10 Health penalty!_` : `// ¡TRIPLE CALAVERA! Perdiste la apuesta y sufriste -10 de Salud._`;
+        } else if (multiplier > 0) {
+          const winAmount = Math.floor(currentSlotBet * multiplier);
+          save.player.money = (Number(save.player.money) || 0) + winAmount;
+          let msg = en ? `// JACKPOT! You won +$${winAmount} (x${multiplier})!` : `// ¡PREMIO! Ganaste +$${winAmount} (x${multiplier})!`;
+          if (bonusItem) {
+            save.player.inventory = save.player.inventory || [];
+            save.player.inventory.push({
+              id: 'casino_gold_token',
+              name: en ? 'Casino Golden Token' : 'Ficha de Oro de Casino',
+              type: 'valuable',
+              price: 1500,
+              quantity: 1,
+              description: en ? 'Legendary commemorative golden token from the underground casino.' : 'Ficha legendaria de oro puro conmemorativa del casino clandestino.'
+            });
+            msg += en ? ` + Found rare Golden Token!` : ` + ¡Obtuviste la Ficha de Oro Clandestina!`;
+          }
+          if (resultBanner) resultBanner.textContent = msg;
+        } else {
+          if (resultBanner) resultBanner.textContent = en ? `// No match. Better luck next spin._` : `// Sin combinación. Mejor suerte en el próximo giro._`;
+        }
+
+        window.__lifeSave = save;
+        saveCurrentGame(save);
+        renderStats();
+      }, 200);
+    }, 200);
+  }, 350);
+}
+
+// Blackjack 21
+function createDeck() {
+  const suits = ['♠', '♥', '♦', '♣'];
+  const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+  const deck = [];
+  suits.forEach((suit) => {
+    values.forEach((val) => {
+      deck.push({ val, suit, text: `[ ${val}${suit} ]` });
+    });
+  });
+  for (let i = deck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+  return deck;
+}
+
+function calculateHandScore(hand) {
+  let score = 0;
+  let aces = 0;
+  hand.forEach((card) => {
+    if (['J', 'Q', 'K'].includes(card.val)) {
+      score += 10;
+    } else if (card.val === 'A') {
+      aces += 1;
+      score += 11;
+    } else {
+      score += parseInt(card.val, 10);
+    }
+  });
+  while (score > 21 && aces > 0) {
+    score -= 10;
+    aces -= 1;
+  }
+  return score;
+}
+
+function renderBlackjackUI() {
+  const pRow = document.querySelector('#playerCardsRow');
+  const dRow = document.querySelector('#dealerCardsRow');
+  const pScore = document.querySelector('#playerScore');
+  const dScore = document.querySelector('#dealerScore');
+
+  if (pRow) pRow.innerHTML = bjPlayerHand.map((c) => `<span class="retro-card">${c.text}</span>`).join('');
+  if (pScore) pScore.textContent = calculateHandScore(bjPlayerHand);
+
+  if (dRow) {
+    if (bjGameOver) {
+      dRow.innerHTML = bjDealerHand.map((c) => `<span class="retro-card">${c.text}</span>`).join('');
+      if (dScore) dScore.textContent = calculateHandScore(bjDealerHand);
+    } else {
+      dRow.innerHTML = bjDealerHand.length
+        ? `<span class="retro-card">${bjDealerHand[0].text}</span><span class="retro-card">[ ? ]</span>`
+        : '<span class="retro-card">[ ? ]</span>';
+      if (dScore) dScore.textContent = '?';
+    }
+  }
+
+  const dealBtn = document.querySelector('#bjDealBtn');
+  const hitBtn = document.querySelector('#bjHitBtn');
+  const standBtn = document.querySelector('#bjStandBtn');
+  const doubleBtn = document.querySelector('#bjDoubleBtn');
+
+  if (dealBtn) dealBtn.disabled = !bjGameOver;
+  if (hitBtn) hitBtn.classList.toggle('hidden', bjGameOver);
+  if (standBtn) standBtn.classList.toggle('hidden', bjGameOver);
+  if (doubleBtn) doubleBtn.classList.toggle('hidden', bjGameOver || bjPlayerHand.length !== 2);
+}
+
+function startBlackjackHand() {
+  const save = readSave();
+  if (!save?.player) return;
+  const en = currentLanguage === 'en';
+  const currentMoney = Number(save.player.money) || 0;
+  const resultBanner = document.querySelector('#bjResultBanner');
+
+  if (currentMoney < bjCurrentBet) {
+    if (resultBanner) resultBanner.textContent = en ? '// ERROR: Not enough funds for this bet._' : '// ERROR: Fondos insuficientes para esta apuesta._';
+    return;
+  }
+
+  save.player.money = currentMoney - bjCurrentBet;
+  renderStats();
+
+  bjDeck = createDeck();
+  bjPlayerHand = [bjDeck.pop(), bjDeck.pop()];
+  bjDealerHand = [bjDeck.pop(), bjDeck.pop()];
+  bjGameOver = false;
+
+  renderBlackjackUI();
+
+  const pScore = calculateHandScore(bjPlayerHand);
+  const dScore = calculateHandScore(bjDealerHand);
+
+  if (pScore === 21) {
+    bjGameOver = true;
+    if (dScore === 21) {
+      save.player.money += bjCurrentBet;
+      if (resultBanner) resultBanner.textContent = en ? '// BOTH BLACKJACK! Push (bet refunded)._' : '// ¡AMBOS BLACKJACK! Empate (apuesta devuelta)._';
+    } else {
+      const win = Math.floor(bjCurrentBet * 2.5);
+      save.player.money += win;
+      if (resultBanner) resultBanner.textContent = en ? `// NATURAL BLACKJACK! You won +$${win}!_` : `// ¡BLACKJACK NATURAL! Ganaste +$${win}!_`;
+    }
+    window.__lifeSave = save;
+    saveCurrentGame(save);
+    renderStats();
+    renderBlackjackUI();
+  } else {
+    if (resultBanner) resultBanner.textContent = en ? '// Hand dealt. Choose Hit, Stand or Double._' : '// Mano repartida. Elige Pedir, Plantarte o Doblar._';
+  }
+}
+
+function bjHit() {
+  if (bjGameOver) return;
+  const en = currentLanguage === 'en';
+  bjPlayerHand.push(bjDeck.pop());
+  const score = calculateHandScore(bjPlayerHand);
+  renderBlackjackUI();
+  const resultBanner = document.querySelector('#bjResultBanner');
+
+  if (score > 21) {
+    bjGameOver = true;
+    renderBlackjackUI();
+    if (resultBanner) resultBanner.textContent = en ? `// BUST! (${score}) Dealer wins._` : `// ¡TE PASASTE! (${score}) La casa gana._`;
+    const save = readSave();
+    window.__lifeSave = save;
+    saveCurrentGame(save);
+  }
+}
+
+function bjStand() {
+  if (bjGameOver) return;
+  bjGameOver = true;
+  const en = currentLanguage === 'en';
+  const save = readSave();
+  const resultBanner = document.querySelector('#bjResultBanner');
+
+  while (calculateHandScore(bjDealerHand) < 17) {
+    bjDealerHand.push(bjDeck.pop());
+  }
+
+  const pScore = calculateHandScore(bjPlayerHand);
+  const dScore = calculateHandScore(bjDealerHand);
+  renderBlackjackUI();
+
+  if (dScore > 21) {
+    const win = bjCurrentBet * 2;
+    save.player.money = (Number(save.player.money) || 0) + win;
+    if (resultBanner) resultBanner.textContent = en ? `// DEALER BUSTED (${dScore})! You won +$${win}!_` : `// ¡LA CASA SE PASÓ (${dScore})! Ganaste +$${win}!_`;
+  } else if (pScore > dScore) {
+    const win = bjCurrentBet * 2;
+    save.player.money = (Number(save.player.money) || 0) + win;
+    if (resultBanner) resultBanner.textContent = en ? `// YOU WIN (${pScore} vs ${dScore})! +$${win}_` : `// ¡GANASTE (${pScore} vs ${dScore})! +$${win}_`;
+  } else if (pScore === dScore) {
+    save.player.money = (Number(save.player.money) || 0) + bjCurrentBet;
+    if (resultBanner) resultBanner.textContent = en ? `// PUSH (${pScore} vs ${dScore}). Bet returned._` : `// EMPATE (${pScore} vs ${dScore}). Apuesta devuelta._`;
+  } else {
+    if (resultBanner) resultBanner.textContent = en ? `// DEALER WINS (${dScore} vs ${pScore}). Better luck next hand._` : `// LA CASA GANA (${dScore} vs ${pScore}). Mejor suerte la próxima._`;
+  }
+
+  window.__lifeSave = save;
+  saveCurrentGame(save);
+  renderStats();
+}
+
+function bjDouble() {
+  if (bjGameOver || bjPlayerHand.length !== 2) return;
+  const save = readSave();
+  const en = currentLanguage === 'en';
+  const currentMoney = Number(save.player.money) || 0;
+  if (currentMoney < bjCurrentBet) {
+    const resultBanner = document.querySelector('#bjResultBanner');
+    if (resultBanner) resultBanner.textContent = en ? '// ERROR: Not enough cash to double bet._' : '// ERROR: No tienes suficiente dinero para doblar._';
+    return;
+  }
+  save.player.money = currentMoney - bjCurrentBet;
+  bjCurrentBet *= 2;
+  renderStats();
+  bjPlayerHand.push(bjDeck.pop());
+  renderBlackjackUI();
+  if (calculateHandScore(bjPlayerHand) > 21) {
+    bjGameOver = true;
+    renderBlackjackUI();
+    const resultBanner = document.querySelector('#bjResultBanner');
+    if (resultBanner) resultBanner.textContent = en ? `// BUST ON DOUBLE! Lost $${bjCurrentBet}._` : `// ¡TE PASASTE AL DOBLAR! Perdiste $${bjCurrentBet}._`;
+    window.__lifeSave = save;
+    saveCurrentGame(save);
+  } else {
+    bjStand();
+  }
+}
+
+// Rasca y Gana
+function buyScratchTicket() {
+  const save = readSave();
+  if (!save?.player) return;
+  const en = currentLanguage === 'en';
+  const currentMoney = Number(save.player.money) || 0;
+  const resultBanner = document.querySelector('#scratchResultBanner');
+  const cost = 25;
+
+  if (currentMoney < cost) {
+    if (resultBanner) resultBanner.textContent = en ? '// ERROR: Ticket costs $25. Insufficient funds._' : '// ERROR: El boleto cuesta $25. Dinero insuficiente._';
+    return;
+  }
+
+  save.player.money = currentMoney - cost;
+  renderStats();
+
+  const possiblePrizes = ['$0', '$10', '$50', '$250', '$1,000', 'LUCKY'];
+  const weights = [0.45, 0.25, 0.15, 0.08, 0.04, 0.03];
+  const pick = () => {
+    const r = Math.random();
+    let acc = 0;
+    for (let i = 0; i < possiblePrizes.length; i++) {
+      acc += weights[i];
+      if (r <= acc) return possiblePrizes[i];
+    }
+    return '$0';
+  };
+
+  const isWinner = Math.random() < 0.32;
+  if (isWinner) {
+    const winSymbol = pick();
+    scratchCardPrizes = [winSymbol, winSymbol, winSymbol];
+  } else {
+    scratchCardPrizes = [pick(), pick(), pick()];
+    if (scratchCardPrizes[0] === scratchCardPrizes[1] && scratchCardPrizes[1] === scratchCardPrizes[2]) {
+      scratchCardPrizes[2] = scratchCardPrizes[0] === '$0' ? '$10' : '$0';
+    }
+  }
+
+  scratchCardRevealed = [false, false, false];
+  scratchTicketActive = true;
+
+  [1, 2, 3].forEach((idx) => {
+    const slot = document.querySelector(`#scratchSlot${idx}`);
+    if (slot) {
+      slot.classList.remove('revealed');
+      slot.textContent = '[ ??? ]';
+    }
+  });
+
+  const revealAllBtn = document.querySelector('#scratchRevealBtn');
+  if (revealAllBtn) revealAllBtn.classList.remove('hidden');
+
+  if (resultBanner) resultBanner.textContent = en ? '// Ticket purchased! Click the 3 slots to scratch._' : '// ¡Boleto comprado! Haz clic en las 3 casillas para rascar._';
+}
+
+function revealScratchSlot(idx) {
+  if (!scratchTicketActive || scratchCardRevealed[idx]) return;
+  scratchCardRevealed[idx] = true;
+  const slot = document.querySelector(`#scratchSlot${idx + 1}`);
+  if (slot) {
+    slot.classList.add('revealed');
+    slot.textContent = scratchCardPrizes[idx];
+  }
+  checkScratchResult();
+}
+
+function revealAllScratch() {
+  if (!scratchTicketActive) return;
+  [0, 1, 2].forEach((i) => revealScratchSlot(i));
+}
+
+function checkScratchResult() {
+  if (!scratchCardRevealed.every(Boolean)) return;
+  scratchTicketActive = false;
+  const save = readSave();
+  const en = currentLanguage === 'en';
+  const resultBanner = document.querySelector('#scratchResultBanner');
+  const [s1, s2, s3] = scratchCardPrizes;
+
+  if (s1 === s2 && s2 === s3 && s1 !== '$0') {
+    if (s1 === 'LUCKY') {
+      save.player.inventory = save.player.inventory || [];
+      save.player.inventory.push({
+        id: 'lucky_charm',
+        name: en ? 'Lucky Charm' : 'Amuleto de la Suerte',
+        type: 'equipable',
+        price: 800,
+        quantity: 1,
+        description: en ? 'Mystical talisman. Saves you from death once by shattering!' : 'Talismán místico. ¡Te salva de la muerte una vez rompiéndose!'
+      });
+      if (resultBanner) resultBanner.textContent = en ? '// TRIPLE LUCKY! Won a rare Lucky Charm Talisman!_' : '// ¡TRIPLE SUERTE! ¡Ganaste un Amuleto de la Suerte!_';
+    } else {
+      const prizeMoney = parseInt(s1.replace('$', '').replace(',', ''), 10);
+      save.player.money = (Number(save.player.money) || 0) + prizeMoney;
+      if (resultBanner) resultBanner.textContent = en ? `// WINNER! Matched 3x ${s1}! Won +$${prizeMoney}!_` : `// ¡GANADOR! ¡Coincidieron 3x ${s1}! ¡Ganaste +$${prizeMoney}!_`;
+    }
+  } else {
+    if (resultBanner) resultBanner.textContent = en ? '// No 3-way match. Try another ticket!_' : '// No coincidieron las 3 casillas. ¡Prueba otro boleto!_';
+  }
+
+  window.__lifeSave = save;
+  saveCurrentGame(save);
+  renderStats();
+}
+
+/* 3. DADO DEL CAOS Y DECISIONES RÁPIDAS CONTEXTUALES */
+function renderQuickActions(save = readSave()) {
+  if (!quickActionsGrid) return;
+  quickActionsGrid.replaceChildren();
+  const en = currentLanguage === 'en';
+  const age = Number(save?.player?.age) || 20;
+
+  let suggestions = [];
+  if (age < 18) {
+    suggestions = en ? [
+      'Set up an undercover lemonade stand on the busiest corner',
+      'Climb the municipal observatory fence after curfew',
+      'Trade my vintage comic books for an encrypted USB drive'
+    ] : [
+      'Montar un puesto secreto de limonada en la esquina más transitada',
+      'Trepar la reja del observatorio municipal después del toque de queda',
+      'Intercambiar mis cómics raros por una memoria USB encriptada'
+    ];
+  } else if (age < 30) {
+    suggestions = en ? [
+      'Invest all my savings into an obscure crypto mining startup',
+      'Challenge my boss to a karaoke showdown for a promotion',
+      'Adopt a fake identity and move into an artists warehouse'
+    ] : [
+      'Invertir todos mis ahorros en una startup sospechosa de criptomonedas',
+      'Desafiar a mi jefe a un duelo de karaoke por un aumento de sueldo',
+      'Adoptar una identidad falsa y mudarme a un taller clandestino de artistas'
+    ];
+  } else if (age < 60) {
+    suggestions = en ? [
+      'Buy a restored retro motorcycle and plan an impromptu road trip',
+      'Confront the corporate board about unethical algorithmic trading',
+      'Enroll in secret midnight martial arts lessons'
+    ] : [
+      'Comprar una motocicleta retro y planear un viaje improvisado por carretera',
+      'Confrontar a la junta directiva sobre algoritmos financieros poco éticos',
+      'Inscribirme en clases clandestinas de artes marciales a medianoche'
+    ];
+  } else {
+    suggestions = en ? [
+      'Write an explosive tell-all autobiography exposing city secrets',
+      'Bet everything on a high-stakes championship bingo tournament',
+      'Challenge the mayor to a public debate in the central plaza'
+    ] : [
+      'Escribir una autobiografía escandalosa revelando secretos de la ciudad',
+      'Apostar todo en un torneo clandestino de bingo de altas apuestas',
+      'Desafiar al alcalde a un debate público en la plaza central'
+    ];
+  }
+
+  suggestions.slice(0, 3).forEach((text) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'quick-action-btn';
+    btn.textContent = `[ ${text} ]`;
+    btn.addEventListener('click', () => {
+      if (storyInput) {
+        storyInput.value = text;
+        saveStoryButton?.click();
+      }
+    });
+    quickActionsGrid.append(btn);
+  });
+
+  const chaosBtn = document.createElement('button');
+  chaosBtn.type = 'button';
+  chaosBtn.className = 'quick-action-btn chaos-die-btn';
+  chaosBtn.textContent = t('chaosDie');
+  chaosBtn.addEventListener('click', () => {
+    triggerChaosDie();
+  });
+  quickActionsGrid.append(chaosBtn);
+}
+
+function triggerChaosDie() {
+  const save = readSave();
+  if (!save?.player?.name) return;
+  if (save.lifeStatus === 'ended') return;
+
+  const en = currentLanguage === 'en';
+  const roll = Math.floor(Math.random() * 20) + 1; // 1 to 20
+
+  const chaosTable = [
+    {
+      title_es: 'PIFIA CIBERNÉTICA', title_en: 'CYBER BLUNDER',
+      desc_es: 'Tropezaste con cables clandestinos. Pierdes -$30 y -10 energía, pero la multitud aplaude tu estilo (+5 reputación).',
+      desc_en: 'Tripped over street power cables. Lost -$30 and -10 energy, but the crowd applauds your style (+5 reputation).',
+      apply: (p) => { p.money = Math.max(0, (Number(p.money) || 0) - 30); p.energy = Math.max(25, (Number(p.energy) || 0) - 10); p.reputation = (Number(p.reputation) || 0) + 5; }
+    },
+    {
+      title_es: 'PALOMA MENSAJERA ESPÍA', title_en: 'SPY CARRIER PIGEON',
+      desc_es: 'Una paloma robótica aterriza con un micro-chip en su pata. ¡Ganas +1 en programación y +10 ánimo!',
+      desc_en: 'A robotic pigeon lands bearing a microchip. Gained +1 programming and +10 mood!',
+      apply: (p) => { p.skills = p.skills || {}; p.skills.programacion = (p.skills.programacion || 0) + 1; p.mood = (Number(p.mood) || 0) + 10; }
+    },
+    {
+      title_es: 'TACO RADIOACTIVO', title_en: 'RADIOACTIVE STREET TACO',
+      desc_es: 'Compraste un taco fluorescente. Pierdes -10 energía, pero tu sistema inmunológico se vuelve de titanio (+15 salud).',
+      desc_en: 'Ate a glowing street taco. Lost -10 energy, but your immune system turned to titanium (+15 health).',
+      apply: (p) => { p.energy = Math.max(25, (Number(p.energy) || 0) - 10); p.health = Math.min(100, (Number(p.health) || 0) + 15); }
+    },
+    {
+      title_es: 'ARMADURA MEDIEVAL', title_en: 'MEDIEVAL ARMOR FRENZY',
+      desc_es: 'Caminas con una armadura completa por el centro comercial. Eres el meme del día (+15 reputación, +$120 en propinas).',
+      desc_en: 'Walked in full knight armor through the mall. You are the meme of the day (+15 reputation, +$120 tips).',
+      apply: (p) => { p.reputation = (Number(p.reputation) || 0) + 15; p.money = (Number(p.money) || 0) + 120; }
+    },
+    {
+      title_es: 'DRON DESCALIBRADO', title_en: 'ROGUE DELIVERY DRONE',
+      desc_es: 'Un dron de reparto suelta accidentalmente 3 cajas de pizza caliente en tus brazos (+25 energía, +15 ánimo).',
+      desc_en: 'A delivery drone drops 3 hot pizzas into your open arms (+25 energy, +15 mood).',
+      apply: (p) => { p.energy = Math.min(100, (Number(p.energy) || 0) + 25); p.mood = (Number(p.mood) || 0) + 15; }
+    },
+    {
+      title_es: 'DUELO DE MIRADAS', title_en: 'SUBWAY STARE-DOWN',
+      desc_es: 'Vences a un desconocido en un intenso duelo de miradas en el metro (+10 reputación, +5 ánimo).',
+      desc_en: 'Defeated a stranger in an intense subway staring contest (+10 reputation, +5 mood).',
+      apply: (p) => { p.reputation = (Number(p.reputation) || 0) + 10; p.mood = (Number(p.mood) || 0) + 5; }
+    },
+    {
+      title_es: 'MAPACHE MECÁNICO', title_en: 'MECHANICAL RACCOON',
+      desc_es: 'Alimentas a un mapache cibernético callejero y a cambio te obsequia una pieza de cobre rara (+10 ánimo, +$150).',
+      desc_en: 'Fed a cybernetic raccoon; it gifted you a rare scrap metal artifact (+10 mood, +$150).',
+      apply: (p) => { p.mood = (Number(p.mood) || 0) + 10; p.money = (Number(p.money) || 0) + 150; }
+    },
+    {
+      title_es: 'CONCIERTO IMPROVISADO', title_en: 'IMPROMPTU STREET CONCERT',
+      desc_es: 'Haces ritmo con tapas de botes de basura y congregas a una multitud (+1 creatividad, +$180 en donaciones).',
+      desc_en: 'Drummed on garbage lids gathering a cheerful crowd (+1 creativity, +$180 donations).',
+      apply: (p) => { p.skills = p.skills || {}; p.skills.creatividad = (p.skills.creatividad || 0) + 1; p.money = (Number(p.money) || 0) + 180; }
+    },
+    {
+      title_es: 'CAJERO CON FALLO', title_en: 'GLITCHED ATM CASHBACK',
+      desc_es: 'Un cajero automático parpadea en azul y suelta un billete de $200 sin pedir PIN.',
+      desc_en: 'An ATM flashes blue error text and spits out a crisp $200 bill without asking for PIN.',
+      apply: (p) => { p.money = (Number(p.money) || 0) + 200; }
+    },
+    {
+      title_es: 'RADIO PIRATA', title_en: 'PIRATE FREQUENCY TUNING',
+      desc_es: 'Sintonizas una transmisión binaural calmante. Tu mente se despeja (+20 energía, +10 salud).',
+      desc_en: 'Tuned into a soothing pirate synth transmission (+20 energy, +10 health).',
+      apply: (p) => { p.energy = Math.min(100, (Number(p.energy) || 0) + 20); p.health = Math.min(100, (Number(p.health) || 0) + 10); }
+    },
+    {
+      title_es: 'MICRO-ESTADO INDEPENDIENTE', title_en: 'SOVEREIGN MICRO-ROOM',
+      desc_es: 'Declaras tu cuarto como territorio soberano. Tus amigos lo celebran con una ronda (+8 reputación, +12 ánimo).',
+      desc_en: 'Declared your room a sovereign micronation. Friends celebrate with drinks (+8 reputation, +12 mood).',
+      apply: (p) => { p.reputation = (Number(p.reputation) || 0) + 8; p.mood = (Number(p.mood) || 0) + 12; }
+    },
+    {
+      title_es: 'APUESTA EXÓTICA', title_en: 'WILD STREET BET',
+      desc_es: 'Apostaste $30 a una carrera de aspiradoras robot y ganaste la final (+$250).',
+      desc_en: 'Wagered $30 on a robot vacuum race and took first place (+$250).',
+      apply: (p) => { p.money = (Number(p.money) || 0) + 250; }
+    },
+    {
+      title_es: 'ORÁCULO CALLEJERO', title_en: 'ALLEYWAY GURU',
+      desc_es: 'Un veterano informático te da un consejo vital sobre algoritmos y vida (+1 conocimiento, +15 energía).',
+      desc_en: 'A veteran hacker shares timeless advice on algorithms and life (+1 knowledge, +15 energy).',
+      apply: (p) => { p.skills = p.skills || {}; p.skills.conocimiento = (p.skills.conocimiento || 0) + 1; p.energy = Math.min(100, (Number(p.energy) || 0) + 15); }
+    },
+    {
+      title_es: 'VINILO VINTAGE', title_en: 'RARE VINYL DISCOVERY',
+      desc_es: 'Encuentras un disco analógico descatalogado y lo vendes a un coleccionista (+ $400).',
+      desc_en: 'Found an out-of-print analog vinyl record and sold it to a collector (+ $400).',
+      apply: (p) => { p.money = (Number(p.money) || 0) + 400; }
+    },
+    {
+      title_es: 'SOBRECARGA DE CAFEÍNA', title_en: 'HYPER-ESPRESSO SURGE',
+      desc_es: 'Probaste un café hiper-concentrado. Tus reflejos aumentan (+30 energía, +10 ánimo).',
+      desc_en: 'Drank hyper-concentrated espresso. Reflexes boosted (+30 energy, +10 mood).',
+      apply: (p) => { p.energy = Math.min(100, (Number(p.energy) || 0) + 30); p.mood = (Number(p.mood) || 0) + 10; }
+    },
+    {
+      title_es: 'MEMORIA CRIPTO', title_en: 'FORGOTTEN CRYPTO DONGLE',
+      desc_es: 'Encontraste una memoria USB olvidada con fracciones de moneda digital (+ $650).',
+      desc_en: 'Discovered an old USB drive carrying leftover digital currency (+ $650).',
+      apply: (p) => { p.money = (Number(p.money) || 0) + 650; }
+    },
+    {
+      title_es: 'HERENCIA IMPREVISTA', title_en: 'SURPRISE BENEFACTOR',
+      desc_es: 'Un benefactor excéntrico te envía una propina anónima sorpresa de +$1,000.',
+      desc_en: 'An anonymous eccentric benefactor wired a surprise gift of +$1,000.',
+      apply: (p) => { p.money = (Number(p.money) || 0) + 1000; }
+    },
+    {
+      title_es: 'CHISPA DE LUCIDEZ', title_en: 'SPARK OF BRILLIANCE',
+      desc_es: 'Una epifanía repentina te llena de vigor (+20 salud, +20 energía, +1 experiencia).',
+      desc_en: 'A sudden burst of insight invigorates your entire spirit (+20 health, +20 energy, +1 experience).',
+      apply: (p) => {
+        p.health = Math.min(100, (Number(p.health) || 0) + 20);
+        p.energy = Math.min(100, (Number(p.energy) || 0) + 20);
+        p.skills = p.skills || {};
+        p.skills.experiencia = (p.skills.experiencia || 0) + 1;
+      }
+    },
+    {
+      title_es: 'MALETÍN PERDIDO', title_en: 'UNCLAIMED BRIEFCASE',
+      desc_es: 'Hallaste un maletín abandonado sin dueño con +$1,800 limpios en efectivo.',
+      desc_en: 'Found an abandoned briefcase containing +$1,800 clean cash.',
+      apply: (p) => { p.money = (Number(p.money) || 0) + 1800; }
+    },
+    {
+      title_es: '¡¡CRÍTICO SUPREMO 20!!', title_en: '!! NATURAL 20 SUPREME !!',
+      desc_es: '¡¡ÉXITO CRÍTICO ABSOLUTO!! ¡Alineación cósmica! Ganas +$3,000, 100% de salud y energía, y +20 reputación.',
+      desc_en: '!! CRITICAL NATURAL 20 !! Cosmic alignment! Won +$3,000, full health & energy (100%), and +20 reputation.',
+      apply: (p) => {
+        p.money = (Number(p.money) || 0) + 3000;
+        p.health = 100;
+        p.energy = 100;
+        p.reputation = (Number(p.reputation) || 0) + 20;
+      }
+    }
+  ];
+
+  const ev = chaosTable[roll - 1];
+  ev.apply(save.player);
+
+  // Safety invariants: Chaos Die NEVER causes death or aging
+  save.player.health = Math.max(25, Number(save.player.health) || 25);
+
+  const title = en ? ev.title_en : ev.title_es;
+  const desc = en ? ev.desc_en : ev.desc_es;
+  const chapterText = `// [ D20: ${roll} ] // ${title}_\n${desc}`;
+
+  save.chapters.push({
+    decision: `[ D20: DADO DEL CAOS -> ${roll} ]`,
+    continuation: chapterText,
+    effects: [`D20: ${roll}`, title],
+    date: new Date().toISOString()
+  });
+
+  window.__lifeSave = save;
+  saveCurrentGame(save);
+
+  if (aiText) aiText.textContent = chapterText;
+  if (aiOutput) aiOutput.classList.remove('hidden');
+  if (savedMessage) {
+    savedMessage.classList.remove('error');
+    savedMessage.textContent = en ? `// CHAOS DIE ROLLED [ D20: ${roll} ] - ${title}_` : `// DADO DEL CAOS LANZADO [ D20: ${roll} ] - ${title}_`;
+    savedMessage.classList.remove('hidden');
+  }
+
+  renderStats();
+  renderQuickActions(save);
+}
+
+/* 4. MINIJUEGO DE HACKEO CYBER BYPASS */
+let currentHackTarget = 'atm';
+let currentHackCode = '';
+let hackAttemptsRemaining = 4;
+const hackTargetConfig = {
+  atm: { name_es: 'Cajero ATM (Fácil)', name_en: 'ATM Cashpoint (Easy)', len: 3, rewardMin: 500, rewardMax: 1500, risk: 0.15 },
+  corp: { name_es: 'Megacorp Server (Medio)', name_en: 'Megacorp Server (Medium)', len: 4, rewardMin: 3000, rewardMax: 7000, risk: 0.4 },
+  gov: { name_es: 'Base de Gobierno (Difícil)', name_en: 'Government Vault (Hard)', len: 5, rewardMin: 12000, rewardMax: 25000, risk: 0.7 }
+};
+
+function generateHexCode(length) {
+  const chars = '0123456789ABCDEF';
+  let code = '';
+  for (let i = 0; i < length; i++) {
+    code += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return code;
+}
+
+function openHackModal() {
+  if (hackScreen) {
+    hackScreen.classList.remove('hidden');
+    initHackTarget('atm');
+  }
+}
+
+function closeHackModal() {
+  if (hackScreen) hackScreen.classList.add('hidden');
+}
+
+function initHackTarget(target = 'atm') {
+  currentHackTarget = target;
+  const cfg = hackTargetConfig[target];
+  currentHackCode = generateHexCode(cfg.len);
+  hackAttemptsRemaining = 4;
+  updateHackUI();
+  const log = document.querySelector('#hackMatrixLog');
+  const en = currentLanguage === 'en';
+  if (log) {
+    log.innerHTML = `<p class="hack-log-entry">// Target: ${en ? cfg.name_en : cfg.name_es}. Length: ${cfg.len} HEX chars. 4 attempts remain._</p>`;
+  }
+}
+
+function updateHackUI() {
+  const cfg = hackTargetConfig[currentHackTarget];
+  const en = currentLanguage === 'en';
+  const nameEl = document.querySelector('#hackTargetName');
+  const rewardEl = document.querySelector('#hackTargetReward');
+  const attEl = document.querySelector('#hackAttemptsLeft');
+  const inputEl = document.querySelector('#hackCodeInput');
+
+  if (nameEl) nameEl.textContent = `${en ? 'TARGET: ' : 'OBJETIVO: '}${en ? cfg.name_en : cfg.name_es}`;
+  if (rewardEl) rewardEl.textContent = `${en ? 'LOOT: ' : 'BOTÍN: '}$${cfg.rewardMin.toLocaleString()} - $${cfg.rewardMax.toLocaleString()}`;
+  if (attEl) attEl.textContent = `${en ? 'ATTEMPTS: ' : 'INTENTOS: '}[ ${hackAttemptsRemaining} / 4 ]`;
+  if (inputEl) {
+    inputEl.maxLength = cfg.len;
+    inputEl.value = '';
+    inputEl.placeholder = `${'X'.repeat(cfg.len)} HEX...`;
+  }
+}
+
+function submitHackGuess() {
+  if (hackAttemptsRemaining <= 0) return;
+  const cfg = hackTargetConfig[currentHackTarget];
+  const inputEl = document.querySelector('#hackCodeInput');
+  const log = document.querySelector('#hackMatrixLog');
+  const banner = document.querySelector('#hackStatusBanner');
+  const en = currentLanguage === 'en';
+  const guess = (inputEl?.value || '').trim().toUpperCase();
+
+  if (guess.length !== cfg.len || !/^[0-9A-F]+$/.test(guess)) {
+    if (banner) banner.textContent = en ? `// ERROR: Enter exactly ${cfg.len} hexadecimal characters (0-9, A-F)._` : `// ERROR: Introduce exactamente ${cfg.len} caracteres hexadecimales (0-9, A-F)._`;
+    return;
+  }
+
+  hackAttemptsRemaining -= 1;
+  updateHackUI();
+
+  let exactMatches = 0;
+  let codeArr = currentHackCode.split('');
+  let guessArr = guess.split('');
+
+  for (let i = 0; i < cfg.len; i++) {
+    if (guessArr[i] === codeArr[i]) {
+      exactMatches += 1;
+      codeArr[i] = null;
+      guessArr[i] = null;
+    }
+  }
+
+  let shiftedMatches = 0;
+  for (let i = 0; i < cfg.len; i++) {
+    if (guessArr[i] !== null) {
+      const foundIdx = codeArr.indexOf(guessArr[i]);
+      if (foundIdx !== -1) {
+        shiftedMatches += 1;
+        codeArr[foundIdx] = null;
+      }
+    }
+  }
+
+  if (exactMatches === cfg.len) {
+    // VICTORY!
+    const reward = Math.floor(cfg.rewardMin + Math.random() * (cfg.rewardMax - cfg.rewardMin));
+    const save = readSave();
+    save.player.money = (Number(save.player.money) || 0) + reward;
+    let extraMsg = '';
+
+    if (currentHackTarget === 'gov') {
+      save.player.inventory = save.player.inventory || [];
+      save.player.inventory.push({
+        id: 'crypto_master_key',
+        name: en ? 'Cryptographic Master Key' : 'Llave Maestra Criptográfica',
+        type: 'equipable',
+        price: 5000,
+        quantity: 1,
+        description: en ? 'Decryption device recovered from government mainframe.' : 'Dispositivo de desencriptado recuperado de los servidores del gobierno.'
+      });
+      extraMsg = en ? ' + Obtained Cryptographic Master Key!' : ' + ¡Obtuviste la Llave Maestra Criptográfica!';
+    }
+
+    window.__lifeSave = save;
+    saveCurrentGame(save);
+    renderStats();
+
+    if (log) {
+      log.innerHTML += `<p class="hack-log-entry success">// ACCESS GRANTED! [ ${guess} ] -> Exploit injected. +$${reward.toLocaleString()}${extraMsg}_</p>`;
+      log.scrollTop = log.scrollHeight;
+    }
+    if (banner) banner.textContent = en ? `// SUCCESS: Loot secured (+$${reward.toLocaleString()})!_` : `// ¡ÉXITO: Botín asegurado (+$${reward.toLocaleString()})!_`;
+    hackAttemptsRemaining = 0;
+  } else {
+    if (log) {
+      log.innerHTML += `<p class="hack-log-entry">> [ ${guess} ] -> ${exactMatches} ${en ? 'EXACT' : 'EXACTO(S)'}, ${shiftedMatches} ${en ? 'IN SYSTEM' : 'EN SISTEMA'} (${hackAttemptsRemaining} ${en ? 'left' : 'restantes'})</p>`;
+      log.scrollTop = log.scrollHeight;
+    }
+
+    if (hackAttemptsRemaining <= 0) {
+      // ALARM TRIGGERED!
+      if (log) {
+        log.innerHTML += `<p class="hack-log-entry alarm">// ALARM TRIGGERED! Trace confirmed by local security dispatch._</p>`;
+        log.scrollTop = log.scrollHeight;
+      }
+      const save = readSave();
+      if (Math.random() < cfg.risk) {
+        const fine = Math.min(Number(save.player.money) || 0, Math.floor(300 + Math.random() * 800));
+        save.player.money = Math.max(0, (Number(save.player.money) || 0) - fine);
+        save.player.reputation = (Number(save.player.reputation) || 0) - 10;
+        if (banner) banner.textContent = en ? `// POLICE TRACE: Caught and fined -$${fine}! Rep -10._` : `// RASTREO POLICIAL: ¡Capturado y multado con -$${fine}! Rep -10._`;
+      } else {
+        if (banner) banner.textContent = en ? `// LOCKOUT: System locked. You disconnected in time._` : `// BLOQUEO: Sistema bloqueado. Desconectaste a tiempo._`;
+      }
+      window.__lifeSave = save;
+      saveCurrentGame(save);
+      renderStats();
+    } else {
+      if (banner) banner.textContent = en ? `// Partial match. Analyze response and retry._` : `// Coincidencia parcial. Analiza la respuesta y reintenta._`;
+    }
+  }
+}
+
+/* 5. MERCADO NEGRO CLANDESTINO Y SUBASTAS RELÁMPAGO */
+const BLACK_MARKET_ITEMS = [
+  { id: 'fake_id', name_es: 'Identificación Clandestina', name_en: 'Underground Fake ID', price: 800, type: 'valuable', description_es: 'Documento falso impecable. Reduce sospechas y multas policiales a cero. +10 carisma.', description_en: 'Flawless forged documents. Clears police fines and records. +10 charisma.' },
+  { id: 'spy_bug', name_es: 'Dispositivo Micro-Espía', name_en: 'Micro Spy Device', price: 1200, type: 'equipable', description_es: 'Intercepta conversaciones de altos funcionarios. Otorga +18 de inteligencia.', description_en: 'Intercepts high-level government chats. Grants +18 intelligence.' },
+  { id: 'experimental_stim', name_es: 'Fármaco Experimental ZX', name_en: 'Experimental Stim ZX', price: 450, type: 'consumable', description_es: 'Inyección experimental. Restaura +50 Salud y +50 Energía inmediatamente, pero -5 Karma.', description_en: 'Experimental stimulant. Instantly restores +50 Health & +50 Energy, but costs -5 Karma.' },
+  { id: 'titanium_lockpick', name_es: 'Ganzúa Clandestina de Titanio', name_en: 'Titanium Lockpick', price: 500, type: 'equipable', description_es: 'Herramienta de cerrajería avanzada. +25% éxito al hackear y buscar objetos.', description_en: 'Precision lockpicking tool. +25% success when hacking and searching.' },
+  { id: 'counterfeit_ticket', name_es: 'Billete Adulterado de Lotería', name_en: 'Counterfeit Lottery Ticket', price: 350, type: 'consumable', description_es: 'Billete trucado. 50% de probabilidad de cobrar $2,500 en el banco o 50% de multa.', description_en: 'Tampered lottery ticket. 50% chance to claim $2,500 at the bank, or a police fine.' }
+];
+
+let auctionActive = false;
+let auctionTimerInterval = null;
+let auctionTimeRemaining = 20;
+let auctionHighestBid = 1200;
+let auctionLeader = 'Fantasma_404';
+
+function openBlackMarketModal() {
+  if (blackMarketScreen) {
+    blackMarketScreen.classList.remove('hidden');
+    initBlackMarketUI();
+  }
+}
+
+function closeBlackMarketModal() {
+  if (blackMarketScreen) blackMarketScreen.classList.add('hidden');
+  stopAuction();
+}
+
+function initBlackMarketUI() {
+  const tabShop = document.querySelector('#bmTabShop');
+  const tabAuc = document.querySelector('#bmTabAuction');
+  const secShop = document.querySelector('#bmShopSection');
+  const secAuc = document.querySelector('#bmAuctionSection');
+
+  if (tabShop && tabAuc && secShop && secAuc) {
+    tabShop.onclick = () => {
+      tabShop.classList.add('active');
+      tabAuc.classList.remove('active');
+      secShop.classList.remove('hidden');
+      secAuc.classList.add('hidden');
+    };
+    tabAuc.onclick = () => {
+      tabAuc.classList.add('active');
+      tabShop.classList.remove('active');
+      secAuc.classList.remove('hidden');
+      secShop.classList.add('hidden');
+    };
+  }
+
+  // Render Shop
+  const grid = document.querySelector('#bmItemsGrid');
+  if (grid) {
+    grid.replaceChildren();
+    const en = currentLanguage === 'en';
+    BLACK_MARKET_ITEMS.forEach((item) => {
+      const card = document.createElement('div');
+      card.className = 'bm-item-card';
+      const name = en ? item.name_en : item.name_es;
+      const desc = en ? item.description_en : item.description_es;
+      card.innerHTML = `
+        <span class="bm-item-name">${name}</span>
+        <p class="bm-item-desc">${desc}</p>
+        <div class="bm-item-footer">
+          <span class="bm-item-price">$${item.price.toLocaleString()}</span>
+          <button class="history-button" type="button">[ ${en ? 'BUY' : 'COMPRAR'} ]</button>
+        </div>
+      `;
+      card.querySelector('button').onclick = () => buyBlackMarketItem(item);
+      grid.append(card);
+    });
+  }
+}
+
+function buyBlackMarketItem(item) {
+  const save = readSave();
+  if (!save?.player) return;
+  const en = currentLanguage === 'en';
+  const currentMoney = Number(save.player.money) || 0;
+
+  if (currentMoney < item.price) {
+    alert(en ? 'Not enough funds to purchase this contraband item.' : 'No tienes suficiente dinero para comprar este objeto de contrabando.');
+    return;
+  }
+
+  save.player.money = currentMoney - item.price;
+  save.player.inventory = save.player.inventory || [];
+  save.player.inventory.push({
+    id: item.id,
+    name: en ? item.name_en : item.name_es,
+    type: item.type,
+    price: item.price,
+    quantity: 1,
+    description: en ? item.description_en : item.description_es
+  });
+
+  window.__lifeSave = save;
+  saveCurrentGame(save);
+  renderStats();
+  renderInventoryPanel();
+  alert(en ? `Acquired: ${item.name_en}!` : `¡Adquirido: ${item.name_es}!`);
+}
+
+function startBlackMarketAuction() {
+  if (auctionActive) return;
+  auctionActive = true;
+  auctionTimeRemaining = 20;
+  auctionHighestBid = 1000 + Math.floor(Math.random() * 800);
+  auctionLeader = 'Cipher_X';
+
+  const en = currentLanguage === 'en';
+  const feed = document.querySelector('#auctionFeed');
+  const timerEl = document.querySelector('#auctionTimer');
+  const highBidEl = document.querySelector('#auctionHighBid');
+  const leaderEl = document.querySelector('#auctionHighBidder');
+  const startBtn = document.querySelector('#auctionStartBtn');
+  const bid100Btn = document.querySelector('#auctionBid100Btn');
+  const bid500Btn = document.querySelector('#auctionBid500Btn');
+
+  if (startBtn) startBtn.classList.add('hidden');
+  if (bid100Btn) bid100Btn.classList.remove('hidden');
+  if (bid500Btn) bid500Btn.classList.remove('hidden');
+
+  if (highBidEl) highBidEl.textContent = `$${auctionHighestBid.toLocaleString()}`;
+  if (leaderEl) leaderEl.textContent = `(${en ? 'Leader: ' : 'Líder: '}${auctionLeader})`;
+  if (feed) feed.innerHTML = `<p class="feed-line">// ${en ? 'AUCTION OPENED! Starting bid: $' : '¡SUBASTA ABIERTA! Puja inicial: $'}${auctionHighestBid.toLocaleString()}_</p>`;
+
+  const competitors = ['Fantasma_404', 'ZeroCool', 'Baronesa_Negra', 'Corredor_Cero', 'Dra_Vortex'];
+
+  auctionTimerInterval = setInterval(() => {
+    auctionTimeRemaining -= 1;
+    if (timerEl) timerEl.textContent = `[ ${en ? 'TIME: ' : 'TIEMPO: '}00:${String(auctionTimeRemaining).padStart(2, '0')} ]`;
+
+    // AI competitors counter-bidding randomly
+    if (auctionTimeRemaining > 2 && Math.random() < 0.45) {
+      const bidder = competitors[Math.floor(Math.random() * competitors.length)];
+      if (bidder !== auctionLeader) {
+        const increment = (Math.floor(Math.random() * 3) + 1) * 100;
+        auctionHighestBid += increment;
+        auctionLeader = bidder;
+        if (highBidEl) highBidEl.textContent = `$${auctionHighestBid.toLocaleString()}`;
+        if (leaderEl) leaderEl.textContent = `(${en ? 'Leader: ' : 'Líder: '}${auctionLeader})`;
+        if (feed) {
+          feed.innerHTML += `<p class="feed-line">> ${bidder} ${en ? 'counter-bid' : 'contraatacó con'}: $${auctionHighestBid.toLocaleString()}</p>`;
+          feed.scrollTop = feed.scrollHeight;
+        }
+      }
+    }
+
+    if (auctionTimeRemaining <= 0) {
+      stopAuction();
+      finishAuction();
+    }
+  }, 1000);
+}
+
+function placeAuctionBid(increment) {
+  if (!auctionActive) return;
+  const save = readSave();
+  const en = currentLanguage === 'en';
+  const currentMoney = Number(save?.player?.money) || 0;
+  const newBid = auctionHighestBid + increment;
+
+  if (currentMoney < newBid) {
+    alert(en ? 'You do not have enough funds to cover this bid.' : 'No tienes suficientes fondos para cubrir esta puja.');
+    return;
+  }
+
+  auctionHighestBid = newBid;
+  auctionLeader = save.player.name || (en ? 'You' : 'Tú');
+
+  const highBidEl = document.querySelector('#auctionHighBid');
+  const leaderEl = document.querySelector('#auctionHighBidder');
+  const feed = document.querySelector('#auctionFeed');
+
+  if (highBidEl) highBidEl.textContent = `$${auctionHighestBid.toLocaleString()}`;
+  if (leaderEl) leaderEl.textContent = `(${en ? 'Leader: ' : 'Líder: '}${auctionLeader})`;
+  if (feed) {
+    feed.innerHTML += `<p class="feed-line" style="color: #00ff41;">> ${en ? 'YOU BID' : 'PUJASTE'}: $${auctionHighestBid.toLocaleString()}!</p>`;
+    feed.scrollTop = feed.scrollHeight;
+  }
+}
+
+function stopAuction() {
+  if (auctionTimerInterval) {
+    clearInterval(auctionTimerInterval);
+    auctionTimerInterval = null;
+  }
+  auctionActive = false;
+  const startBtn = document.querySelector('#auctionStartBtn');
+  const bid100Btn = document.querySelector('#auctionBid100Btn');
+  const bid500Btn = document.querySelector('#auctionBid500Btn');
+  if (startBtn) startBtn.classList.remove('hidden');
+  if (bid100Btn) bid100Btn.classList.add('hidden');
+  if (bid500Btn) bid500Btn.classList.add('hidden');
+}
+
+function finishAuction() {
+  const save = readSave();
+  const en = currentLanguage === 'en';
+  const feed = document.querySelector('#auctionFeed');
+  const playerName = save.player.name || (en ? 'You' : 'Tú');
+
+  if (auctionLeader === playerName) {
+    save.player.money = Math.max(0, (Number(save.player.money) || 0) - auctionHighestBid);
+    save.player.inventory = save.player.inventory || [];
+    save.player.inventory.push({
+      id: 'military_cam_proto',
+      name: en ? 'Military Stealth Prototype' : 'Prototipo Militar de Camuflaje',
+      type: 'equipable',
+      price: auctionHighestBid * 2,
+      quantity: 1,
+      description: en ? 'Classified military stealth system won in flash underground auction.' : 'Sistema militar de camuflaje clasificado adjudicado en subasta relámpago.'
+    });
+    window.__lifeSave = save;
+    saveCurrentGame(save);
+    renderStats();
+    renderInventoryPanel();
+    if (feed) feed.innerHTML += `<p class="feed-line" style="color: #00ff41; font-weight: 700;">// ${en ? 'AUCTION WON! Prototype added to your inventory for $' : '¡SUBASTA GANADA! Prototipo entregado en tu inventario por $'}${auctionHighestBid.toLocaleString()}_</p>`;
+  } else {
+    if (feed) feed.innerHTML += `<p class="feed-line" style="color: #ff5555;">// ${en ? 'SOLD to' : 'ADJUDICADO a'} ${auctionLeader} ${en ? 'for' : 'por'} $${auctionHighestBid.toLocaleString()}. ${en ? 'Better luck next lot.' : 'Mejor suerte en el próximo lote.'}_</p>`;
+  }
+}
+
+/* 6. PERIÓDICO SENSACIONALISTA ANUAL // THE DAILY TERMINAL */
+function showYearlyNewspaper(save = readSave()) {
+  if (!newspaperModal) return;
+  const en = currentLanguage === 'en';
+  const player = save?.player || {};
+  const age = player.age || 0;
+  const money = Number(player.money) || 0;
+
+  const editionEl = document.querySelector('#newspaperEdition');
+  const cityEl = document.querySelector('#newspaperCity');
+  if (editionEl) editionEl.textContent = en ? `SPECIAL EDITION // YEAR ${age}` : `EDICIÓN ESPECIAL // AÑO ${age}`;
+  if (cityEl) cityEl.textContent = `${(player.location || (en ? 'WORLD' : 'MUNDIAL')).toUpperCase()}`;
+
+  let headline = '';
+  let subheadline = '';
+  let leadStory = '';
+  if (money > 50000) {
+    headline = en ? `LOCAL TYCOON "${player.name || 'CITIZEN'}" SPOTTED BUYING BREAD IN SILK PAJAMAS!` : `¡MAGNATE LOCAL "${player.name || 'CIUDADANO'}" ES VISTO COMPRANDO PAN EN PIJAMA!`;
+    subheadline = en ? '// Neighbors whisper that money is being stored in cereal boxes.' : '// Vecinos aseguran que guarda billetes en cajas de cereal.';
+    leadStory = en ? `With fortune rising past $${money.toLocaleString()}, rumors circulate about lavish expenditures, secret underground vaults, and unexpected civic donations.` : `Con una fortuna que supera los $${money.toLocaleString()}, circulan rumores sobre gastos extravagantes, bóvedas clandestinas y donaciones inesperadas a la comunidad.`;
+  } else if (money < 50) {
+    headline = en ? `FINANCIAL DROUGHT: CITIZEN "${player.name || 'CITIZEN'}" SURVIVES ON REHEATED COFFEE AND DREAMS` : `CRISIS MONETARIA: "${player.name || 'CIUDADANO'}" SOBREVIVE A BASE DE CAFÉ RECALENTADO Y SUEÑOS`;
+    subheadline = en ? '// Economic analysts wonder how they keep going with only spare change.' : '// Analistas económicos se preguntan cómo sigue adelante con solo monedas sueltas.';
+    leadStory = en ? `With barely $${money} to their name, ${player.name || 'the citizen'} was seen scouring street vending machines and examining public fountain coins.` : `Con apenas $${money} en el bolsillo, ${player.name || 'el ciudadano'} fue visto buscando cambio en máquinas expendedoras y examinando fuentes públicas.`;
+  } else {
+    headline = en ? `YEARLY DISPATCH: "${player.name || 'CITIZEN'}" CONTINUES SURPRISING LOCAL COMMUNITY` : `CRÓNICA ANUAL: "${player.name || 'CIUDADANO'}" SIGUE SORPRENDIENDO A LA COMUNIDAD LOCAL`;
+    subheadline = en ? '// Another year of unpredictable decisions leaves citizens talking.' : '// Otro año de decisiones impredecibles mantiene a todos intrigados.';
+    leadStory = en ? `Reaching age ${age}, their daily habits, bold choices, and strange hobbies have become a regular subject of city conversations.` : `Al cumplir ${age} años, sus hábitos diarios, elecciones arriesgadas y pasatiempos curiosos se han convertido en tema habitual en las esquinas de la ciudad.`;
+  }
+
+  const headlineEl = document.querySelector('#newspaperHeadline');
+  const subheadlineEl = document.querySelector('#newspaperSubheadline');
+  const leadEl = document.querySelector('#newspaperLeadStory');
+  if (headlineEl) headlineEl.textContent = headline;
+  if (subheadlineEl) subheadlineEl.textContent = subheadline;
+  if (leadEl) leadEl.textContent = leadStory;
+
+  const govStories = en ? [
+    'City Council approves a new 3% tax on the word "hello" to fund retro computer museums.',
+    'Ministry of Transport declares roller skates the official emergency vehicle for downtown.',
+    'Local government bans loud sighing on public buses between 2 PM and 4 PM.'
+  ] : [
+    'El Consejo Municipal aprueba un impuesto del 3% al uso de la palabra "hola" para financiar museos CRT.',
+    'El Ministerio de Tránsito declara a los patines con ruedas como vehículo oficial de emergencia.',
+    'El gobierno prohíbe los suspiros audibles en el transporte público entre las 14:00 y las 16:00.'
+  ];
+
+  const gossipStories = en ? [
+    'Local scientists claim staring at green phosphor monitors prevents premature aging.',
+    'Street pigeon crowned honorary mayor after nesting on council chairman chair.',
+    'Mysterious jazz music heard echoing through municipal drainage pipes at midnight.'
+  ] : [
+    'Científicos afirman que mirar pantallas CRT verdes previene el envejecimiento prematuro.',
+    'Una paloma callejera es nombrada alcaldesa honoraria tras anidar en el sillón del consejo.',
+    'Música misteriosa de jazz resuena en las alcantarillas municipales a medianoche.'
+  ];
+
+  const govEl = document.querySelector('#newspaperGovNews');
+  const gossipEl = document.querySelector('#newspaperGossipNews');
+  if (govEl) govEl.textContent = govStories[Math.floor(Math.random() * govStories.length)];
+  if (gossipEl) gossipEl.textContent = gossipStories[Math.floor(Math.random() * gossipStories.length)];
+
+  newspaperModal.classList.remove('hidden');
+}
+
+function closeNewspaperModal() {
+  if (newspaperModal) newspaperModal.classList.add('hidden');
+}
+
+/* 7. MUTADORES DE PARTIDA (MODO LOCURA / SANDBOX) */
+function updateMutatorIndicator(save = readSave()) {
+  if (!mutatorIndicator) return;
+  const mutator = save?.mutator || (gameMutatorSelect ? gameMutatorSelect.value : 'standard');
+  const en = currentLanguage === 'en';
+  if (!mutator || mutator === 'standard') {
+    mutatorIndicator.classList.add('hidden');
+    mutatorIndicator.textContent = '';
+    return;
+  }
+  const labels = {
+    anarchy: en ? '[ MODE: ANARCHY // DOUBLE CHAOS ]' : '[ MODO: ANARQUÍA // DOBLE CAOS ]',
+    inflation: en ? '[ MODE: COSMIC INFLATION (+25%) ]' : '[ MODO: INFLACIÓN CÓSMICA (+25%) ]',
+    chaos: en ? '[ MODE: CRAZY DIE // EXTREME ]' : '[ MODO: DADO LOCO // CONSECUENCIAS EXTREMAS ]',
+    god: en ? '[ MODE: GOD / SANDBOX UNLIMITED ]' : '[ MODO DIOS // SANDBOX ILIMITADO ]'
+  };
+  mutatorIndicator.textContent = labels[mutator] || `[ MODO: ${mutator.toUpperCase()} ]`;
+  mutatorIndicator.classList.remove('hidden');
+}
+
+function initNewSystemsListeners() {
+  listen(quickStartWelcomeBtn, 'click', quickStartLife);
+  listen(quickStartQuestionBtn, 'click', quickStartLife);
+
+  listen(openCasinoDirectBtn, 'click', openCasinoModal);
+  listen(casinoButton, 'click', openCasinoModal);
+  listen(closeCasinoButton, 'click', closeCasinoModal);
+
+  // Slots
+  const slotSpinBtn = document.querySelector('#slotSpinBtn');
+  listen(slotSpinBtn, 'click', spinSlots);
+  document.querySelectorAll('.slot-bet-btn').forEach((btn) => {
+    btn.onclick = () => {
+      document.querySelectorAll('.slot-bet-btn').forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentSlotBet = parseInt(btn.dataset.bet, 10) || 10;
+    };
+  });
+
+  // Blackjack
+  const dealBtn = document.querySelector('#bjDealBtn');
+  const hitBtn = document.querySelector('#bjHitBtn');
+  const standBtn = document.querySelector('#bjStandBtn');
+  const doubleBtn = document.querySelector('#bjDoubleBtn');
+  listen(dealBtn, 'click', startBlackjackHand);
+  listen(hitBtn, 'click', bjHit);
+  listen(standBtn, 'click', bjStand);
+  listen(doubleBtn, 'click', bjDouble);
+  document.querySelectorAll('.bj-bet-btn').forEach((btn) => {
+    btn.onclick = () => {
+      document.querySelectorAll('.bj-bet-btn').forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      bjCurrentBet = parseInt(btn.dataset.bjbet, 10) || 25;
+    };
+  });
+
+  // Scratch
+  const scratchBuyBtn = document.querySelector('#scratchBuyBtn');
+  const scratchRevealBtn = document.querySelector('#scratchRevealBtn');
+  listen(scratchBuyBtn, 'click', buyScratchTicket);
+  listen(scratchRevealBtn, 'click', revealAllScratch);
+  [1, 2, 3].forEach((idx) => {
+    const slot = document.querySelector(`#scratchSlot${idx}`);
+    if (slot) slot.onclick = () => revealScratchSlot(idx - 1);
+  });
+
+  // Hack
+  listen(openHackDirectBtn, 'click', openHackModal);
+  listen(hackButton, 'click', openHackModal);
+  listen(closeHackButton, 'click', closeHackModal);
+  const hackSubmitBtn = document.querySelector('#hackSubmitBtn');
+  const hackResetBtn = document.querySelector('#hackResetBtn');
+  listen(hackSubmitBtn, 'click', submitHackGuess);
+  listen(hackResetBtn, 'click', () => initHackTarget(currentHackTarget));
+  document.querySelectorAll('.hack-target-btn').forEach((btn) => {
+    btn.onclick = () => {
+      document.querySelectorAll('.hack-target-btn').forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      initHackTarget(btn.dataset.target || 'atm');
+    };
+  });
+
+  // Black Market
+  listen(openBlackMarketDirectBtn, 'click', openBlackMarketModal);
+  listen(blackMarketButton, 'click', openBlackMarketModal);
+  listen(closeBlackMarketButton, 'click', closeBlackMarketModal);
+  const auctionStartBtn = document.querySelector('#auctionStartBtn');
+  const bid100Btn = document.querySelector('#auctionBid100Btn');
+  const bid500Btn = document.querySelector('#auctionBid500Btn');
+  listen(auctionStartBtn, 'click', startBlackMarketAuction);
+  listen(bid100Btn, 'click', () => placeAuctionBid(100));
+  listen(bid500Btn, 'click', () => placeAuctionBid(500));
+
+  // Newspaper
+  listen(openNewspaperDirectBtn, 'click', () => showYearlyNewspaper(readSave()));
+  listen(newspaperButton, 'click', () => showYearlyNewspaper(readSave()));
+  listen(closeNewspaperBtn, 'click', closeNewspaperModal);
+  listen(newspaperOkBtn, 'click', closeNewspaperModal);
+
+  // Mutator select change
+  listen(gameMutatorSelect, 'change', () => {
+    if (window.__lifeSave) {
+      window.__lifeSave.mutator = gameMutatorSelect.value;
+      updateMutatorIndicator(window.__lifeSave);
+    }
+  });
+
+  // 1. Cyber Coliseo
+  listen(coliseoButton, 'click', openColiseoModal);
+  listen(closeColiseoButton, 'click', () => coliseoScreen?.classList.add('hidden'));
+  const coliseoStartBtn = document.querySelector('#coliseoStartBtn');
+  listen(coliseoStartBtn, 'click', startColiseoFight);
+  listen(document.querySelector('#coliseoFastAtkBtn'), 'click', () => executeColiseoAction('fast'));
+  listen(document.querySelector('#coliseoHeavyAtkBtn'), 'click', () => executeColiseoAction('heavy'));
+  listen(document.querySelector('#coliseoBlockBtn'), 'click', () => executeColiseoAction('block'));
+  listen(document.querySelector('#coliseoTauntBtn'), 'click', () => executeColiseoAction('taunt'));
+  document.querySelectorAll('.coliseo-bet-btn').forEach((btn) => {
+    btn.onclick = () => {
+      document.querySelectorAll('.coliseo-bet-btn').forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      coliseoCombat.bet = parseInt(btn.dataset.coliseobet, 10) || 50;
+    };
+  });
+
+  // 2. CyberStock Exchange
+  listen(stocksButton, 'click', openStocksModal);
+  listen(closeStocksButton, 'click', () => stocksScreen?.classList.add('hidden'));
+  listen(document.querySelector('#stocksRefreshBtn'), 'click', refreshStocksMarket);
+
+  // 3. Mascota Tamagotchi CRT
+  listen(tamagotchiButton, 'click', openTamagotchiModal);
+  listen(closeTamagotchiButton, 'click', () => tamagotchiScreen?.classList.add('hidden'));
+  listen(document.querySelector('#tChargeBtn') || document.querySelector('#tamagotchiChargeBtn'), 'click', tActionCharge);
+  listen(document.querySelector('#tPlayBtn') || document.querySelector('#tamagotchiPlayBtn'), 'click', tActionPlay);
+  listen(document.querySelector('#tCleanBtn') || document.querySelector('#tamagotchiCleanBtn'), 'click', tActionClean);
+  listen(document.querySelector('#tUpgradeBtn') || document.querySelector('#tamagotchiUpgradeBtn'), 'click', tActionUpgrade);
+
+  // 4. Modo Detective
+  listen(detectiveButton, 'click', openDetectiveModal);
+  listen(closeDetectiveButton, 'click', () => detectiveScreen?.classList.add('hidden'));
+
+  // 5. Refugio y Bienes Raíces
+  listen(safehouseButton, 'click', openSafehouseModal);
+  listen(closeSafehouseButton, 'click', () => safehouseScreen?.classList.add('hidden'));
+
+  // 6. Batalla de Rap en Terminal
+  listen(rapBattleButton, 'click', openRapBattleModal);
+  listen(closeRapBattleButton, 'click', () => rapBattleScreen?.classList.add('hidden'));
+
+  // Menu search filter
+  const menuFilterInput = document.querySelector('#menuFilterInput');
+  if (menuFilterInput) {
+    listen(menuFilterInput, 'input', (e) => {
+      renderMenu(e.target.value);
+    });
+  }
+
+  // Newbie onboarding guide banner
+  const dismissGuideBtn = document.querySelector('#dismissGuideBtn');
+  const newbieGuideBanner = document.querySelector('#newbieGuideBanner');
+  if (dismissGuideBtn) {
+    listen(dismissGuideBtn, 'click', () => {
+      newbieGuideBanner?.classList.add('hidden');
+      try {
+        localStorage.setItem('lifeDismissedNewbieGuide', 'true');
+      } catch { /* ignore */ }
+    });
+  }
+}
+
+// ==========================================
+// 1. CYBER COLISEO CLANDESTINO (ASCII BOXING)
+// ==========================================
+let coliseoCombat = {
+  active: false,
+  bet: 50,
+  playerHp: 100,
+  enemyHp: 80,
+  enemyMaxHp: 80,
+  enemyName: 'BRAWLER CALLEJERO',
+  enemyAtk: 12,
+  playerBlocking: false,
+  playerTaunt: false
+};
+
+const COLISEO_RIVALS = [
+  { name: 'BRAWLER CALLEJERO', hp: 80, atk: 12, avatar: '[ (ò_ó) ]' },
+  { name: 'CYBORG RENEGADO', hp: 110, atk: 18, avatar: '[ [X_X] ]' },
+  { name: 'CAMPEÓN NEÓN OMEGA', hp: 140, atk: 24, avatar: '[ {*w*} ]' }
+];
+
+function openColiseoModal() {
+  const save = readSave();
+  const en = currentLanguage === 'en';
+  coliseoCombat.active = false;
+  coliseoCombat.playerHp = 100;
+  coliseoCombat.playerBlocking = false;
+  coliseoCombat.playerTaunt = false;
+
+  const rival = COLISEO_RIVALS[Math.floor(Math.random() * COLISEO_RIVALS.length)];
+  coliseoCombat.enemyName = rival.name;
+  coliseoCombat.enemyHp = rival.hp;
+  coliseoCombat.enemyMaxHp = rival.hp;
+  coliseoCombat.enemyAtk = rival.atk;
+
+  const enemyNameEl = document.querySelector('#coliseoEnemyName');
+  const enemyAvatarEl = document.querySelector('#coliseoEnemyAvatar');
+  const playerHpBar = document.querySelector('#coliseoPlayerHpBar');
+  const enemyHpBar = document.querySelector('#coliseoEnemyHpBar');
+  const playerHpText = document.querySelector('#coliseoPlayerHpText');
+  const enemyHpText = document.querySelector('#coliseoEnemyHpText');
+  const combatLog = document.querySelector('#coliseoCombatLog');
+  const statusBanner = document.querySelector('#coliseoStatusBanner');
+  const betRow = document.querySelector('#coliseoBetRow');
+  const actionsRow = document.querySelector('#coliseoActionsRow');
+
+  if (enemyNameEl) enemyNameEl.textContent = rival.name;
+  if (enemyAvatarEl) enemyAvatarEl.textContent = rival.avatar;
+  if (playerHpBar) playerHpBar.style.width = '100%';
+  if (enemyHpBar) enemyHpBar.style.width = '100%';
+  if (playerHpText) playerHpText.textContent = 'HP: 100/100';
+  if (enemyHpText) enemyHpText.textContent = `HP: ${rival.hp}/${rival.hp}`;
+
+  if (betRow) betRow.classList.remove('hidden');
+  if (actionsRow) actionsRow.classList.add('hidden');
+
+  if (combatLog) {
+    combatLog.textContent = en
+      ? `// Ready to enter the ring against ${rival.name}. Choose your bet and hit [ START FIGHT ].`
+      : `// Listo para subir al ring contra ${rival.name}. Elige tu apuesta y pulsa [ INICIAR PELEA ].`;
+  }
+  if (statusBanner) {
+    statusBanner.textContent = en
+      ? `// Street fights pay 2x your bet and grant street reputation._`
+      : `// Las peleas pagan el doble de tu apuesta y otorgan reputación barrial._`;
+  }
+
+  coliseoScreen?.classList.remove('hidden');
+}
+
+function startColiseoFight() {
+  const save = readSave();
+  const en = currentLanguage === 'en';
+  const playerMoney = Number(save.player?.money) || 0;
+  const statusBanner = document.querySelector('#coliseoStatusBanner');
+  const betRow = document.querySelector('#coliseoBetRow');
+  const actionsRow = document.querySelector('#coliseoActionsRow');
+  const combatLog = document.querySelector('#coliseoCombatLog');
+
+  if (playerMoney < coliseoCombat.bet) {
+    if (statusBanner) {
+      statusBanner.textContent = en
+        ? `// Not enough cash! You need $${coliseoCombat.bet} to bet._`
+        : `// ¡Fondos insuficientes! Necesitas $${coliseoCombat.bet} para apostar._`;
+    }
+    return;
+  }
+
+  save.player.money = playerMoney - coliseoCombat.bet;
+  window.__lifeSave = save;
+  saveCurrentGame(save);
+  renderStats();
+
+  coliseoCombat.active = true;
+  coliseoCombat.playerHp = 100;
+  if (betRow) betRow.classList.add('hidden');
+  if (actionsRow) actionsRow.classList.remove('hidden');
+
+  if (combatLog) {
+    combatLog.textContent = en
+      ? `// Bell rings! Bet: $${coliseoCombat.bet}. It's your turn. Choose your move!`
+      : `// ¡Suena la campana! Apuesta: $${coliseoCombat.bet}. Es tu turno. ¡Elige tu movimiento!`;
+  }
+}
+
+function executeColiseoAction(type) {
+  if (!coliseoCombat.active) return;
+  const save = readSave();
+  const en = currentLanguage === 'en';
+  const combatLog = document.querySelector('#coliseoCombatLog');
+  const statusBanner = document.querySelector('#coliseoStatusBanner');
+  const playerHpBar = document.querySelector('#coliseoPlayerHpBar');
+  const enemyHpBar = document.querySelector('#coliseoEnemyHpBar');
+  const playerHpText = document.querySelector('#coliseoPlayerHpText');
+  const enemyHpText = document.querySelector('#coliseoEnemyHpText');
+  const betRow = document.querySelector('#coliseoBetRow');
+  const actionsRow = document.querySelector('#coliseoActionsRow');
+
+  let playerMsg = '';
+
+  if (type === 'fast') {
+    const hit = Math.random() < 0.95;
+    if (hit) {
+      let dmg = Math.floor(14 + Math.random() * 8);
+      if (coliseoCombat.playerTaunt) {
+        dmg = Math.floor(dmg * 1.5);
+        coliseoCombat.playerTaunt = false;
+      }
+      coliseoCombat.enemyHp = Math.max(0, coliseoCombat.enemyHp - dmg);
+      playerMsg = en ? `You land a swift jab for ${dmg} DMG!` : `¡Conectas un golpe rápido de ${dmg} de daño!`;
+    } else {
+      playerMsg = en ? `Your fast jab missed!` : `¡Tu golpe rápido falló!`;
+    }
+  } else if (type === 'heavy') {
+    const hit = Math.random() < 0.65;
+    if (hit) {
+      let dmg = Math.floor(30 + Math.random() * 16);
+      if (coliseoCombat.playerTaunt) {
+        dmg = Math.floor(dmg * 1.5);
+        coliseoCombat.playerTaunt = false;
+      }
+      coliseoCombat.enemyHp = Math.max(0, coliseoCombat.enemyHp - dmg);
+      playerMsg = en ? `CRITICAL! Massive heavy hook deals ${dmg} DMG!` : `¡CRÍTICO! ¡Gancho demoledor inflige ${dmg} de daño!`;
+    } else {
+      playerMsg = en ? `Your heavy hook missed wide!` : `¡Tu golpe pesado falló el blanco!`;
+    }
+  } else if (type === 'block') {
+    coliseoCombat.playerBlocking = true;
+    coliseoCombat.playerHp = Math.min(100, coliseoCombat.playerHp + 10);
+    playerMsg = en ? `Tactical defense ready (+10 HP). Enemy damage reduced by 75%.` : `Postura defensiva táctica (+10 HP). Próximo daño rival mitigado 75%.`;
+  } else if (type === 'taunt') {
+    coliseoCombat.playerTaunt = true;
+    playerMsg = en ? `You taunt the rival! Your next strike deals +50% damage.` : `¡Provocas al rival! Tu próximo golpe causará +50% de daño.`;
+  }
+
+  // Update enemy HP
+  if (enemyHpBar) enemyHpBar.style.width = `${Math.round((coliseoCombat.enemyHp / coliseoCombat.enemyMaxHp) * 100)}%`;
+  if (enemyHpText) enemyHpText.textContent = `HP: ${coliseoCombat.enemyHp}/${coliseoCombat.enemyMaxHp}`;
+
+  // Check victory
+  if (coliseoCombat.enemyHp <= 0) {
+    coliseoCombat.active = false;
+    const payout = coliseoCombat.bet * 2;
+    save.player.money = (Number(save.player.money) || 0) + payout;
+    save.player.reputation = (Number(save.player.reputation) || 0) + 15;
+    save.player.mood = 'confiado';
+    window.__lifeSave = save;
+    saveCurrentGame(save);
+    renderStats();
+
+    if (combatLog) {
+      combatLog.textContent = `${playerMsg} ${en ? `KO! ${coliseoCombat.enemyName} hit the canvas!` : `¡KO! ¡${coliseoCombat.enemyName} cayó noqueado!`}`;
+    }
+    if (statusBanner) {
+      statusBanner.textContent = en
+        ? `// VICTORY! You earned $${payout} and +15 Reputation._`
+        : `// ¡VICTORIA! Cobraste $${payout} y ganaste +15 de Reputación._`;
+    }
+    if (actionsRow) actionsRow.classList.add('hidden');
+    if (betRow) betRow.classList.remove('hidden');
+    return;
+  }
+
+  // Enemy counter-attack
+  let enemyDmg = Math.floor(coliseoCombat.enemyAtk + (Math.random() * 8 - 4));
+  if (coliseoCombat.playerBlocking) {
+    enemyDmg = Math.max(2, Math.floor(enemyDmg * 0.25));
+    coliseoCombat.playerBlocking = false;
+  }
+  coliseoCombat.playerHp = Math.max(0, coliseoCombat.playerHp - enemyDmg);
+
+  if (playerHpBar) playerHpBar.style.width = `${coliseoCombat.playerHp}%`;
+  if (playerHpText) playerHpText.textContent = `HP: ${coliseoCombat.playerHp}/100`;
+
+  if (coliseoCombat.playerHp <= 0) {
+    coliseoCombat.active = false;
+    save.player.energy = Math.max(0, (Number(save.player.energy) || 0) - 20);
+    save.player.mood = 'adolorido';
+    window.__lifeSave = save;
+    saveCurrentGame(save);
+    renderStats();
+
+    if (combatLog) {
+      combatLog.textContent = `${playerMsg} ${en ? `${coliseoCombat.enemyName} knocked you out cold!` : `¡${coliseoCombat.enemyName} te conectó un golpe y caíste a la lona!`}`;
+    }
+    if (statusBanner) {
+      statusBanner.textContent = en
+        ? `// DEFEAT: You lost the fight and your $${coliseoCombat.bet} bet._`
+        : `// DERROTA: Perdiste el combate y tu apuesta de $${coliseoCombat.bet}._`;
+    }
+    if (actionsRow) actionsRow.classList.add('hidden');
+    if (betRow) betRow.classList.remove('hidden');
+    return;
+  }
+
+  if (combatLog) {
+    combatLog.textContent = `${playerMsg} -> ${coliseoCombat.enemyName} strikes back for ${enemyDmg} DMG!`;
+  }
+}
+
+// ==========================================
+// 2. CYBERSTOCK EXCHANGE (BOLSA RETRO)
+// ==========================================
+const CYBER_STOCKS = [
+  { ticker: 'MCORP', name: 'MegaCorp Inc.', price: 120, trend: '+3.2%', history: '/\\_/\\-', color: '#4ade80' },
+  { ticker: 'BSYN', name: 'BioSynth Pharma', price: 45, trend: '-1.8%', history: '\\__/-', color: '#f87171' },
+  { ticker: 'NENRG', name: 'Neon Energy Grid', price: 85, trend: '+5.4%', history: '/---/\\', color: '#38bdf8' },
+  { ticker: 'DCYB', name: 'Doge-Cyber Crypto', price: 18, trend: '+14.2%', history: '/\\/\\/\\', color: '#fbbf24' }
+];
+
+function openStocksModal() {
+  renderStocksUI();
+  stocksScreen?.classList.remove('hidden');
+}
+
+function renderStocksUI() {
+  const save = readSave();
+  const en = currentLanguage === 'en';
+  save.portfolio = save.portfolio || { MCORP: 0, BSYN: 0, NENRG: 0, DCYB: 0 };
+
+  const playerCash = Number(save.player?.money) || 0;
+  let totalPortfolioValue = 0;
+  CYBER_STOCKS.forEach((stock) => {
+    const qty = save.portfolio[stock.ticker] || 0;
+    totalPortfolioValue += qty * stock.price;
+  });
+
+  const cashEl = document.querySelector('#stocksPlayerCash');
+  const portfolioEl = document.querySelector('#stocksPortfolioValue');
+  const tableBody = document.querySelector('#stocksTableBody');
+
+  if (cashEl) cashEl.textContent = `${en ? 'AVAILABLE CASH: $' : 'LIQUIDEZ DISPONIBLE: $'}${playerCash}`;
+  if (portfolioEl) portfolioEl.textContent = `${en ? 'PORTFOLIO VALUE: $' : 'VALOR EN CARTERA: $'}${totalPortfolioValue}`;
+
+  if (tableBody) {
+    tableBody.replaceChildren();
+    CYBER_STOCKS.forEach((stock) => {
+      const owned = save.portfolio[stock.ticker] || 0;
+      const tr = document.createElement('tr');
+
+      tr.innerHTML = `
+        <td><strong>${stock.ticker}</strong><br><small style="color:var(--text-dim);">${stock.name}</small></td>
+        <td style="color:var(--accent); font-weight:bold;">$${stock.price}</td>
+        <td style="color:${stock.trend.startsWith('+') ? '#4ade80' : '#f87171'};">${stock.trend} <code>${stock.history}</code></td>
+        <td><strong>${owned}</strong></td>
+        <td>
+          <button class="history-button stock-buy-btn" data-ticker="${stock.ticker}" type="button" style="padding:4px 8px; font-size:10px;">[ ${en ? 'BUY 1' : 'COMPRAR 1'} ]</button>
+          <button class="history-button stock-sell-btn" data-ticker="${stock.ticker}" type="button" style="padding:4px 8px; font-size:10px;" ${owned <= 0 ? 'disabled' : ''}>[ ${en ? 'SELL 1' : 'VENDER 1'} ]</button>
+        </td>
+      `;
+
+      const buyBtn = tr.querySelector('.stock-buy-btn');
+      const sellBtn = tr.querySelector('.stock-sell-btn');
+
+      buyBtn?.addEventListener('click', () => buyCyberStock(stock.ticker));
+      sellBtn?.addEventListener('click', () => sellCyberStock(stock.ticker));
+
+      tableBody.appendChild(tr);
+    });
+  }
+}
+
+function buyCyberStock(ticker) {
+  const save = readSave();
+  const en = currentLanguage === 'en';
+  save.portfolio = save.portfolio || {};
+  const stock = CYBER_STOCKS.find((s) => s.ticker === ticker);
+  if (!stock) return;
+
+  const playerMoney = Number(save.player?.money) || 0;
+  const banner = document.querySelector('#stocksResultBanner');
+
+  if (playerMoney < stock.price) {
+    if (banner) banner.textContent = en ? `// Not enough funds to buy 1 share of ${ticker}._` : `// Fondos insuficientes para comprar 1 acción de ${ticker}._`;
+    return;
+  }
+
+  save.player.money = playerMoney - stock.price;
+  save.portfolio[ticker] = (save.portfolio[ticker] || 0) + 1;
+  window.__lifeSave = save;
+  saveCurrentGame(save);
+  renderStats();
+  renderStocksUI();
+
+  if (banner) banner.textContent = en ? `// Purchased 1 share of ${stock.ticker} for $${stock.price}._` : `// Compraste 1 acción de ${stock.ticker} por $${stock.price}._`;
+}
+
+function sellCyberStock(ticker) {
+  const save = readSave();
+  const en = currentLanguage === 'en';
+  save.portfolio = save.portfolio || {};
+  const stock = CYBER_STOCKS.find((s) => s.ticker === ticker);
+  if (!stock) return;
+
+  const owned = save.portfolio[ticker] || 0;
+  const banner = document.querySelector('#stocksResultBanner');
+  if (owned <= 0) return;
+
+  save.player.money = (Number(save.player?.money) || 0) + stock.price;
+  save.portfolio[ticker] = owned - 1;
+  window.__lifeSave = save;
+  saveCurrentGame(save);
+  renderStats();
+  renderStocksUI();
+
+  if (banner) banner.textContent = en ? `// Sold 1 share of ${stock.ticker} for $${stock.price}._` : `// Vendiste 1 acción de ${stock.ticker} por $${stock.price}._`;
+}
+
+function refreshStocksMarket() {
+  CYBER_STOCKS.forEach((stock) => {
+    const delta = (Math.random() * 0.16) - 0.07;
+    stock.price = Math.max(5, Math.round(stock.price * (1 + delta)));
+    stock.trend = `${delta >= 0 ? '+' : ''}${(delta * 100).toFixed(1)}%`;
+    const symbols = ['/\\_', '_/-', '\\__', '/-\\', '/\\/\\'];
+    stock.history = symbols[Math.floor(Math.random() * symbols.length)];
+  });
+  renderStocksUI();
+  const banner = document.querySelector('#stocksResultBanner');
+  const en = currentLanguage === 'en';
+  if (banner) banner.textContent = en ? `// Market updated with live financial indices._` : `// Mercado actualizado con índices financieros en tiempo real._`;
+}
+
+// ==========================================
+// 3. MASCOTA CIBERNÉTICA TAMAGOTCHI CRT
+// ==========================================
+const TAMAGOTCHI_PHASES = [
+  {
+    phase: 1,
+    name: { es: 'FASE 1: PROTOTIPO', en: 'PHASE 1: PROTOTYPE' },
+    ascii: `   [ o.o ]\n  /| === |\\\n   d     b`
+  },
+  {
+    phase: 2,
+    name: { es: 'FASE 2: CIBER-COMPAÑERO', en: 'PHASE 2: CYBER-COMPANION' },
+    ascii: `  <[ O_O ]>\n  //|===|\\\\\n  ( )   ( )`
+  },
+  {
+    phase: 3,
+    name: { es: 'FASE 3: GUARDIÁN OMEGA', en: 'PHASE 3: OMEGA GUARDIAN' },
+    ascii: ` /\\[{ -_- }]//|\n<==| OMEGA |==>\n   /|     |\\`
+  }
+];
+
+function openTamagotchiModal() {
+  renderTamagotchiUI();
+  tamagotchiScreen?.classList.remove('hidden');
+}
+
+function renderTamagotchiUI() {
+  const save = readSave();
+  const en = currentLanguage === 'en';
+  save.tamagotchi = save.tamagotchi || {
+    name: 'CIBER-DRON V1',
+    battery: 85,
+    mood: 90,
+    firmware: 35,
+    phase: 1
+  };
+
+  const tState = save.tamagotchi;
+  const currentPhaseData = TAMAGOTCHI_PHASES.find((p) => p.phase === (tState.phase || 1)) || TAMAGOTCHI_PHASES[0];
+
+  const petNameEl = document.querySelector('#tamagotchiPetName');
+  const phaseBadgeEl = document.querySelector('#tamagotchiPhaseBadge');
+  const asciiEl = document.querySelector('#tamagotchiAscii');
+  const batteryBar = document.querySelector('#tamagotchiBatteryBar');
+  const moodBar = document.querySelector('#tamagotchiMoodBar');
+  const firmwareBar = document.querySelector('#tamagotchiFirmwareBar');
+  const batteryText = document.querySelector('#tamagotchiBatteryText');
+  const moodText = document.querySelector('#tamagotchiMoodText');
+  const firmwareText = document.querySelector('#tamagotchiFirmwareText');
+
+  if (petNameEl) petNameEl.textContent = `${en ? 'NAME: ' : 'NOMBRE: '}${tState.name}`;
+  if (phaseBadgeEl) phaseBadgeEl.textContent = `[ ${currentPhaseData.name[currentLanguage] || currentPhaseData.name.es} ]`;
+  if (asciiEl) asciiEl.textContent = currentPhaseData.ascii;
+
+  if (batteryBar) batteryBar.style.width = `${tState.battery}%`;
+  if (moodBar) moodBar.style.width = `${tState.mood}%`;
+  if (firmwareBar) firmwareBar.style.width = `${Math.min(100, tState.firmware)}%`;
+
+  if (batteryText) batteryText.textContent = `${tState.battery}%`;
+  if (moodText) moodText.textContent = `${tState.mood}%`;
+  if (firmwareText) firmwareText.textContent = `${tState.firmware}/100 EXP`;
+}
+
+function tActionCharge() {
+  const save = readSave();
+  const en = currentLanguage === 'en';
+  save.tamagotchi = save.tamagotchi || { battery: 80, mood: 80, firmware: 20, phase: 1, name: 'CIBER-DRON V1' };
+  const cost = 15;
+  const playerCash = Number(save.player?.money) || 0;
+  const banner = document.querySelector('#tamagotchiStatusBanner');
+
+  if (playerCash < cost) {
+    if (banner) banner.textContent = en ? `// Not enough cash ($15 required to recharge)._` : `// Dinero insuficiente (se requieren $15 para recarga)._`;
+    return;
+  }
+
+  save.player.money = playerCash - cost;
+  save.tamagotchi.battery = 100;
+  window.__lifeSave = save;
+  saveCurrentGame(save);
+  renderStats();
+  renderTamagotchiUI();
+  if (banner) banner.textContent = en ? `// Battery fully restored to 100% (-$15)._` : `// Batería recargada al 100% (-$15)._`;
+}
+
+function tActionPlay() {
+  const save = readSave();
+  const en = currentLanguage === 'en';
+  save.tamagotchi = save.tamagotchi || { battery: 80, mood: 80, firmware: 20, phase: 1, name: 'CIBER-DRON V1' };
+  const banner = document.querySelector('#tamagotchiStatusBanner');
+
+  if (save.tamagotchi.battery < 15) {
+    if (banner) banner.textContent = en ? `// Low battery! Recharge your pet before training._` : `// ¡Batería baja! Recarga a tu mascota antes de jugar._`;
+    return;
+  }
+
+  save.tamagotchi.battery = Math.max(0, save.tamagotchi.battery - 15);
+  save.tamagotchi.mood = Math.min(100, save.tamagotchi.mood + 25);
+  save.tamagotchi.firmware = Math.min(100, save.tamagotchi.firmware + 15);
+  save.player.mood = 'feliz';
+  window.__lifeSave = save;
+  saveCurrentGame(save);
+  renderStats();
+  renderTamagotchiUI();
+  if (banner) banner.textContent = en ? `// You played with your pet! +25 Mood, +15 Firmware EXP._` : `// ¡Jugaste con tu mascota! +25 Ánimo, +15 EXP de Firmware._`;
+}
+
+function tActionClean() {
+  const save = readSave();
+  const en = currentLanguage === 'en';
+  save.tamagotchi = save.tamagotchi || { battery: 80, mood: 80, firmware: 20, phase: 1, name: 'CIBER-DRON V1' };
+  save.tamagotchi.mood = Math.min(100, save.tamagotchi.mood + 15);
+  save.tamagotchi.firmware = Math.min(100, save.tamagotchi.firmware + 5);
+  window.__lifeSave = save;
+  saveCurrentGame(save);
+  renderTamagotchiUI();
+  const banner = document.querySelector('#tamagotchiStatusBanner');
+  if (banner) banner.textContent = en ? `// Diagnostics clean and cache flushed. +15 Mood._` : `// Diagnóstico ejecutado y caché purgada. +15 Ánimo._`;
+}
+
+function tActionUpgrade() {
+  const save = readSave();
+  const en = currentLanguage === 'en';
+  save.tamagotchi = save.tamagotchi || { battery: 80, mood: 80, firmware: 20, phase: 1, name: 'CIBER-DRON V1' };
+  const banner = document.querySelector('#tamagotchiStatusBanner');
+
+  if (save.tamagotchi.firmware < 100) {
+    if (banner) banner.textContent = en ? `// Firmware needs 100 EXP to evolve (Current: ${save.tamagotchi.firmware}/100)._` : `// El firmware requiere 100 EXP para evolucionar (Actual: ${save.tamagotchi.firmware}/100)._`;
+    return;
+  }
+
+  if (save.tamagotchi.phase >= 3) {
+    if (banner) banner.textContent = en ? `// Your pet has already achieved maximum OMEGA form!_` : `// ¡Tu mascota ya ha alcanzado su evolución máxima OMEGA!_`;
+    return;
+  }
+
+  save.tamagotchi.phase = (save.tamagotchi.phase || 1) + 1;
+  save.tamagotchi.firmware = 0;
+  save.player.health = Math.min(100, (Number(save.player.health) || 0) + 15);
+  save.player.mood = 'inspirado';
+  window.__lifeSave = save;
+  saveCurrentGame(save);
+  renderStats();
+  renderTamagotchiUI();
+  if (banner) banner.textContent = en ? `// EVOLUTION COMPLETE! Pet evolved to Phase ${save.tamagotchi.phase}! Permanent life bonus applied._` : `// ¡EVOLUCIÓN COMPLETADA! ¡Mascota avanzó a Fase ${save.tamagotchi.phase}! Bonos permanentes aplicados._`;
+}
+
+// ==========================================
+// 4. EXPEDIENTE POLICIAL / MODO DETECTIVE
+// ==========================================
+const DETECTIVE_CASES = [
+  {
+    id: 409,
+    title: { es: 'CASO #409: EL ROBO DE MEMORIAS MEGACORP', en: 'CASE #409: MEGACORP MEMORY THEFT' },
+    bounty: 1800,
+    brief: {
+      es: 'Un lote de memorias cuánticas fue extraído de los servidores centrales durante un corte eléctrico. 3 sospechosos fueron retenidos en la escena.',
+      en: 'A batch of quantum drives was taken from core servers during a blackout. 3 suspects were detained at the perimeter.'
+    },
+    clues: {
+      es: [
+        'Huellas de botas de titanio militar marcadas en el ducto de ventilación.',
+        'El chip de desencriptado usado requería un implante militar Grado 3.',
+        'Se halló una credencial dañada perteneciente al Escuadrón 77.'
+      ],
+      en: [
+        'Titanium boot prints marked along the ventilation duct.',
+        'The decryption chip required a Military Grade 3 neural implant.',
+        'A damaged ID badge belonging to Squadron 77 was recovered nearby.'
+      ]
+    },
+    suspects: [
+      { name: 'Corredor Jax', alibi: { es: 'Estaba en el bar. Lleva zapatillas de tela ligeras.', en: 'Was at the bar. Wears light running sneakers.' }, guilty: false },
+      { name: 'Ex-Sargento Vane', alibi: { es: 'Dice que pasaba por ahí. Lleva botas pesadas de titanio y tiene implante militar Grado 3 del Escuadrón 77.', en: 'Claims he was strolling. Wears heavy titanium boots and has a Grade 3 implant from Squadron 77.' }, guilty: true },
+      { name: 'Hacker Kira', alibi: { es: 'Conectada a la deepnet toda la noche. Sus implantes son ópticos civiles.', en: 'Connected to deepnet all night. Her implants are civilian optics.' }, guilty: false }
+    ]
+  },
+  {
+    id: 512,
+    title: { es: 'CASO #512: EL SABOTAJE DE LA SUBESTACIÓN', en: 'CASE #512: SUBSTATION SABOTAGE' },
+    bounty: 2400,
+    brief: {
+      es: 'La red eléctrica sur colapsó intencionalmente con ácido sulfuroso industrial. Se retuvo a 3 sospechosos en el taller cercano.',
+      en: 'The southern grid collapsed due to industrial sulfur acid tampering. 3 suspects were questioned nearby.'
+    },
+    clues: {
+      es: [
+        'Residuos de ácido sulfuroso de grado taller en la caja de fusibles.',
+        'El culpable huyó en una moto eléctrica con rueda trasera desgastada.',
+        'Testigos vieron una chaqueta de "Talleres Vulcano".'
+      ],
+      en: [
+        'Industrial sulfur acid residue found inside the fuse box.',
+        'Suspect fled on an electric bike with a worn rear tire.',
+        'Witnesses spotted a "Vulcan Garage" jacket.'
+      ]
+    },
+    suspects: [
+      { name: 'Mecánico Rudo Tor', alibi: { es: 'Trabaja en Talleres Vulcano y sus manos tienen restos de azufre. Maneja una moto eléctrica desgastada.', en: 'Works at Vulcan Garage, sulfur stains on hands. Rides a worn electric bike.' }, guilty: true },
+      { name: 'Operador Sam', alibi: { es: 'Solo usa traje corporativo limpio y viaja en aerotrén.', en: 'Wears clean corporate uniform and commutes via sky-train.' }, guilty: false },
+      { name: 'Química Nora', alibi: { es: 'Científica de laboratorio, no maneja motos y tiene coartada en su oficina.', en: 'Lab scientist, does not ride motorbikes, verified office alibi.' }, guilty: false }
+    ]
+  }
+];
+
+let activeDetectiveIndex = 0;
+
+function openDetectiveModal() {
+  renderDetectiveCase();
+  detectiveScreen?.classList.remove('hidden');
+}
+
+function renderDetectiveCase() {
+  const currentCase = DETECTIVE_CASES[activeDetectiveIndex % DETECTIVE_CASES.length];
+  const en = currentLanguage === 'en';
+
+  const titleEl = document.querySelector('#detectiveCaseTitle');
+  const bountyEl = document.querySelector('#detectiveCaseBounty');
+  const briefEl = document.querySelector('#detectiveCaseBrief');
+  const cluesList = document.querySelector('#detectiveCluesList');
+  const suspectsGrid = document.querySelector('#detectiveSuspectsGrid');
+
+  if (titleEl) titleEl.textContent = currentCase.title[currentLanguage] || currentCase.title.es;
+  if (bountyEl) bountyEl.textContent = `${en ? 'BOUNTY: $' : 'RECOMPENSA: $'}${currentCase.bounty}`;
+  if (briefEl) briefEl.textContent = currentCase.brief[currentLanguage] || currentCase.brief.es;
+
+  if (cluesList) {
+    cluesList.replaceChildren();
+    const clues = currentCase.clues[currentLanguage] || currentCase.clues.es;
+    clues.forEach((clue) => {
+      const li = document.createElement('li');
+      li.textContent = clue;
+      cluesList.appendChild(li);
+    });
+  }
+
+  if (suspectsGrid) {
+    suspectsGrid.replaceChildren();
+    currentCase.suspects.forEach((suspect, idx) => {
+      const card = document.createElement('div');
+      card.className = 'suspect-card';
+      const alibiText = suspect.alibi[currentLanguage] || suspect.alibi.es;
+
+      card.innerHTML = `
+        <h4>${suspect.name}</h4>
+        <p>${alibiText}</p>
+        <button class="history-button accuse-btn" data-suspect="${idx}" type="button">[ ${en ? 'ACCUSE SUSPECT' : 'ACUSAR SOSPECHOSO'} ]</button>
+      `;
+
+      card.querySelector('.accuse-btn')?.addEventListener('click', () => {
+        accuseSuspect(suspect.guilty, currentCase.bounty);
+      });
+
+      suspectsGrid.appendChild(card);
+    });
+  }
+}
+
+function accuseSuspect(isGuilty, bounty) {
+  const save = readSave();
+  const en = currentLanguage === 'en';
+  const banner = document.querySelector('#detectiveStatusBanner');
+
+  if (isGuilty) {
+    save.player.money = (Number(save.player.money) || 0) + bounty;
+    save.player.reputation = (Number(save.player.reputation) || 0) + 20;
+    save.player.mood = 'triunfante';
+    window.__lifeSave = save;
+    saveCurrentGame(save);
+    renderStats();
+
+    if (banner) {
+      banner.textContent = en
+        ? `// CASE SOLVED! Correct suspect apprehended. Bounty collected: +$${bounty}, +20 Rep._`
+        : `// ¡CASO RESUELTO! Culpable capturado con éxito. Recompensa cobrada: +$${bounty}, +20 Rep._`;
+    }
+    activeDetectiveIndex++;
+    setTimeout(() => {
+      renderDetectiveCase();
+    }, 1800);
+  } else {
+    const fine = 300;
+    save.player.money = Math.max(0, (Number(save.player.money) || 0) - fine);
+    save.player.reputation = Math.max(0, (Number(save.player.reputation) || 0) - 10);
+    window.__lifeSave = save;
+    saveCurrentGame(save);
+    renderStats();
+
+    if (banner) {
+      banner.textContent = en
+        ? `// FALSE ACCUSATION! You blamed an innocent citizen. Police fine: -$${fine}, -10 Rep._`
+        : `// ¡FALSA ACUSACIÓN! Acusaste a un inocente. Multa policial por mala praxis: -$${fine}, -10 Rep._`;
+    }
+  }
+}
+
+// ==========================================
+// 5. REFUGIO CLANDESTINO & BIENES RAÍCES
+// ==========================================
+const SAFEHOUSE_PROPERTIES = [
+  { id: 'capsule', name: { es: 'Cápsula Hotel 404', en: 'Capsule Hotel 404' }, price: 1200, bonus: { es: 'Alojamiento básico (+5% recuperación de energía)', en: 'Basic lodging (+5% energy recovery)' } },
+  { id: 'workshop', name: { es: 'Taller Subterráneo Abandonado', en: 'Abandoned Underground Workshop' }, price: 4500, bonus: { es: 'Espacio industrial amplio (Habilita Rack de Minería)', en: 'Industrial space (Enables Crypto Rack)' } },
+  { id: 'penthouse', name: { es: 'Ático en Torre Neón 88', en: 'Neon Tower 88 Penthouse' }, price: 18000, bonus: { es: '+25 Reputación y protección total contra eventos caóticos', en: '+25 Reputation & immune to crime events' } }
+];
+
+const SAFEHOUSE_UPGRADES_CATALOG = [
+  { id: 'crypto_rack', name: { es: 'Rack de Minería Cripto', en: 'Crypto Mining Rack' }, price: 1500, desc: { es: 'Genera +$45 a +$85 pasivos en cada decisión de la historia', en: 'Yields +$45 to +$85 passive income per story chapter' } },
+  { id: 'med_pod', name: { es: 'Cápsula de Biorrecuperación', en: 'Biorecovery Pod' }, price: 2200, desc: { es: 'Restaura +10 Energía/Salud al envejecer o descansar', en: 'Restores +10 Energy/Health on aging or resting' } },
+  { id: 'arcade_unit', name: { es: 'Terminal Arcade CRT Clásica', en: 'Classic CRT Arcade Unit' }, price: 800, desc: { es: '+15 Ánimo constante por entretenimiento en casa', en: '+15 Permanent Mood boost from home gaming' } }
+];
+
+function openSafehouseModal() {
+  renderSafehouseUI();
+  safehouseScreen?.classList.remove('hidden');
+}
+
+function renderSafehouseUI() {
+  const save = readSave();
+  const en = currentLanguage === 'en';
+  save.safehouse = save.safehouse || { owned: null, upgrades: [] };
+
+  const currentProp = SAFEHOUSE_PROPERTIES.find((p) => p.id === save.safehouse.owned);
+  const currentTitleEl = document.querySelector('#safehouseCurrentTitle');
+  const currentBonusEl = document.querySelector('#safehouseCurrentBonus');
+  const catalogGrid = document.querySelector('#safehouseCatalogGrid');
+  const upgradesGrid = document.querySelector('#safehouseUpgradesGrid');
+
+  if (currentTitleEl) {
+    currentTitleEl.textContent = `${en ? 'CURRENT SAFEHOUSE: ' : 'REFUGIO ACTUAL: '}${currentProp ? (currentProp.name[currentLanguage] || currentProp.name.es) : (en ? 'None (Homeless)' : 'Ninguno (Sin techo propio)')}`;
+  }
+  if (currentBonusEl) {
+    currentBonusEl.textContent = currentProp ? `${en ? 'Active benefits: ' : 'Beneficios activos: '}${currentProp.bonus[currentLanguage] || currentProp.bonus.es}` : (en ? 'No active property bonuses.' : 'Sin beneficios de propiedad activos.');
+  }
+
+  if (catalogGrid) {
+    catalogGrid.replaceChildren();
+    SAFEHOUSE_PROPERTIES.forEach((prop) => {
+      const isOwned = save.safehouse.owned === prop.id;
+      const card = document.createElement('div');
+      card.className = 'property-card';
+      const pName = prop.name[currentLanguage] || prop.name.es;
+      const pBonus = prop.bonus[currentLanguage] || prop.bonus.es;
+
+      card.innerHTML = `
+        <h4>${pName}</h4>
+        <div class="property-price">$${prop.price}</div>
+        <p>${pBonus}</p>
+        <button class="history-button buy-prop-btn" type="button" ${isOwned ? 'disabled' : ''}>[ ${isOwned ? (en ? 'OWNED' : 'ADQUIRIDO') : (en ? 'BUY PROPERTY' : 'COMPRAR PROPIEDAD')} ]</button>
+      `;
+
+      card.querySelector('.buy-prop-btn')?.addEventListener('click', () => buySafehouseProperty(prop.id, prop.price));
+      catalogGrid.appendChild(card);
+    });
+  }
+
+  if (upgradesGrid) {
+    upgradesGrid.replaceChildren();
+    SAFEHOUSE_UPGRADES_CATALOG.forEach((upg) => {
+      const isInstalled = save.safehouse.upgrades?.includes(upg.id);
+      const card = document.createElement('div');
+      card.className = 'upgrade-card';
+      const uName = upg.name[currentLanguage] || upg.name.es;
+      const uDesc = upg.desc[currentLanguage] || upg.desc.es;
+
+      card.innerHTML = `
+        <h4>${uName}</h4>
+        <div class="property-price">$${upg.price}</div>
+        <p>${uDesc}</p>
+        <button class="history-button buy-upg-btn" type="button" ${isInstalled ? 'disabled' : ''}>[ ${isInstalled ? (en ? 'INSTALLED' : 'INSTALADO') : (en ? 'INSTALL' : 'INSTALAR')} ]</button>
+      `;
+
+      card.querySelector('.buy-upg-btn')?.addEventListener('click', () => buySafehouseUpgrade(upg.id, upg.price));
+      upgradesGrid.appendChild(card);
+    });
+  }
+}
+
+function buySafehouseProperty(propId, price) {
+  const save = readSave();
+  const en = currentLanguage === 'en';
+  save.safehouse = save.safehouse || { owned: null, upgrades: [] };
+  const playerMoney = Number(save.player?.money) || 0;
+  const banner = document.querySelector('#safehouseStatusBanner');
+
+  if (playerMoney < price) {
+    if (banner) banner.textContent = en ? `// Insufficient cash to acquire this property._` : `// Fondos insuficientes para adquirir esta propiedad._`;
+    return;
+  }
+
+  save.player.money = playerMoney - price;
+  save.safehouse.owned = propId;
+  save.player.reputation = (Number(save.player.reputation) || 0) + 10;
+  window.__lifeSave = save;
+  saveCurrentGame(save);
+  renderStats();
+  renderSafehouseUI();
+
+  if (banner) banner.textContent = en ? `// Property deed registered! Welcome home._` : `// ¡Escritura de propiedad registrada! Bienvenido a tu nuevo refugio._`;
+}
+
+function buySafehouseUpgrade(upgId, price) {
+  const save = readSave();
+  const en = currentLanguage === 'en';
+  save.safehouse = save.safehouse || { owned: null, upgrades: [] };
+  save.safehouse.upgrades = save.safehouse.upgrades || [];
+  const playerMoney = Number(save.player?.money) || 0;
+  const banner = document.querySelector('#safehouseStatusBanner');
+
+  if (!save.safehouse.owned) {
+    if (banner) banner.textContent = en ? `// You must own a safehouse before installing upgrades!_` : `// ¡Debes ser dueño de un refugio antes de instalar mejoras!_`;
+    return;
+  }
+
+  if (playerMoney < price) {
+    if (banner) banner.textContent = en ? `// Insufficient cash for this installation._` : `// Fondos insuficientes para esta instalación._`;
+    return;
+  }
+
+  save.player.money = playerMoney - price;
+  save.safehouse.upgrades.push(upgId);
+  window.__lifeSave = save;
+  saveCurrentGame(save);
+  renderStats();
+  renderSafehouseUI();
+
+  if (banner) banner.textContent = en ? `// Module installed successfully in your safehouse._` : `// ¡Módulo instalado exitosamente en tu refugio!_`;
+}
+
+// ==========================================
+// 6. BATALLAS DE RAP EN TERMINAL
+// ==========================================
+const RAP_BATTLES = [
+  {
+    opponent: 'MC BYTE (CAMPEÓN DEL CALLEJÓN)',
+    rounds: [
+      {
+        verse: {
+          es: '"Tus algoritmos son lentos, tu procesador da pena, te gano en esta terminal y te dejo en cuarentena."',
+          en: '"Your algorithms are crawling, your CPU is obsolete, I crush you on this terminal and cast you to the street."'
+        },
+        options: [
+          { text: { es: '"Mi sintaxis es perfecta, tu compás está roto / Te formateo el disco y te saco una foto."', en: '"My syntax is flawless while your rhythm broke in two / I will wipe your hard drive and say farewell to you."' }, hype: 25 },
+          { text: { es: '"Yo rapeo normalito pero tengo más dinero / Vuelve a tu trinchera que yo soy el primero."', en: '"I spit standard bars but my pocket is packed / Return to your trench before you get tracked."' }, hype: 10 },
+          { text: { es: '"Eh... bueno... mi memoria RAM se acaba de congelar..."', en: '"Uh... well... my RAM just froze up..."' }, hype: -20 }
+        ]
+      },
+      {
+        verse: {
+          es: '"Te crees un hacker de élite moviendo bytes vacíos, cuando cae la noche tus circuitos tienen frío."',
+          en: '"You pose as elite hacker shuffling empty bytes of trash, when night falls your circuits freeze before my flash."'
+        },
+        options: [
+          { text: { es: '"El frío me conserva mientras tu kernel se funde / Mi estilo es el relámpago que en tu sistema se hunde."', en: '"The chill preserves my code while your kernel turns to slag / My lightning strikes your server and raises up my flag."' }, hype: 25 },
+          { text: { es: '"Yo tengo abrigo térmico y cables de aleación / No me hables de frío en esta competición."', en: '"I wear thermal plating and braided copper wire / Do not preach of cold to someone made of fire."' }, hype: 10 },
+          { text: { es: '"La verdad sí hace frío en esta ciudad cibernética."', en: '"It really is rather chilly in this cyber town."' }, hype: -20 }
+        ]
+      },
+      {
+        verse: {
+          es: '"Último asalto novato, se apagan las pantallas, en este bajo mundo solo quedan metrallas."',
+          en: '"Final round rookie, screens are going pitch black, in this underground jungle there is no coming back."'
+        },
+        options: [
+          { text: { es: '"Se apagarán tus pantallas pero no mi legado / En el salón de la fama mi nombre ha quedado."', en: '"Your monitors may dim but my legacy will shine / Across every mainframe immortality is mine."' }, hype: 30 },
+          { text: { es: '"Las metrallas no me tocan porque tengo blindaje / Te gané la batalla y te cobro el peaje."', en: '"Bullets bounce off armor thicker than your pride / Victory is sealed and the prize is on my side."' }, hype: 15 },
+          { text: { es: '"Ya me cansé de rimar, me voy para mi casa."', en: '"I am tired of rhyming, I am going home."' }, hype: -25 }
+        ]
+      }
+    ],
+    prize: 600
+  }
+];
+
+let rapBattleState = {
+  round: 0,
+  hype: 50,
+  active: false
+};
+
+function openRapBattleModal() {
+  rapBattleState.round = 0;
+  rapBattleState.hype = 50;
+  rapBattleState.active = true;
+  renderRapRound();
+  rapBattleScreen?.classList.remove('hidden');
+}
+
+function renderRapRound() {
+  const battle = RAP_BATTLES[0];
+  const en = currentLanguage === 'en';
+  const oppNameEl = document.querySelector('#rapOpponentName');
+  const roundBadgeEl = document.querySelector('#rapRoundBadge');
+  const oppVerseEl = document.querySelector('#rapOpponentVerse');
+  const hypeBar = document.querySelector('#rapHypeBar');
+  const optionsList = document.querySelector('#rapOptionsList');
+  const statusBanner = document.querySelector('#rapStatusBanner');
+
+  if (oppNameEl) oppNameEl.textContent = `OPONENTE: ${battle.opponent}`;
+  if (roundBadgeEl) roundBadgeEl.textContent = `[ ${en ? 'ROUND' : 'ASALTO'} ${rapBattleState.round + 1} / 3 ]`;
+  if (hypeBar) hypeBar.style.width = `${rapBattleState.hype}%`;
+
+  const roundData = battle.rounds[rapBattleState.round];
+  if (oppVerseEl && roundData) {
+    oppVerseEl.textContent = roundData.verse[currentLanguage] || roundData.verse.es;
+  }
+
+  if (optionsList && roundData) {
+    optionsList.replaceChildren();
+    roundData.options.forEach((opt) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'history-button rap-choice-btn';
+      btn.textContent = opt.text[currentLanguage] || opt.text.es;
+      btn.addEventListener('click', () => chooseRapRhyme(opt.hype, battle.prize));
+      optionsList.appendChild(btn);
+    });
+  }
+
+  if (statusBanner) {
+    statusBanner.textContent = en
+      ? `// Choose the sharpest rhyme to win over the crowd._`
+      : `// Elige la rima más contundente para ganarte al público._`;
+  }
+}
+
+function chooseRapRhyme(hypeDelta, prize) {
+  const save = readSave();
+  const en = currentLanguage === 'en';
+  rapBattleState.hype = Math.max(0, Math.min(100, rapBattleState.hype + hypeDelta));
+  const hypeBar = document.querySelector('#rapHypeBar');
+  if (hypeBar) hypeBar.style.width = `${rapBattleState.hype}%`;
+
+  rapBattleState.round++;
+  const statusBanner = document.querySelector('#rapStatusBanner');
+  const optionsList = document.querySelector('#rapOptionsList');
+
+  if (rapBattleState.round < 3) {
+    renderRapRound();
+  } else {
+    rapBattleState.active = false;
+    optionsList?.replaceChildren();
+
+    if (rapBattleState.hype >= 55) {
+      save.player.money = (Number(save.player.money) || 0) + prize;
+      save.player.reputation = (Number(save.player.reputation) || 0) + 15;
+      save.player.mood = 'eufórico';
+      window.__lifeSave = save;
+      saveCurrentGame(save);
+      renderStats();
+
+      if (statusBanner) {
+        statusBanner.textContent = en
+          ? `// CROWD ROARS! Victory in 3 rounds! Prize: +$${prize}, +15 Rep._`
+          : `// ¡EL PÚBLICO ENLOQUECE! ¡Victoria en 3 asaltos! Premio: +$${prize}, +15 Rep._`;
+      }
+    } else {
+      save.player.reputation = Math.max(0, (Number(save.player.reputation) || 0) - 5);
+      save.player.mood = 'abochornado';
+      window.__lifeSave = save;
+      saveCurrentGame(save);
+      renderStats();
+
+      if (statusBanner) {
+        statusBanner.textContent = en
+          ? `// BOOED OFF STAGE! The crowd didn't feel your flow._`
+          : `// ¡ABUCHEO TOTAL! El público no sintió tu flow. Practica tus rimas._`;
+      }
+    }
+
+    const restartBtn = document.createElement('button');
+    restartBtn.type = 'button';
+    restartBtn.className = 'start-life-button';
+    restartBtn.textContent = en ? '[ PLAY AGAIN ]' : '[ VOLVER A BATALLAR ]';
+    restartBtn.onclick = () => openRapBattleModal();
+    optionsList?.appendChild(restartBtn);
+  }
+}
+
+// Window global references for testing and interoperability
+window.coliseoCombat = coliseoCombat;
+window.openColiseoModal = openColiseoModal;
+window.startColiseoFight = startColiseoFight;
+window.executeColiseoAction = executeColiseoAction;
+window.CYBER_STOCKS = CYBER_STOCKS;
+window.openStocksModal = openStocksModal;
+window.buyCyberStock = buyCyberStock;
+window.sellCyberStock = sellCyberStock;
+window.refreshStocksMarket = refreshStocksMarket;
+window.openTamagotchiModal = openTamagotchiModal;
+window.tActionCharge = tActionCharge;
+window.tActionPlay = tActionPlay;
+window.tActionClean = tActionClean;
+window.tActionUpgrade = tActionUpgrade;
+window.DETECTIVE_CASES = DETECTIVE_CASES;
+window.openDetectiveModal = openDetectiveModal;
+window.accuseSuspect = accuseSuspect;
+window.activeDetectiveIndex = activeDetectiveIndex;
+window.openSafehouseModal = openSafehouseModal;
+window.buySafehouseProperty = buySafehouseProperty;
+window.buySafehouseUpgrade = buySafehouseUpgrade;
+window.RAP_BATTLES = RAP_BATTLES;
+window.rapBattleState = rapBattleState;
+window.openRapBattleModal = openRapBattleModal;
+window.chooseRapRhyme = chooseRapRhyme;
+
+try {
+  initNewSystemsListeners();
+} catch (error) {
+  console.warn('LIFE.AI new systems initialization:', error);
+}
+
