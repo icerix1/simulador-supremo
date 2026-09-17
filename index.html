@@ -11,36 +11,144 @@
 	<link rel="stylesheet" href="styles.css">
 	<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 	<script src="supabase-client.js"></script>
+	<script>
+		function openTutorialModal(e) {
+			if (e) { try { e.preventDefault(); e.stopPropagation(); } catch(_) {} }
+			const m = document.getElementById('tutorialModal');
+			if (m) {
+				m.classList.remove('hidden');
+				m.style.setProperty('display', 'flex', 'important');
+				m.style.setProperty('z-index', '9999999', 'important');
+			}
+			if (window.renderTutorialStep) {
+				try { window.renderTutorialStep(window.tutorialCurrentStep || 0); } catch(_) {}
+			}
+			if (window.playSfx) {
+				try { window.playSfx('fanfare'); } catch(_) {}
+			}
+		}
+		function closeTutorialModal(e) {
+			if (e) { try { e.preventDefault(); e.stopPropagation(); } catch(_) {} }
+			const m = document.getElementById('tutorialModal');
+			if (m) {
+				m.classList.add('hidden');
+				m.style.setProperty('display', 'none', 'important');
+			}
+			try { localStorage.setItem('lifeTutorialCompleted', 'true'); } catch(_) {}
+		}
+		window.openTutorial = openTutorialModal;
+		window.closeTutorial = closeTutorialModal;
+		document.addEventListener('keydown', function(e) {
+			if (e.key === 'Escape') {
+				const m = document.getElementById('tutorialModal');
+				if (m && !m.classList.contains('hidden')) {
+					closeTutorialModal();
+				}
+			}
+		});
+	</script>
 </head>
 
 <body>
 	<main class="life-screen">
-		<div class="screen-status">
-			<span id="appTitle">Unnamed life simulation</span> <span>v0.0.2</span>
-			<span class="username-status" id="usernameStatus" aria-live="polite">USER: —</span>
-			<button class="status-logout-btn hidden" id="statusLogoutBtn" type="button" title="Cerrar sesión">[ LOGOUT ]</button>
-			<button class="status-tool-btn" id="blogButton" type="button" title="Ver notas y novedades de LIFE.AI">[ BLOG.TXT ]</button>
-			<label class="theme-control" id="themeLabel" for="themeSelect">TEMA:</label>
-			<select id="themeSelect" name="lifeTheme" aria-label="Tema de color retro" autocomplete="off">
-				<option value="green">VERDE</option>
-				<option value="orange">ÁMBAR</option>
-				<option value="red">ROJO</option>
-				<option value="blue">AZUL</option>
-			</select>
-			<label class="language-control" id="languageLabel" for="languageSelect">LANG:</label>
-			<select id="languageSelect" name="lifeLanguage" aria-label="Language" autocomplete="off">
-				<option value="es">ES</option>
-				<option value="en">EN</option>
-			</select>
+		<!-- Overlay para números flotantes y chispas de clics -->
+		<div id="dopamineOverlay" class="dopamine-overlay" aria-hidden="true"></div>
+
+		<!-- HUD del Multiplicador de Racha / Combo -->
+		<div class="combo-hud-container hidden" id="comboHud">
+			<div class="combo-title" id="comboTitle">COMBO x1</div>
+			<div class="combo-meter-bg">
+				<div class="combo-meter-fill" id="comboMeterFill" style="width: 100%;"></div>
+			</div>
 		</div>
-		<div class="active-players-indicator" id="activePlayersIndicator" aria-live="polite">JUGADORES: —</div>
+
+		<!-- Airdrop Relámpago Flotante -->
+		<button class="airdrop-pulse-btn hidden" id="airdropBtn" type="button">
+			<span class="airdrop-tag">[ ! DROP AÉREO ! ]</span>
+			<span class="airdrop-timer" id="airdropTimer">03.5s</span>
+		</button>
+
+		<!-- Micro-Logros en Cascada (Toasts Neón) -->
+		<div class="achievements-viewport" id="achievementsViewport"></div>
+
+		<!-- Feed de Notificaciones de Red Social Falsa -->
+		<div class="social-notif-overlay" id="socialNotifOverlay"></div>
+
+		<!-- Quick Time Event (QTE) Overlay -->
+		<div class="qte-overlay hidden" id="qteOverlay">
+			<div class="qte-box">
+				<p class="qte-prompt-text" id="qtePromptText">¡REFLEJO RELÁMPAGO!</p>
+				<button type="button" class="qte-action-btn" id="qteActionBtn">[ PULSA ESPACIO / CLIC ]</button>
+				<div class="qte-timer-bar-wrap">
+					<div class="qte-timer-bar-fill" id="qteTimerBarFill"></div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Chat en Vivo Simulado Estilo TikTok/Twitch con Reactor de Dopamina Integrado (Minimizado por defecto para no saturar la pantalla) -->
+		<div class="live-chat-widget minimized hidden" id="liveChatWidget">
+			<div class="live-chat-header">
+				<span><span class="live-stream-dot"></span><span id="liveChatViewerCount">14.8K</span> LIVE</span>
+				<button type="button" id="liveChatToggleBtn" class="chat-min-btn" title="Minimizar / Expandir">[-]</button>
+			</div>
+			<div class="dopamine-button-widget" id="dopamineButtonWidget">
+				<button type="button" class="dopamine-click-btn" id="dopamineClickBtn" title="¡Haz clic para cargar el reactor de dopamina!">[ ! PÚLSAME ! 0% ]</button>
+				<div class="dopamine-charge-bar">
+					<div class="dopamine-charge-fill" id="dopamineChargeFill"></div>
+				</div>
+			</div>
+			<div class="live-chat-list" id="liveChatList"></div>
+			<div class="live-chat-hearts-box" id="liveChatHeartsBox"></div>
+		</div>
+
+		<div class="screen-status">
+			<div class="status-group-left">
+				<span class="status-brand" id="appTitle">LIFE.AI</span>
+				<span class="status-version-badge">v0.0.2a</span>
+				<span class="username-status" id="usernameStatus" aria-live="polite">USER: —</span>
+			</div>
+			<div class="status-group-center">
+				<button class="status-tool-btn status-guide-highlight" id="tutorialBtn" type="button" title="Tutorial y guía interactiva" onclick="openTutorialModal(event);">[ ? GUÍA ]</button>
+				<button class="status-tool-btn" id="blogButton" type="button" title="Ver notas y novedades de LIFE.AI">[ BLOG ]</button>
+				<button class="status-tool-btn sfx-toggle-btn" id="sfxToggleBtn" type="button" title="Activar/desactivar audio sintetizado retro">[ SFX: ACTIVO ]</button>
+			</div>
+			<div class="status-group-right">
+				<div class="status-ctrl-item">
+					<label class="theme-control" id="themeLabel" for="themeSelect">TEMA:</label>
+					<select id="themeSelect" name="lifeTheme" aria-label="Tema de color retro" autocomplete="off">
+						<option value="green">VERDE</option>
+						<option value="orange">ÁMBAR</option>
+						<option value="red">ROJO</option>
+						<option value="blue">AZUL</option>
+					</select>
+				</div>
+				<div class="status-ctrl-item">
+					<label class="language-control" id="languageLabel" for="languageSelect">LANG:</label>
+					<select id="languageSelect" name="lifeLanguage" aria-label="Language" autocomplete="off">
+						<option value="es">ES</option>
+						<option value="en">EN</option>
+					</select>
+				</div>
+				<div class="active-players-indicator" id="activePlayersIndicator" aria-live="polite">JUGADORES: —</div>
+				<button class="status-logout-btn hidden" id="statusLogoutBtn" type="button" title="Cerrar sesión">[ LOGOUT ]</button>
+			</div>
+		</div>
 		<div class="weather-overlay" id="weatherOverlay" aria-hidden="true"></div>
 		<div class="season-effects" id="seasonEffects" aria-hidden="true"></div>
 		<div class="money-rain-overlay hidden" id="moneyRainOverlay" aria-hidden="true"></div>
-		<div class="money-rain-indicator hidden" id="moneyRainIndicator" aria-live="polite"></div>
-		<div class="season-indicator hidden" id="seasonIndicator" aria-live="polite"></div>
-		<div class="weather-indicator hidden" id="weatherIndicator" aria-live="polite"></div>
-		<div class="mutator-indicator hidden" id="mutatorIndicator" aria-live="polite"></div>
+
+		<!-- Deck de Estado del Jugador (Esquina Inferior Izquierda) -->
+		<div class="player-status-deck" id="playerStatusDeck">
+			<div class="mutator-indicator hidden" id="mutatorIndicator" aria-live="polite"></div>
+			<div class="current-occupation hidden" id="currentOccupation" aria-live="polite"></div>
+		</div>
+
+		<!-- Deck de Eventos Mundiales y Clima (Esquina Inferior Derecha) -->
+		<div class="world-events-deck" id="worldEventsDeck">
+			<div class="money-rain-indicator hidden" id="moneyRainIndicator" aria-live="polite"></div>
+			<div class="season-indicator hidden" id="seasonIndicator" aria-live="polite"></div>
+			<div class="weather-indicator hidden" id="weatherIndicator" aria-live="polite"></div>
+		</div>
 		<section class="username-screen auth-screen" id="usernameScreen">
 			<p class="code-line"><span class="prompt">C:\LIFE&gt;</span> auth_service.exe</p>
 			<h1 id="usernameTitle">ACCESO DE USUARIO</h1>
@@ -179,6 +287,12 @@
 		</section>
 
 		<section class="story-screen hidden" id="storyScreen">
+			<!-- Cinta Marquee de Noticias en Vivo (Exclusiva In-Game) -->
+			<div class="live-ticker-wrap" id="liveTickerWrap">
+				<div class="live-ticker-label" id="liveTickerLabel">NOTICIAS:</div>
+				<div class="live-ticker-track" id="liveTickerTrack">// CONECTANDO A RED CRT... · MEGACORP REPORTA GANANCIAS HISTÓRICAS · CYBERCOIN SE DISPARA +450% EN TIEMPO RÉCORD · ALERTA METEOROLÓGICA EN EL SECTOR 4 · NUEVOS CLONES DETECTADOS EN LA METRÓPOLI //</div>
+			</div>
+
 			<div class="story-layout">
 				<div class="story-editor">
 					<div class="newbie-guide-banner hidden" id="newbieGuideBanner">
@@ -194,10 +308,10 @@
 					<div class="story-action-row">
 						<button class="save-button" id="saveStoryButton" type="button" title="Tomar decisión y registrar capítulo">[ DECIDIR ]</button>
 						<button class="history-button age-up-button" id="ageUpButton" type="button" title="Avanzar 1 año de edad de forma directa">[ +1 AÑO ]</button>
-						<button class="history-button exit-life-button" id="exitLifeButton" type="button" title="Guarda y sale de la vida actual sin morir">[ GUARDAR Y SALIR ]</button>
 						<button class="history-button toggle-missions-btn" id="toggleMissionsBtn" type="button" title="Mostrar u ocultar misiones laterales">[ MISIONES ]</button>
 						<button class="history-button menu-button" id="menuButton" type="button"
 							data-open-target="storyEditor" aria-controls="storyScreen">[ MENU ]</button>
+						<button class="history-button exit-life-button" id="exitLifeButton" type="button" title="Guarda y sale de la vida actual sin morir">[ GUARDAR Y SALIR ]</button>
 					</div>
 
 					<!-- Decisiones Rápidas Contextuales & Dado del Caos -->
@@ -847,10 +961,61 @@
 					</div>
 					<p class="casino-result-banner" id="rapStatusBanner">// Elige la rima más contundente para ganarte a la multitud._</p>
 				</div>
+		<!-- GACHA / RULETA DE BIENVENIDA INSTANTÁNEA -->
+		<section class="stats-screen hidden" id="gachaModal" aria-modal="true" role="dialog" aria-labelledby="gachaTitle">
+			<div class="stats-window gacha-window">
+				<h2 id="gachaTitle">ruleta_del_destino.exe // BENDICIÓN INICIAL</h2>
+				<p class="history-subtitle" id="gachaSubtitle">// ¡El destino te otorga una bendición cuántica antes de comenzar tu vida!</p>
+				<div class="gacha-reel-box">
+					<div class="gacha-reel-text" id="gachaReelText">[ GIRANDO DESTINO... ]</div>
+					<p class="gacha-reward-desc" id="gachaRewardDesc">// Sincronizando con la matriz cósmica..._</p>
+				</div>
+				<button class="start-life-button gacha-claim-btn" id="gachaClaimBtn" type="button">[ RECLAMAR BENDICIÓN ]</button>
+			</div>
+		</section>
+
+		<!-- RULETA DE CUMPLEAÑOS INSTANTÁNEA (BIRTHDAY SLOT DROP) -->
+		<section class="stats-screen hidden" id="birthdaySlotModal" aria-modal="true" role="dialog" aria-labelledby="birthdaySlotTitle">
+			<div class="stats-window birthday-slot-window">
+				<h2 id="birthdaySlotTitle">birthday_jackpot.exe // ¡FELIZ CUMPLEAÑOS!</h2>
+				<p class="history-subtitle" id="birthdaySlotSubtitle">// ¡Gira la tragamonedas cuántica y reclama tu regalo anual!</p>
+				<div class="birthday-reels">
+					<div class="birthday-reel" id="bReel1">7</div>
+					<div class="birthday-reel" id="bReel2">7</div>
+					<div class="birthday-reel" id="bReel3">7</div>
+				</div>
+				<p class="gacha-reward-desc" id="birthdayRewardDesc">// Tirando de la palanca del destino..._</p>
+				<button class="start-life-button" id="birthdayClaimBtn" type="button">[ RECLAMAR REGALO ]</button>
+			</div>
+		</section>
+
+		<!-- GUÍA / TUTORIAL DE ONBOARDING INTERACTIVO -->
+		<section class="stats-screen hidden" id="tutorialModal" aria-modal="true" role="dialog" aria-labelledby="tutorialTitle" onclick="if(event.target === this) closeTutorialModal(event);">
+			<div class="stats-window tutorial-window" onclick="event.stopPropagation();">
+				<button class="close-history" id="closeTutorialButton" data-close="tutorialModal" onclick="closeTutorialModal(event);" type="button" title="Cerrar">[ X ]</button>
+				<h2 id="tutorialTitle">tutorial_terminal.exe // GUÍA DE SUPERVIVENCIA</h2>
+				<p class="history-subtitle" id="tutorialSubtitle">// Aprende las bases para forjar tu destino en LIFE.AI</p>
+				<div class="tutorial-step-indicator" id="tutorialDots">
+					<span class="tutorial-dot active"></span>
+					<span class="tutorial-dot"></span>
+					<span class="tutorial-dot"></span>
+					<span class="tutorial-dot"></span>
+					<span class="tutorial-dot"></span>
+				</div>
+				<div class="tutorial-content-card" id="tutorialCard">
+					<h3 class="tutorial-card-title" id="tutorialCardTitle">1. CREA TU IDENTIDAD</h3>
+					<div class="tutorial-card-body" id="tutorialCardBody">
+						<p>Al iniciar, elige tu nombre o usa <strong>INICIO RÁPIDO</strong> para nacer de inmediato en una familia aleatoria con atributos únicos.</p>
+					</div>
+				</div>
+				<div class="tutorial-nav-buttons">
+					<button type="button" class="history-button" id="tutorialPrevBtn">[ &lt; ANTERIOR ]</button>
+					<button type="button" class="start-life-button" id="tutorialNextBtn">[ SIGUIENTE &gt; ]</button>
+					<button type="button" class="history-button" id="tutorialCloseBtn" onclick="closeTutorialModal(event);">[ SALIR ]</button>
+				</div>
 			</div>
 		</section>
 	</main>
-	<div class="current-occupation hidden" id="currentOccupation" aria-live="polite"></div>
 	<footer class="game-footer" id="gameFooter">Juego hecho por icerix. Todos los derechos reservados 2026</footer>
 	<script src="script.js"></script>
 </body>

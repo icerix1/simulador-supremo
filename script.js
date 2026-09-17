@@ -1442,6 +1442,9 @@ function renderMissionsSidebar() {
     titleH3.className = 'mission-title';
     titleH3.textContent = item.title[currentLanguage] || item.title.es;
 
+    const badgesWrap = document.createElement('div');
+    badgesWrap.className = 'mission-badges-wrap';
+
     const badge = document.createElement('span');
     badge.className = 'mission-badge';
     if (isClaimed) {
@@ -1452,7 +1455,13 @@ function renderMissionsSidebar() {
       badge.textContent = `${prog.current}/${prog.target}`;
     }
 
-    topRow.append(titleH3, badge);
+    const toggleBtn = document.createElement('span');
+    toggleBtn.className = 'mission-toggle-btn';
+    toggleBtn.textContent = '+';
+    toggleBtn.title = en ? 'Click / Tap to view details' : 'Clic / Tocar para ver detalles';
+
+    badgesWrap.append(badge, toggleBtn);
+    topRow.append(titleH3, badgesWrap);
 
     const descP = document.createElement('p');
     descP.className = 'mission-desc';
@@ -1494,9 +1503,6 @@ function renderMissionsSidebar() {
         e.stopPropagation();
         showItemDetail(item.rewardItem);
       });
-      itemBadge.addEventListener('mouseenter', () => {
-        showItemDetail(item.rewardItem);
-      });
       itemBadge.addEventListener('touchend', (e) => {
         e.stopPropagation();
         e.preventDefault();
@@ -1519,7 +1525,20 @@ function renderMissionsSidebar() {
       rewardsRow.append(claimBtn);
     }
 
-    card.append(topRow, descP, progWrap, rewardsRow);
+    const detailsWrap = document.createElement('div');
+    detailsWrap.className = 'mission-card-details';
+    detailsWrap.append(descP, progWrap, rewardsRow);
+
+    card.append(topRow, detailsWrap);
+
+    const toggleDetails = (e) => {
+      if (e.target.closest('button') || e.target.closest('.mission-reward-item-badge')) return;
+      card.classList.toggle('expanded');
+      const isExpanded = card.classList.contains('expanded');
+      toggleBtn.textContent = isExpanded ? '-' : '+';
+    };
+
+    card.addEventListener('click', toggleDetails);
     missionsList.append(card);
   });
 }
@@ -1721,6 +1740,15 @@ const creatorPosts = [
     text: {
       es: 'La versión 0.0.2 revoluciona la experiencia: 1) Menú simplificado por categorías temáticas en el panel de control (menu.json) para que los principiantes no se pierdan. 2) Cyber Coliseo: combates callejeros por turnos en ASCII con apuestas barriales. 3) CyberStock Exchange: simulación bursátil y criptomonedas con cotizaciones y gráficos en tiempo real. 4) Mascota Tamagotchi CRT: compañero robótico virtual evolutivo. 5) Expediente Detective: casos policiales noir procedurales con deducción de pistas y acusaciones. 6) Refugio Clandestino & Bienes Raíces: propiedades seguras con minadores pasivos de cripto. 7) Batalla de Rap en Terminal: duelos líricos en rima de 3 asaltos. 8) Marcación estricta de vidas fallecidas como injugables y balanceo seguro del Dado del Caos D20.',
       en: 'Version 0.0.2 brings a complete expansion: 1) Simplified categorized control panel (menu.json) so newcomers never get overwhelmed. 2) Cyber Coliseum: turn-based ASCII street fights with bets. 3) CyberStock Exchange: live stock and crypto simulation with real-time ASCII charts. 4) CRT Tamagotchi: evolutionary virtual cyber pet with battery and firmware care. 5) Detective Casefiles: procedural noir crime investigations with clues and accusations. 6) Safehouse & Real Estate: underground properties with passive crypto mining. 7) Terminal Rap Battles: 3-round verbal rhyme showdowns. 8) Strict marking of deceased lives as unplayable and fully balanced D20 Chaos Die.'
+    }
+  },
+  {
+    date: '2026-09-16',
+    category: { es: 'ACTUALIZACIÓN', en: 'UPDATE' },
+    title: { es: 'NUEVA VERSION 0.0.2a — Suite de Dopamina Arcade, Tutorial Guiado y Optimización Extrema', en: 'NEW VERSION 0.0.2a — Arcade Dopamine Suite, Guided Tutorial & Extreme Optimization' },
+    text: {
+      es: 'La versión 0.0.2a transforma la experiencia con una sobredosis de estímulos inmediatos y máxima retención: 1) Tutorial Interactivo de Onboarding con botón [ GUÍA ? ] siempre accesible para aprender a jugar al instante. 2) Chat en Vivo Simulado estilo TikTok/Twitch: miles de espectadores comentan y reaccionan en tiempo real a cada decisión de tu vida con corazones y donaciones flotantes. 3) El Botón Rojo de Dopamina: reactor clicker con barra de sobrecarga acumulativa que detona jackpots masivos al llegar al 100%. 4) Ruleta de Cumpleaños Relámpago: gira una tragamonedas cuántica cada año para reclamar regalos anuales sorpresa de salud, energía y dinero. 5) QTE Relámpago en Decisiones: reflejos rápidos de 1.8 segundos para conseguir multiplicadores y éxitos críticos. 6) Cascada de Dinero Matrix y Feed Social: lluvias de billetes verdes y notificaciones virales interactivas. 7) Optimización extrema del motor, limpieza del runner y barrido bilingüe integral con cero caracteres corruptos.',
+      en: 'Version 0.0.2a transforms the game with instant sensory feedback and high retention: 1) Interactive Onboarding Tutorial with a persistent [ GUIDE ? ] button to learn how to play immediately. 2) Simulated Live TikTok/Twitch Chat: thousands of live viewers react to your choices in real time with floating ASCII hearts and bits. 3) The Red Dopamine Button: an arcade clicker reactor with cumulative charge unleashing massive jackpots at 100%. 4) Annual Birthday Slot Drop: instant quantum slot machine spinning every year for surprise cash, health, and energy gifts. 5) Lightning QTE Reflex Events: 1.8-second quick-time events for critical success and combo multipliers. 6) Matrix Money Rain & Social Feed: full-screen falling dollar cascades and interactive viral notifications. 7) Extreme performance optimizations, runner cleanup, and full bilingual parity with zero corrupt characters.'
     }
   }
 ];
@@ -2372,6 +2400,30 @@ const uiText = {
     rapBattleSubtitle: '// demuestra tu elocuencia en 3 asaltos de rimas callejeras frente a la multitud',
     rapHypeLabel: 'RESPETO DEL PÚBLICO:',
     rapOptionsTitle: '// ELIGE TU RESPUESTA EN RIMA:',
+    sfxOn: '[ SFX: ACTIVO ]',
+    sfxOff: '[ SFX: INACTIVO ]',
+    sfxTitle: 'Activar o desactivar sonido sintetizado retro',
+    comboTitle: 'COMBO x{count}',
+    comboFever: '¡FIEBRE x{count}!',
+    airdropTag: '[ ! DROP AÉREO ! ]',
+    gachaTitle: 'ruleta_del_destino.exe // BENDICIÓN INICIAL',
+    gachaSubtitle: '// ¡El destino te otorga una bendición cuántica antes de comenzar tu vida!',
+    gachaClaimBtn: '[ RECLAMAR BENDICIÓN ]',
+    tickerText: '// CONECTANDO A RED CRT... · MEGACORP REPORTA GANANCIAS HISTÓRICAS · CYBERCOIN SE DISPARA +450% EN TIEMPO RÉCORD · ALERTA METEOROLÓGICA EN EL SECTOR 4 · NUEVOS CLONES DETECTADOS EN LA METRÓPOLI //',
+    tutorialBtn: '[ GUÍA ? ]',
+    tutorialTitle: 'tutorial_terminal.exe // GUÍA DE SUPERVIVENCIA',
+    tutorialSubtitle: '// Aprende las bases para forjar tu destino en LIFE.AI',
+    tutorialPrevBtn: '[ < ANTERIOR ]',
+    tutorialNextBtn: '[ SIGUIENTE > ]',
+    tutorialCloseBtn: '[ SALIR ]',
+    tutorialFinishBtn: '[ ¡A JUGAR! ]',
+    birthdaySlotTitle: 'birthday_jackpot.exe // ¡FELIZ CUMPLEAÑOS!',
+    birthdaySlotSubtitle: '// ¡Gira la tragamonedas cuántica y reclama tu regalo anual!',
+    birthdayClaimBtn: '[ RECLAMAR REGALO ]',
+    dopamineBtnText: '[ ! PÚLSAME ! {pct}% ]',
+    qtePromptText: '¡REFLEJO RELÁMPAGO!',
+    qteActionBtn: '[ PULSA ESPACIO / CLIC ]',
+    liveChatTitle: 'EN VIVO',
     mutatorStandard: 'ESTÁNDAR (NORMAL)', mutatorAnarchy: 'MODO ANARQUÍA (SIN LEYES / DOBLE CAOS)', mutatorInflation: 'INFLACIÓN CÓSMICA (+25% ANUAL)', mutatorChaos: 'DADO LOCO (CONSECUENCIAS EXTREMAS)', mutatorGod: 'MODO DIOS / SANDBOX (TODO INFINITO)', mutatorLabel: '// MODO DE JUEGO / MUTADOR:'
   },
   en: {
@@ -2441,6 +2493,30 @@ const uiText = {
     rapBattleSubtitle: '// prove your flow across 3 rounds of street rhyme battles before the crowd',
     rapHypeLabel: 'CROWD RESPECT:',
     rapOptionsTitle: '// CHOOSE YOUR RHYME RESPONSE:',
+    sfxOn: '[ SFX: ON ]',
+    sfxOff: '[ SFX: OFF ]',
+    sfxTitle: 'Toggle retro synthesized sound',
+    comboTitle: 'COMBO x{count}',
+    comboFever: 'FEVER x{count}!',
+    airdropTag: '[ ! AIRDROP ! ]',
+    gachaTitle: 'destiny_wheel.exe // INITIAL BLESSING',
+    gachaSubtitle: '// Destiny grants you a quantum blessing before your life begins!',
+    gachaClaimBtn: '[ CLAIM BLESSING ]',
+    tickerText: '// CONNECTING TO CRT NETWORK... · MEGACORP REPORTS RECORD QUARTERLY PROFITS · CYBERCOIN SURGES +450% IN HISTORIC RALLY · WEATHER ALERT IN SECTOR 4 · UNREGISTERED CLONES DETECTED IN DOWNTOWN //',
+    tutorialBtn: '[ GUIDE ? ]',
+    tutorialTitle: 'tutorial_terminal.exe // SURVIVAL GUIDE',
+    tutorialSubtitle: '// Learn the fundamentals to forge your destiny in LIFE.AI',
+    tutorialPrevBtn: '[ < PREVIOUS ]',
+    tutorialNextBtn: '[ NEXT > ]',
+    tutorialCloseBtn: '[ EXIT ]',
+    tutorialFinishBtn: '[ PLAY NOW! ]',
+    birthdaySlotTitle: 'birthday_jackpot.exe // HAPPY BIRTHDAY!',
+    birthdaySlotSubtitle: '// Spin the quantum slots and claim your annual gift!',
+    birthdayClaimBtn: '[ CLAIM GIFT ]',
+    dopamineBtnText: '[ ! CLICK ME ! {pct}% ]',
+    qtePromptText: 'LIGHTNING REFLEX!',
+    qteActionBtn: '[ PRESS SPACE / CLICK ]',
+    liveChatTitle: 'LIVE',
     mutatorStandard: 'STANDARD (NORMAL)', mutatorAnarchy: 'ANARCHY MODE (NO LAWS / DOUBLE CHAOS)', mutatorInflation: 'COSMIC INFLATION (+25% PER YEAR)', mutatorChaos: 'CRAZY DIE (EXTREME OUTCOMES)', mutatorGod: 'GOD MODE / SANDBOX (UNLIMITED EVERYTHING)', mutatorLabel: '// GAME MODE / MUTATOR:'
   }
 };
@@ -2500,6 +2576,7 @@ async function startNewLife() {
   playTimeRewardsScreen?.classList.add('hidden');
   welcomeScreen?.classList.remove('hidden');
   setWelcomeNavigationVisible(true);
+  setInGameArcadeVisibility(false);
   renderPreviousLivesList();
 }
 
@@ -2519,6 +2596,7 @@ function renderGameOver(reason, savedGame, globalMemory) {
   storyScreen?.classList.add('hidden');
   menuScreen?.classList.add('hidden');
   setWelcomeNavigationVisible(false);
+  setInGameArcadeVisibility(false);
   gameOverScreen.classList.remove('hidden');
 }
 
@@ -2632,6 +2710,7 @@ function showUsernameGate() {
   gameOverScreen?.classList.add('hidden');
   statusLogoutBtn?.classList.add('hidden');
   setWelcomeNavigationVisible(false);
+  setInGameArcadeVisibility(false);
   switchAuthTab('login');
   updatePreGameLinks();
 }
@@ -2641,6 +2720,7 @@ function showApplicationEntry() {
   statusLogoutBtn?.classList.remove('hidden');
   welcomeScreen?.classList.remove('hidden');
   setWelcomeNavigationVisible(true);
+  setInGameArcadeVisibility(false);
   if (welcomeUserGreeting) {
     welcomeUserGreeting.textContent = `${t('welcomeGreeting')} // ${currentUsername || 'USER'}`;
   }
@@ -3187,6 +3267,7 @@ async function exitCurrentLifeWithoutDying() {
   gameOverScreen?.classList.add('hidden');
   questionScreen?.classList.add('hidden');
   statsScreen?.classList.add('hidden');
+  setInGameArcadeVisibility(false);
 
   showApplicationEntry();
 }
@@ -3660,6 +3741,31 @@ function applyTranslations() {
   setText(document.querySelector('#rapBattleSubtitle'), t('rapBattleSubtitle'));
   setText(document.querySelector('#rapHypeLabel'), t('rapHypeLabel'));
   setText(document.querySelector('#rapOptionsTitle'), t('rapOptionsTitle'));
+
+  const sfxBtn = document.querySelector('#sfxToggleBtn');
+  if (sfxBtn) {
+    sfxBtn.textContent = isSfxEnabled() ? t('sfxOn') : t('sfxOff');
+    sfxBtn.title = t('sfxTitle');
+  }
+  setText(document.querySelector('#tutorialBtn'), t('tutorialBtn'));
+  setText(document.querySelector('#tutorialTitle'), t('tutorialTitle'));
+  setText(document.querySelector('#tutorialSubtitle'), t('tutorialSubtitle'));
+  setText(document.querySelector('#tutorialPrevBtn'), t('tutorialPrevBtn'));
+  setText(document.querySelector('#tutorialNextBtn'), t('tutorialNextBtn'));
+  setText(document.querySelector('#tutorialCloseBtn'), t('tutorialCloseBtn'));
+
+  setText(document.querySelector('#birthdaySlotTitle'), t('birthdaySlotTitle'));
+  setText(document.querySelector('#birthdaySlotSubtitle'), t('birthdaySlotSubtitle'));
+  setText(document.querySelector('#birthdayClaimBtn'), t('birthdayClaimBtn'));
+
+  setText(document.querySelector('#qtePromptText'), t('qtePromptText'));
+  setText(document.querySelector('#qteActionBtn'), t('qteActionBtn'));
+
+  setText(document.querySelector('#gachaTitle'), t('gachaTitle'));
+  setText(document.querySelector('#gachaSubtitle'), t('gachaSubtitle'));
+  setText(document.querySelector('#gachaClaimBtn'), t('gachaClaimBtn'));
+  const tickerTrack = document.querySelector('#liveTickerTrack');
+  if (tickerTrack) tickerTrack.textContent = t('tickerText');
 
   if (typeof renderQuickActions === 'function') renderQuickActions();
   if (typeof updateMutatorIndicator === 'function') updateMutatorIndicator();
@@ -4444,6 +4550,7 @@ listen(startButton, 'click', () => {
   if (typeof renderStats === 'function') renderStats();
   if (typeof renderFullStats === 'function') renderFullStats();
   questionScreen.classList.remove('hidden');
+  setInGameArcadeVisibility(false);
   updatePreGameLinks();
 });
 
@@ -5813,7 +5920,10 @@ function showStats() {
   questionScreen.classList.add('hidden');
   statsScreen.classList.add('hidden');
   storyScreen.classList.remove('hidden');
+  setInGameArcadeVisibility(true);
   checkNewbieGuideBanner();
+  if (typeof triggerWelcomeGacha === 'function') triggerWelcomeGacha();
+  if (typeof startAirdropCycle === 'function') startAirdropCycle();
   startWeatherCycle(initialSave);
   renderWorldEnvironment(initialSave);
   renderCurrentOccupation();
@@ -6045,6 +6155,8 @@ listen(saveStoryButton, 'click', async () => {
   renderChangedDecisionStats(changedStats);
   aiOutput.classList.remove('hidden');
   renderStats();
+  if (typeof registerComboAction === 'function') registerComboAction();
+  if (typeof triggerScreenShake === 'function') triggerScreenShake();
   evaluateMissions();
   renderMissionsSidebar();
   renderQuickActions(savedGame);
@@ -6116,6 +6228,8 @@ async function handleAgeUp() {
   ]);
   aiOutput.classList.remove('hidden');
   renderStats();
+  if (typeof registerComboAction === 'function') registerComboAction();
+  if (typeof triggerScreenShake === 'function') triggerScreenShake();
   evaluateMissions();
   renderMissionsSidebar();
   renderQuickActions(savedGame);
@@ -6376,7 +6490,9 @@ function restoreSavedGame() {
     questionScreen.classList.add('hidden');
     statsScreen.classList.add('hidden');
     storyScreen.classList.remove('hidden');
+    setInGameArcadeVisibility(true);
     checkNewbieGuideBanner();
+    if (typeof startAirdropCycle === 'function') startAirdropCycle();
     updatePreGameLinks();
     renderWorldEnvironment(savedGame);
     renderCurrentOccupation();
@@ -6404,6 +6520,7 @@ function renderStats() {
   if (moodStat) moodStat.textContent = `"${activePlayer.mood || t('stable')}"`;
   if (reputationStat) reputationStat.textContent = activePlayer.reputation ?? 0;
   renderCurrentOccupation();
+  if (typeof hookStatsJuice === 'function') hookStatsJuice(activePlayer);
 }
 
 function renderFullStats() {
@@ -8391,6 +8508,7 @@ function initNewSystemsListeners() {
       } catch { /* ignore */ }
     });
   }
+
 }
 
 // ==========================================
@@ -9345,4 +9463,995 @@ try {
 } catch (error) {
   console.warn('LIFE.AI new systems initialization:', error);
 }
+
+// =========================================================
+// SENSORY OVERDRIVE & DOPAMINE ARCADE SUITE (v0.0.2)
+// =========================================================
+
+// 1. Web Audio Procedural Sound Synthesizer
+let audioCtx = null;
+function getAudioContext() {
+  if (!audioCtx) {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (AudioContextClass) {
+      audioCtx = new AudioContextClass();
+    }
+  }
+  if (audioCtx && audioCtx.state === 'suspended') {
+    audioCtx.resume().catch(() => {});
+  }
+  return audioCtx;
+}
+
+function isSfxEnabled() {
+  try {
+    return localStorage.getItem('lifeSfxEnabled') !== 'false';
+  } catch {
+    return true;
+  }
+}
+
+function toggleSfx() {
+  const next = !isSfxEnabled();
+  try {
+    localStorage.setItem('lifeSfxEnabled', next ? 'true' : 'false');
+  } catch {}
+  const btn = document.querySelector('#sfxToggleBtn');
+  if (btn) {
+    btn.textContent = next ? t('sfxOn') : t('sfxOff');
+  }
+  if (next) playSfx('coin');
+  return next;
+}
+
+function playSfx(type) {
+  if (!isSfxEnabled()) return;
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    
+    if (type === 'click') {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(650, now);
+      osc.frequency.exponentialRampToValueAtTime(320, now + 0.04);
+      gain.gain.setValueAtTime(0.12, now);
+      gain.gain.linearRampToValueAtTime(0.001, now + 0.04);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.04);
+    } else if (type === 'coin') {
+      const osc1 = ctx.createOscillator();
+      const gain1 = ctx.createGain();
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(987.77, now);
+      gain1.gain.setValueAtTime(0.16, now);
+      gain1.gain.linearRampToValueAtTime(0.01, now + 0.08);
+      osc1.connect(gain1);
+      gain1.connect(ctx.destination);
+      osc1.start(now);
+      osc1.stop(now + 0.08);
+
+      const osc2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(1318.51, now + 0.08);
+      gain2.gain.setValueAtTime(0.18, now + 0.08);
+      gain2.gain.linearRampToValueAtTime(0.001, now + 0.28);
+      osc2.connect(gain2);
+      gain2.connect(ctx.destination);
+      osc2.start(now + 0.08);
+      osc2.stop(now + 0.28);
+    } else if (type === 'damage') {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(150, now);
+      osc.frequency.exponentialRampToValueAtTime(50, now + 0.16);
+      gain.gain.setValueAtTime(0.2, now);
+      gain.gain.linearRampToValueAtTime(0.001, now + 0.16);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.16);
+    } else if (type === 'combo') {
+      const freq = Math.min(1200, 440 + ((comboState?.count || 1) * 60));
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, now);
+      osc.frequency.exponentialRampToValueAtTime(freq * 1.4, now + 0.12);
+      gain.gain.setValueAtTime(0.18, now);
+      gain.gain.linearRampToValueAtTime(0.001, now + 0.12);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.12);
+    } else if (type === 'levelup' || type === 'fanfare') {
+      const notes = [523.25, 659.25, 783.99, 1046.50];
+      notes.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, now + idx * 0.07);
+        gain.gain.setValueAtTime(0.18, now + idx * 0.07);
+        gain.gain.linearRampToValueAtTime(0.001, now + idx * 0.07 + 0.18);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + idx * 0.07);
+        osc.stop(now + idx * 0.07 + 0.18);
+      });
+    } else if (type === 'airdrop') {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(700, now);
+      osc.frequency.linearRampToValueAtTime(1100, now + 0.1);
+      osc.frequency.linearRampToValueAtTime(700, now + 0.2);
+      gain.gain.setValueAtTime(0.12, now);
+      gain.gain.linearRampToValueAtTime(0.001, now + 0.25);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.25);
+    }
+  } catch {}
+}
+
+// 2. Screen Shake & Victory Flash
+function triggerScreenShake(heavy = false) {
+  document.body.classList.remove('screen-shake-hit');
+  void document.body.offsetWidth;
+  document.body.classList.add('screen-shake-hit');
+  setTimeout(() => document.body.classList.remove('screen-shake-hit'), 360);
+  try {
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      navigator.vibrate(heavy ? [30, 20, 50] : [25]);
+    }
+  } catch {}
+}
+
+function triggerVictoryFlash() {
+  const flash = document.createElement('div');
+  flash.className = 'crt-victory-flash';
+  document.body.appendChild(flash);
+  setTimeout(() => flash.remove(), 500);
+}
+
+// 3. Floating Numbers & ASCII Sparks
+function spawnDopamineText(text, type = 'gain', x, y) {
+  const overlay = document.querySelector('#dopamineOverlay');
+  if (!overlay) return;
+  const el = document.createElement('div');
+  el.className = `floating-dopamine-text ${type}`;
+  el.textContent = text;
+  
+  const posX = typeof x === 'number' ? x : (window.innerWidth / 2 + (Math.random() * 120 - 60));
+  const posY = typeof y === 'number' ? y : (window.innerHeight / 2 + (Math.random() * 80 - 40));
+  
+  el.style.left = `${posX}px`;
+  el.style.top = `${posY}px`;
+  overlay.appendChild(el);
+  
+  setTimeout(() => el.remove(), 1400);
+}
+
+const SPARK_CHARS = ['*', '+', '#', '$', '^', '>', '!'];
+function spawnAsciiSparks(x, y) {
+  const overlay = document.querySelector('#dopamineOverlay');
+  if (!overlay) return;
+  const count = 5 + Math.floor(Math.random() * 4);
+  for (let i = 0; i < count; i++) {
+    const spark = document.createElement('span');
+    spark.className = 'ascii-spark';
+    spark.textContent = SPARK_CHARS[Math.floor(Math.random() * SPARK_CHARS.length)];
+    spark.style.left = `${x}px`;
+    spark.style.top = `${y}px`;
+    
+    const angle = Math.random() * Math.PI * 2;
+    const dist = 25 + Math.random() * 40;
+    spark.style.setProperty('--tx', `${Math.cos(angle) * dist}px`);
+    spark.style.setProperty('--ty', `${Math.sin(angle) * dist}px`);
+    
+    overlay.appendChild(spark);
+    setTimeout(() => spark.remove(), 650);
+  }
+}
+
+// 4. Combo Multiplier System
+const comboState = {
+  count: 0,
+  timer: null,
+  timeLeft: 0,
+  fever: false
+};
+
+function registerComboAction() {
+  comboState.count++;
+  comboState.timeLeft = 7000;
+  const hud = document.querySelector('#comboHud');
+  const title = document.querySelector('#comboTitle');
+  const fill = document.querySelector('#comboMeterFill');
+  
+  if (hud) hud.classList.remove('hidden');
+  
+  if (comboState.count >= 5) {
+    if (!comboState.fever) {
+      comboState.fever = true;
+      hud?.classList.add('fever-mode');
+      triggerScreenShake(true);
+      triggerVictoryFlash();
+      playSfx('levelup');
+      spawnDopamineText((t('comboFever') || '¡FIEBRE x{count}!').replace('{count}', comboState.count), 'crit');
+      triggerMicroAchievement('¡MODO FIEBRE!', 'Alcanzaste una racha x5 sin frenar');
+    } else {
+      playSfx('combo');
+      spawnDopamineText(`COMBO x${comboState.count}!`, 'crit');
+    }
+    if (title) title.textContent = (t('comboFever') || '¡FIEBRE x{count}!').replace('{count}', comboState.count);
+  } else {
+    playSfx('combo');
+    spawnDopamineText(`COMBO x${comboState.count}`, 'gain');
+    if (title) title.textContent = (t('comboTitle') || 'COMBO x{count}').replace('{count}', comboState.count);
+  }
+  
+  if (comboState.count === 3) {
+    triggerMicroAchievement('EN RACHA', 'Racha de 3 acciones seguidas');
+  }
+
+  if (comboState.timer) clearInterval(comboState.timer);
+  
+  const stepMs = 100;
+  comboState.timer = setInterval(() => {
+    comboState.timeLeft -= stepMs;
+    const pct = Math.max(0, (comboState.timeLeft / 7000) * 100);
+    if (fill) fill.style.width = `${pct}%`;
+    
+    if (comboState.timeLeft <= 0) {
+      clearInterval(comboState.timer);
+      comboState.timer = null;
+      comboState.count = 0;
+      comboState.fever = false;
+      hud?.classList.remove('fever-mode');
+      hud?.classList.add('hidden');
+    }
+  }, stepMs);
+}
+
+// 5. Micro-Achievements System
+const unlockedMicroAchievements = new Set();
+function triggerMicroAchievement(title, desc) {
+  const key = `${title}:${desc}`;
+  if (unlockedMicroAchievements.has(key)) return;
+  unlockedMicroAchievements.add(key);
+
+  const container = document.querySelector('#achievementsViewport');
+  if (!container) return;
+
+  playSfx('levelup');
+  const toast = document.createElement('div');
+  toast.className = 'micro-achievement-toast';
+  toast.innerHTML = `
+    <div class="toast-header">// LOGRO DESBLOQUEADO</div>
+    <div class="toast-title">${title}</div>
+    <div class="toast-desc">${desc}</div>
+  `;
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add('hiding');
+    setTimeout(() => toast.remove(), 400);
+  }, 3800);
+}
+
+// Controlador de Visibilidad Exclusiva In-Game para Widgets Arcade y Decks
+function setInGameArcadeVisibility(inGame) {
+  const isGameActive = Boolean(inGame && storyScreen && !storyScreen.classList.contains('hidden'));
+  const chatWidget = document.querySelector('#liveChatWidget');
+  const socialOverlay = document.querySelector('#socialNotifOverlay');
+  const worldDeck = document.querySelector('#worldEventsDeck');
+  const playerDeck = document.querySelector('#playerStatusDeck');
+  const tickerWrap = document.querySelector('#liveTickerWrap');
+
+  if (isGameActive) {
+    chatWidget?.classList.remove('hidden');
+    socialOverlay?.classList.remove('hidden');
+    tickerWrap?.classList.remove('hidden');
+    if (worldDeck) worldDeck.style.display = '';
+    if (playerDeck) playerDeck.style.display = '';
+  } else {
+    chatWidget?.classList.add('hidden');
+    socialOverlay?.classList.add('hidden');
+    tickerWrap?.classList.add('hidden');
+    if (worldDeck) worldDeck.style.display = 'none';
+    if (playerDeck) playerDeck.style.display = 'none';
+
+    const comboHud = document.querySelector('#comboHud');
+    if (comboHud) comboHud.classList.add('hidden');
+    const airdropBtn = document.querySelector('#airdropBtn');
+    if (airdropBtn) airdropBtn.classList.add('hidden');
+    const qteOverlay = document.querySelector('#qteOverlay');
+    if (qteOverlay) qteOverlay.classList.add('hidden');
+    if (airdropInterval) {
+      clearInterval(airdropInterval);
+      airdropInterval = null;
+    }
+  }
+}
+window.setInGameArcadeVisibility = setInGameArcadeVisibility;
+
+// 6. Airdrop Relámpago Flotante
+let airdropInterval = null;
+let airdropTimerId = null;
+
+function startAirdropCycle() {
+  if (airdropInterval) clearInterval(airdropInterval);
+  airdropInterval = setInterval(() => {
+    if (storyScreen?.classList.contains('hidden')) return;
+    spawnRandomAirdrop();
+  }, 36000 + Math.random() * 12000);
+}
+
+function spawnRandomAirdrop() {
+  const btn = document.querySelector('#airdropBtn');
+  const timerSpan = document.querySelector('#airdropTimer');
+  if (!btn || !btn.classList.contains('hidden')) return;
+
+  const top = 18 + Math.random() * 55;
+  const left = 15 + Math.random() * 65;
+  btn.style.top = `${top}%`;
+  btn.style.left = `${left}%`;
+  btn.classList.remove('hidden');
+
+  playSfx('airdrop');
+
+  let remaining = 35;
+  if (timerSpan) timerSpan.textContent = '03.5s';
+
+  if (airdropTimerId) clearInterval(airdropTimerId);
+  airdropTimerId = setInterval(() => {
+    remaining--;
+    if (timerSpan) timerSpan.textContent = `0${(remaining / 10).toFixed(1)}s`;
+    if (remaining <= 0) {
+      clearInterval(airdropTimerId);
+      btn.classList.add('hidden');
+    }
+  }, 100);
+
+  btn.onclick = () => {
+    clearInterval(airdropTimerId);
+    btn.classList.add('hidden');
+    
+    const prize = Math.floor(75 + Math.random() * 325);
+    const save = readSave();
+    if (save && save.player) {
+      save.player.money = (Number(save.player.money) || 0) + prize;
+      window.__lifeSave = save;
+      saveCurrentGame(save);
+      renderStats();
+    }
+    triggerScreenShake(true);
+    triggerVictoryFlash();
+    playSfx('fanfare');
+    spawnDopamineText(`¡DROP ATRAPADO! +$${prize}!`, 'crit', window.innerWidth / 2, window.innerHeight / 2);
+    triggerMicroAchievement('CAZADOR DE DROPS', `Reclamaste un airdrop relámpago (+$${prize})`);
+    registerComboAction();
+  };
+}
+
+// 7. Ruleta Gacha de Bienvenida Instantánea
+const GACHA_PRIZES = [
+  { name: { es: 'HEREDERO CORPORATIVO', en: 'CORPORATE HEIR' }, desc: { es: 'Comienzas con un fondo fiduciario de +$1,000.', en: 'Start with a +$1,000 trust fund.' }, apply: (p) => { p.money = (Number(p.money) || 0) + 1000; } },
+  { name: { es: 'ATLETA BIOMECÁNICO', en: 'BIOMECHANICAL ATHLETE' }, desc: { es: 'Tu energía máxima se incrementa a 100.', en: 'Max energy restored to 100.' }, apply: (p) => { p.energy = 100; } },
+  { name: { es: 'FAMA CALLEJERA', en: 'STREET NOTORIETY' }, desc: { es: 'Ganas +25 de reputación instantánea.', en: 'Instant +25 reputation.' }, apply: (p) => { p.reputation = (Number(p.reputation) || 0) + 25; } },
+  { name: { es: 'BILLETERA CRIPTO FRÍA', en: 'COLD CRYPTO WALLET' }, desc: { es: 'Descubres una clave privada con +$650.', en: 'Found a private key with +$650.' }, apply: (p) => { p.money = (Number(p.money) || 0) + 650; } },
+  { name: { es: 'BOTIQUÍN MILITAR', en: 'MILITARY MEDKIT' }, desc: { es: 'Recibes un botiquín quirúrgico en tu inventario.', en: 'Received a surgical medkit in inventory.' }, apply: (p) => { addInventoryItem(p, 'Botiquín Quirúrgico Militar'); } },
+  { name: { es: 'CHIP DE INTELIGENCIA', en: 'NEURAL ACCELERATOR CHIP' }, desc: { es: 'Comienzas con ánimo hiper-inspirado.', en: 'Start with hyper-inspired mood.' }, apply: (p) => { p.mood = 'eufórico'; } }
+];
+
+function triggerWelcomeGacha(onComplete) {
+  const modal = document.querySelector('#gachaModal');
+  const reelText = document.querySelector('#gachaReelText');
+  const descText = document.querySelector('#gachaRewardDesc');
+  const claimBtn = document.querySelector('#gachaClaimBtn');
+  if (!modal || !reelText) {
+    if (onComplete) onComplete();
+    return;
+  }
+
+  modal.classList.remove('hidden');
+  if (claimBtn) claimBtn.disabled = true;
+
+  let spins = 0;
+  const maxSpins = 16;
+  const interval = setInterval(() => {
+    spins++;
+    const randomPrize = GACHA_PRIZES[Math.floor(Math.random() * GACHA_PRIZES.length)];
+    reelText.textContent = `[ ${randomPrize.name[currentLanguage] || randomPrize.name.es} ]`;
+    playSfx('click');
+
+    if (spins >= maxSpins) {
+      clearInterval(interval);
+      const chosen = GACHA_PRIZES[Math.floor(Math.random() * GACHA_PRIZES.length)];
+      reelText.textContent = `[ * ${chosen.name[currentLanguage] || chosen.name.es} * ]`;
+      if (descText) descText.textContent = chosen.desc[currentLanguage] || chosen.desc.es;
+      triggerVictoryFlash();
+      triggerScreenShake(true);
+      playSfx('fanfare');
+
+      if (claimBtn) {
+        claimBtn.disabled = false;
+        claimBtn.onclick = () => {
+          modal.classList.add('hidden');
+          const save = readSave();
+          if (save && save.player) {
+            chosen.apply(save.player);
+            window.__lifeSave = save;
+            saveCurrentGame(save);
+            renderStats();
+          }
+          triggerMicroAchievement('BENDICIÓN RECLAMADA', chosen.name[currentLanguage] || chosen.name.es);
+          spawnDopamineText(`¡BENDICIÓN: ${chosen.name[currentLanguage] || chosen.name.es}!`, 'crit');
+          if (onComplete) onComplete();
+        };
+      }
+    }
+  }, 90);
+}
+
+// 9. Stats Change Juice Hook
+let prevPlayerState = { money: null, energy: null, age: null };
+function hookStatsJuice(activePlayer) {
+  if (!activePlayer || !activePlayer.name) return;
+  const currMoney = Number(activePlayer.money) || 0;
+  const currEnergy = Number(activePlayer.energy) ?? 100;
+  const currAge = Number(activePlayer.age) || 0;
+
+  if (prevPlayerState.money !== null) {
+    const diff = currMoney - prevPlayerState.money;
+    if (diff > 0) {
+      spawnDopamineText(`+$${diff}!`, 'gain');
+      playSfx('coin');
+    } else if (diff < 0) {
+      spawnDopamineText(`-$${Math.abs(diff)}!`, 'loss');
+      playSfx('damage');
+    }
+  }
+
+  if (prevPlayerState.energy !== null) {
+    const diffEnergy = currEnergy - prevPlayerState.energy;
+    if (diffEnergy > 0) {
+      spawnDopamineText(`+${diffEnergy} ENERGÍA`, 'gain');
+    } else if (diffEnergy < 0) {
+      spawnDopamineText(`${diffEnergy} ENERGÍA`, 'loss');
+    }
+  }
+
+  if (prevPlayerState.age !== null && currAge > prevPlayerState.age) {
+    spawnDopamineText('+1 AÑO!', 'level');
+    triggerScreenShake();
+    playSfx('levelup');
+    triggerBirthdaySlot();
+    pushLiveChatMessage('SYSTEM', `¡FELIZ CUMPLEAÑOS! Cumpliste ${currAge} años`, true);
+  }
+
+  prevPlayerState.money = currMoney;
+  prevPlayerState.energy = currEnergy;
+  prevPlayerState.age = currAge;
+}
+
+// 10. Chat en Vivo Simulado Estilo TikTok/Twitch
+const CHAT_USERS = [
+  'cyber_neo', 'valen2026', 'glitch_boy', 'kek_master', 'neon_girl',
+  'anon_99', 'matrix_kid', 'pixel_queen', 'synth_vibe', 'crypto_bro'
+];
+
+const CHAT_POOL_ES = [
+  'W RIZZ', 'LMAOOO que hacia', 'F en el chat muchachos', 'W vida', 'bro is cooking',
+  'skill issue', 'se fue mundial', 'donen bits para la fianza', 'JAJAJAJA que crack',
+  'top 1 del servidor', 'nooo se gasto la guita', 'god modo activado', 'literalmente yo',
+  'alguien sabe el truco de la loteria?', 'W eleccion', 'RIP su energia'
+];
+
+const CHAT_POOL_EN = [
+  'W RIZZ', 'LMAOOO no way', 'F in the chat boys', 'W life', 'bro is cooking',
+  'skill issue', 'unreal run', 'donate bits for bail', 'HAHAHA legend',
+  'top 1 on leaderboard', 'bro spent all his cash', 'god mode activated', 'literally me',
+  'anyone know the lottery trick?', 'W choice', 'RIP his energy'
+];
+
+let liveChatInterval = null;
+function initLiveChat() {
+  const widget = document.querySelector('#liveChatWidget');
+  const toggleBtn = document.querySelector('#liveChatToggleBtn');
+  const list = document.querySelector('#liveChatList');
+  const heartsBox = document.querySelector('#liveChatHeartsBox');
+  if (!widget || !list) return;
+
+  toggleBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    widget.classList.toggle('minimized');
+    toggleBtn.textContent = widget.classList.contains('minimized') ? '[+]' : '[-]';
+  });
+
+  if (liveChatInterval) clearInterval(liveChatInterval);
+
+  liveChatInterval = setInterval(() => {
+    if (widget.classList.contains('minimized') || widget.classList.contains('hidden')) return;
+    const isEn = (currentLanguage === 'en');
+    const pool = isEn ? CHAT_POOL_EN : CHAT_POOL_ES;
+    const user = CHAT_USERS[Math.floor(Math.random() * CHAT_USERS.length)];
+    const text = pool[Math.floor(Math.random() * pool.length)];
+    pushLiveChatMessage(user, text);
+
+    if (Math.random() < 0.45 && heartsBox) {
+      spawnFloatingHeart(heartsBox);
+    }
+  }, 2200);
+}
+
+function pushLiveChatMessage(user, text, isHighlight = false) {
+  const list = document.querySelector('#liveChatList');
+  if (!list) return;
+  const item = document.createElement('div');
+  item.className = 'live-chat-item';
+  item.innerHTML = `<span class="chat-user">@${user}:</span> <span class="chat-text ${isHighlight ? 'chat-highlight' : ''}">${text}</span>`;
+  list.appendChild(item);
+  if (list.children.length > 6) {
+    list.removeChild(list.children[0]);
+  }
+}
+
+const HEART_ICONS = ['<3', '[*]', '($)', '(o)', '+1'];
+function spawnFloatingHeart(container) {
+  const heart = document.createElement('span');
+  heart.className = 'floating-chat-heart';
+  heart.textContent = HEART_ICONS[Math.floor(Math.random() * HEART_ICONS.length)];
+  heart.style.right = `${8 + Math.random() * 24}px`;
+  container.appendChild(heart);
+  setTimeout(() => heart.remove(), 1200);
+}
+
+// 11. El Botón Rojo de Dopamina (The Button)
+let dopamineButtonCharge = 0;
+function initDopamineButton() {
+  const btn = document.querySelector('#dopamineClickBtn');
+  const fill = document.querySelector('#dopamineChargeFill');
+  if (!btn) return;
+
+  btn.addEventListener('click', (e) => {
+    spawnAsciiSparks(e.clientX, e.clientY);
+    dopamineButtonCharge = Math.min(100, dopamineButtonCharge + Math.floor(Math.random() * 4) + 2);
+    if (fill) fill.style.width = `${dopamineButtonCharge}%`;
+    const labelTpl = t('dopamineBtnText') || '[ ! PÚLSAME ! {pct}% ]';
+    btn.textContent = labelTpl.replace('{pct}', dopamineButtonCharge);
+    playSfx('click');
+
+    if (dopamineButtonCharge >= 100) {
+      dopamineButtonCharge = 0;
+      if (fill) fill.style.width = '0%';
+      btn.textContent = labelTpl.replace('{pct}', 0);
+      
+      triggerVictoryFlash();
+      triggerScreenShake(true);
+      playSfx('fanfare');
+      triggerMoneyRainCascade();
+
+      const prize = 500 + Math.floor(Math.random() * 500);
+      const save = readSave();
+      if (save && save.player) {
+        save.player.money = (Number(save.player.money) || 0) + prize;
+        window.__lifeSave = save;
+        saveCurrentGame(save);
+        renderStats();
+      }
+      spawnDopamineText(`¡SOBRECARGA DETONADA! +$${prize}!`, 'crit');
+      triggerMicroAchievement('DETONADOR DE DOPAMINA', `Llegaste al 100% de carga del reactor (+${prize}$)`);
+      pushLiveChatMessage('SYSTEM', `¡SOBRECARGA DETONADA +$${prize}!`, true);
+    }
+  });
+}
+
+// 12. Lluvia de Billetes en Pantalla Completa (Matrix Money)
+const MONEY_CHARS = ['$$$', '[$]', '100', '$$', '[̲$̲]', '$500$', '$$$'];
+function triggerMoneyRainCascade() {
+  const overlay = document.querySelector('#dopamineOverlay') || document.body;
+  const count = 30;
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement('span');
+    el.className = 'falling-money-char';
+    el.textContent = MONEY_CHARS[Math.floor(Math.random() * MONEY_CHARS.length)];
+    el.style.left = `${Math.random() * 95}vw`;
+    el.style.animationDelay = `${Math.random() * 0.6}s`;
+    el.style.fontSize = `${11 + Math.floor(Math.random() * 7)}px`;
+    overlay.appendChild(el);
+    setTimeout(() => el.remove(), 2000);
+  }
+}
+
+// 13. Quick Time Event (QTE) Relámpago
+let qteActive = false;
+let qteTimeout = null;
+function triggerQuickTimeEvent(onSuccess, onFail) {
+  if (qteActive) return;
+  const overlay = document.querySelector('#qteOverlay');
+  const fill = document.querySelector('#qteTimerBarFill');
+  const actionBtn = document.querySelector('#qteActionBtn');
+  if (!overlay) {
+    if (onSuccess) onSuccess();
+    return;
+  }
+
+  qteActive = true;
+  overlay.classList.remove('hidden');
+  triggerScreenShake();
+  playSfx('airdrop');
+
+  if (fill) fill.style.width = '100%';
+  const duration = 1800;
+  const startTime = Date.now();
+
+  const animInterval = setInterval(() => {
+    const elapsed = Date.now() - startTime;
+    const remainingPct = Math.max(0, 100 - (elapsed / duration) * 100);
+    if (fill) fill.style.width = `${remainingPct}%`;
+    if (elapsed >= duration) {
+      clearInterval(animInterval);
+      finishQte(false);
+    }
+  }, 40);
+
+  const cleanup = () => {
+    clearInterval(animInterval);
+    if (qteTimeout) clearTimeout(qteTimeout);
+    overlay.classList.add('hidden');
+    qteActive = false;
+    window.removeEventListener('keydown', keyHandler);
+  };
+
+  const finishQte = (success) => {
+    cleanup();
+    if (success) {
+      triggerVictoryFlash();
+      playSfx('fanfare');
+      spawnDopamineText('¡REFLEJO PERFECTO! +$100 & COMBO +2!', 'crit');
+      registerComboAction();
+      registerComboAction();
+      const save = readSave();
+      if (save && save.player) {
+        save.player.money = (Number(save.player.money) || 0) + 100;
+        window.__lifeSave = save;
+        renderStats();
+      }
+      triggerMicroAchievement('REFLEJOS CUÁNTICOS', 'Acertaste un evento relámpago QTE');
+      if (onSuccess) onSuccess();
+    } else {
+      if (onFail) onFail();
+    }
+  };
+
+  const keyHandler = (e) => {
+    if (e.code === 'Space' || e.code === 'KeyX' || e.code === 'Enter') {
+      e.preventDefault();
+      finishQte(true);
+    }
+  };
+
+  window.addEventListener('keydown', keyHandler);
+  if (actionBtn) actionBtn.onclick = () => finishQte(true);
+}
+
+// 14. Notificaciones de Red Social Falsa (Feed)
+const SOCIAL_FEEDS_ES = [
+  { tag: 'VIRAL', msg: 'Tu video de trucos retro superó 10K visitas (+10 Reputación)' },
+  { tag: 'LIKE', msg: '@cyber_queen reaccionó a tu última historia' },
+  { tag: 'CHISME', msg: 'La corporación local anunció despidos masivos sorpresa' },
+  { tag: 'CRIPTO', msg: 'CyberCoin subió un +15% en las últimas 2 horas' },
+  { tag: 'MATCH', msg: 'Alguien compatible vio tu perfil en CyberDating' }
+];
+
+const SOCIAL_FEEDS_EN = [
+  { tag: 'VIRAL', msg: 'Your retro gaming clip surpassed 10K views (+10 Rep)' },
+  { tag: 'LIKE', msg: '@cyber_queen liked your latest terminal status' },
+  { tag: 'GOSSIP', msg: 'Megacorp announced sudden layoffs downtown' },
+  { tag: 'CRYPTO', msg: 'CyberCoin surged +15% in the last 2 hours' },
+  { tag: 'MATCH', msg: 'A compatible profile viewed you on CyberDating' }
+];
+
+function initSocialFeed() {
+  setInterval(() => {
+    const isEn = (currentLanguage === 'en');
+    const list = isEn ? SOCIAL_FEEDS_EN : SOCIAL_FEEDS_ES;
+    const item = list[Math.floor(Math.random() * list.length)];
+    spawnSocialNotification(item.tag, item.msg);
+  }, 36000);
+}
+
+function spawnSocialNotification(tag, text) {
+  const container = document.querySelector('#socialNotifOverlay');
+  if (!container) return;
+  const card = document.createElement('div');
+  card.className = 'social-notif-card';
+  card.innerHTML = `<span class="social-notif-tag">[ ${tag} ]</span> <span class="social-notif-msg">${text}</span>`;
+  container.appendChild(card);
+  playSfx('click');
+
+  card.onclick = () => {
+    card.remove();
+    playSfx('coin');
+    spawnDopamineText('+$15!', 'gain');
+    const save = readSave();
+    if (save && save.player) {
+      save.player.money = (Number(save.player.money) || 0) + 15;
+      window.__lifeSave = save;
+      renderStats();
+    }
+  };
+
+  setTimeout(() => card.remove(), 5500);
+}
+
+// 15. Ruleta Tragamonedas de Cumpleaños (Birthday Slot Drop)
+const BIRTHDAY_REWARDS = [
+  { reels: ['7', '7', '7'], name: { es: '¡SUPER JACKPOT ANUAL!', en: 'ANNUAL SUPER JACKPOT!' }, apply: (p) => { p.money = (Number(p.money) || 0) + 500; } },
+  { reels: ['$', '$', '$'], name: { es: '¡BONO EN EFECTIVO +$250!', en: 'CASH BIRTHDAY BONUS +$250!' }, apply: (p) => { p.money = (Number(p.money) || 0) + 250; } },
+  { reels: ['+', '+', '+'], name: { es: '¡VITALIDAD +20 ENERGÍA!', en: 'VITALITY +20 ENERGY!' }, apply: (p) => { p.energy = Math.min(100, (Number(p.energy) || 0) + 20); } },
+  { reels: ['*', '*', '*'], name: { es: '¡AURA FELIZ +15 ÁNIMO!', en: 'HAPPY AURA +15 MOOD!' }, apply: (p) => { p.happiness = Math.min(100, (Number(p.happiness) || 50) + 15); } }
+];
+
+function triggerBirthdaySlot(onComplete) {
+  const modal = document.querySelector('#birthdaySlotModal');
+  const r1 = document.querySelector('#bReel1');
+  const r2 = document.querySelector('#bReel2');
+  const r3 = document.querySelector('#bReel3');
+  const desc = document.querySelector('#birthdayRewardDesc');
+  const claimBtn = document.querySelector('#birthdayClaimBtn');
+  if (!modal || !r1 || !r2 || !r3) {
+    if (onComplete) onComplete();
+    return;
+  }
+
+  modal.classList.remove('hidden');
+  if (claimBtn) claimBtn.disabled = true;
+
+  const symbols = ['7', '$', '+', '*', '9', 'X'];
+  let spins = 0;
+  const maxSpins = 12;
+
+  const interval = setInterval(() => {
+    spins++;
+    r1.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+    r2.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+    r3.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+    playSfx('click');
+
+    if (spins >= maxSpins) {
+      clearInterval(interval);
+      const chosen = BIRTHDAY_REWARDS[Math.floor(Math.random() * BIRTHDAY_REWARDS.length)];
+      r1.textContent = chosen.reels[0];
+      r2.textContent = chosen.reels[1];
+      r3.textContent = chosen.reels[2];
+      if (desc) desc.textContent = chosen.name[currentLanguage] || chosen.name.es;
+
+      triggerVictoryFlash();
+      triggerScreenShake(true);
+      playSfx('fanfare');
+      triggerMoneyRainCascade();
+
+      if (claimBtn) {
+        claimBtn.disabled = false;
+        claimBtn.onclick = () => {
+          modal.classList.add('hidden');
+          const save = readSave();
+          if (save && save.player) {
+            chosen.apply(save.player);
+            window.__lifeSave = save;
+            saveCurrentGame(save);
+            renderStats();
+          }
+          if (onComplete) onComplete();
+        };
+      }
+    }
+  }, 100);
+}
+
+// 16. Tutorial Onboarding Interactivo
+const TUTORIAL_SLIDES = [
+  {
+    title: { es: '1. CREA TU IDENTIDAD', en: '1. CREATE YOUR IDENTITY' },
+    body: {
+      es: '<p>Empieza tu simulación eligiendo tu nombre y país, o presiona <strong>INICIO RÁPIDO</strong> para nacer instantáneamente con una familia y contexto generados aleatoriamente.</p>',
+      en: '<p>Start your simulation by picking your name and country, or hit <strong>QUICK START</strong> to instantly spawn into a randomly generated family and background.</p>'
+    }
+  },
+  {
+    title: { es: '2. TUS ESTADÍSTICAS VITALES', en: '2. YOUR VITAL STATS' },
+    body: {
+      es: '<ul><li><strong>SALUD:</strong> Si llega a 0 mueres. ¡Cuídala en el médico o gimnasio!</li><li><strong>FELICIDAD:</strong> Evita la depresión con hobbies, compras o mascotas.</li><li><strong>INTELIGENCIA:</strong> Abre puestos de trabajo de alto sueldo y universidades.</li><li><strong>ENERGÍA:</strong> Se gasta con cada acción y se repone al avanzar año.</li></ul>',
+      en: '<ul><li><strong>HEALTH:</strong> If it hits 0, you die. Visit doctors or gym to restore it!</li><li><strong>HAPPINESS:</strong> Prevent depression with hobbies, shopping, or pets.</li><li><strong>SMARTS:</strong> Unlocks high-income university careers and corporations.</li><li><strong>ENERGY:</strong> Spent on activities and restored each time you age up.</li></ul>'
+    }
+  },
+  {
+    title: { es: '3. AVANZAR AÑO & DECISIONES', en: '3. AGING UP & CHOICES' },
+    body: {
+      es: '<p>Cada año presenta decisiones cruciales. Puedes escribir lo que quieras en la terminal o usar los botones de decisión rápida. ¡Cada cumpleaños viene con un <strong>Jackpot de Regalo Anual</strong>!</p>',
+      en: '<p>Every year brings critical life choices. Type any action into the terminal or pick quick decision buttons. Each birthday triggers an <strong>Annual Gift Slot Drop</strong>!</p>'
+    }
+  },
+  {
+    title: { es: '4. EL MENÚ DE SISTEMAS', en: '4. THE SYSTEMS MENU' },
+    body: {
+      es: '<p>Pulsa el botón <strong>[ MENÚ ]</strong> para explorar carreras, estudios, bolsa de criptomonedas, casino, mascotas tamagotchi, refugios clandestinos y el coliseo de combate.</p>',
+      en: '<p>Click the <strong>[ MENU ]</strong> button to discover careers, university, crypto stock market, casino, tamagotchi pets, safehouses, and cyber combat arena.</p>'
+    }
+  },
+  {
+    title: { es: '5. ZONA ARCADE DE DOPAMINA', en: '5. DOPAMINE ARCADE ZONE' },
+    body: {
+      es: '<ul><li><strong>DROPS AÉREOS:</strong> Paquetes flotantes con botines relámpago de 4 segundos.</li><li><strong>BOTÓN ROJO:</strong> Cárgalo haciendo clics para detonar premios masivos y jackpots.</li><li><strong>CHAT EN VIVO:</strong> Cientos de espectadores reaccionan en tiempo real a tus decisiones con donaciones y corazones.</li><li><strong>RULETA DE CUMPLEAÑOS:</strong> Cada año gira la máquina cuántica para regalos sorpresa.</li></ul>',
+      en: '<ul><li><strong>AIRDROPS:</strong> Floating supply crates with 4-second lightning loot.</li><li><strong>RED BUTTON:</strong> Click to charge the reactor and detonate massive jackpot rewards.</li><li><strong>LIVE CHAT:</strong> Hundreds of live viewers react in real time to your decisions with gifts and ASCII hearts.</li><li><strong>BIRTHDAY SLOT:</strong> Spin the quantum slot machine every year for surprise gifts.</li></ul>'
+    }
+  }
+];
+
+let tutorialCurrentStep = 0;
+function initTutorialSystem() {
+  const modal = document.querySelector('#tutorialModal');
+  const prevBtn = document.querySelector('#tutorialPrevBtn');
+  const nextBtn = document.querySelector('#tutorialNextBtn');
+  const closeBtn = document.querySelector('#tutorialCloseBtn');
+  const closeXBtn = document.querySelector('#closeTutorialButton');
+  const tutorialTriggerBtn = document.querySelector('#tutorialBtn');
+  if (!modal) return;
+
+  const renderStep = (idx) => {
+    tutorialCurrentStep = idx;
+    const slide = TUTORIAL_SLIDES[idx];
+    if (!slide) return;
+    const isEn = (currentLanguage === 'en');
+    const titleEl = document.querySelector('#tutorialCardTitle');
+    const bodyEl = document.querySelector('#tutorialCardBody');
+    if (titleEl) titleEl.textContent = slide.title[currentLanguage] || slide.title.es;
+    if (bodyEl) bodyEl.innerHTML = slide.body[currentLanguage] || slide.body.es;
+
+    const dots = document.querySelectorAll('#tutorialDots .tutorial-dot');
+    dots.forEach((dot, dIdx) => {
+      dot.classList.toggle('active', dIdx === idx);
+    });
+
+    if (prevBtn) prevBtn.disabled = (idx === 0);
+    if (nextBtn) {
+      if (idx === TUTORIAL_SLIDES.length - 1) {
+        nextBtn.textContent = t('tutorialFinishBtn') || (isEn ? '[ PLAY ! ]' : '[ ¡A JUGAR! ]');
+      } else {
+        nextBtn.textContent = t('tutorialNextBtn') || (isEn ? '[ NEXT > ]' : '[ SIGUIENTE > ]');
+      }
+    }
+  };
+
+  const openTutorial = (e) => {
+    if (e && typeof e.preventDefault === 'function') {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    modal.classList.remove('hidden');
+    renderStep(0);
+    playSfx('fanfare');
+  };
+
+  const closeTutorial = (e) => {
+    if (e && typeof e.preventDefault === 'function') {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    modal.classList.add('hidden');
+    try {
+      localStorage.setItem('lifeTutorialCompleted', 'true');
+    } catch {}
+  };
+
+  prevBtn?.addEventListener('click', () => {
+    if (tutorialCurrentStep > 0) {
+      renderStep(tutorialCurrentStep - 1);
+      playSfx('click');
+    }
+  });
+
+  nextBtn?.addEventListener('click', () => {
+    if (tutorialCurrentStep < TUTORIAL_SLIDES.length - 1) {
+      renderStep(tutorialCurrentStep + 1);
+      playSfx('click');
+    } else {
+      closeTutorial();
+      playSfx('coin');
+    }
+  });
+
+  closeBtn?.addEventListener('click', closeTutorial);
+  closeXBtn?.addEventListener('click', closeTutorial);
+  tutorialTriggerBtn?.addEventListener('click', openTutorial);
+
+  window.renderTutorialStep = renderStep;
+  window.openTutorial = openTutorial;
+  window.closeTutorial = closeTutorial;
+
+  // Auto-open on first time visit
+  try {
+    if (!localStorage.getItem('lifeTutorialCompleted')) {
+      setTimeout(openTutorial, 800);
+    }
+  } catch {}
+}
+
+// Global Clicks Listener
+document.addEventListener('click', (e) => {
+  spawnAsciiSparks(e.clientX, e.clientY);
+  getAudioContext();
+  if (e.target.closest('button') || e.target.closest('.history-button') || e.target.closest('.start-life-button')) {
+    playSfx('click');
+  }
+});
+
+// Window global references
+window.playSfx = playSfx;
+window.isSfxEnabled = isSfxEnabled;
+window.toggleSfx = toggleSfx;
+window.triggerScreenShake = triggerScreenShake;
+window.triggerVictoryFlash = triggerVictoryFlash;
+window.spawnDopamineText = spawnDopamineText;
+window.spawnAsciiSparks = spawnAsciiSparks;
+window.registerComboAction = registerComboAction;
+window.triggerMicroAchievement = triggerMicroAchievement;
+window.triggerWelcomeGacha = triggerWelcomeGacha;
+window.startAirdropCycle = startAirdropCycle;
+window.initLiveChat = initLiveChat;
+window.pushLiveChatMessage = pushLiveChatMessage;
+window.initDopamineButton = initDopamineButton;
+window.triggerMoneyRainCascade = triggerMoneyRainCascade;
+window.triggerQuickTimeEvent = triggerQuickTimeEvent;
+window.initSocialFeed = initSocialFeed;
+window.triggerBirthdaySlot = triggerBirthdaySlot;
+window.initTutorialSystem = initTutorialSystem;
+
+// Inicialización de componentes arcade y SFX
+try {
+  initLiveChat();
+  initDopamineButton();
+  initSocialFeed();
+  initTutorialSystem();
+  setInGameArcadeVisibility(false);
+} catch (err) {
+  console.warn('Dopamine systems init failed:', err);
+}
+
+// Hook de decisiones para QTE y Live Chat
+const saveBtnEl = document.querySelector('#saveStoryButton');
+if (saveBtnEl) {
+  saveBtnEl.addEventListener('click', () => {
+    registerComboAction();
+    if (Math.random() < 0.22 && !qteActive) {
+      triggerQuickTimeEvent();
+    }
+    pushLiveChatMessage('viewer_' + Math.floor(Math.random() * 90 + 10), 'Tomó una decisión...');
+  });
+}
+
+const ageBtnEl = document.querySelector('#ageUpButton');
+if (ageBtnEl) {
+  ageBtnEl.addEventListener('click', () => {
+    registerComboAction();
+  });
+}
+
+const sfxBtn = document.querySelector('#sfxToggleBtn');
+if (sfxBtn) {
+  sfxBtn.addEventListener('click', () => {
+    toggleSfx();
+  });
+}
+
 
